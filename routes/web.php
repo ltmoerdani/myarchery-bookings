@@ -126,7 +126,7 @@ Route::prefix('event-booking')->group(function () {
   Route::post('/paytm/notify', 'FrontEnd\PaymentGateway\PaytmController@notify')->name('event_booking.paytm.notify');
 
   Route::get('make-payment', 'FrontEnd\PaymentGateway\MidtransController@makePayment')->name('makePayment');
-  Route::get('notify/{orderId}', 'FrontEnd\PaymentGateway\MidtransController@ccNotify')->name('event.midtrans.notify'); // credit card er IPN
+  Route::get('notify/{orderId}?', 'FrontEnd\PaymentGateway\MidtransController@ccNotify')->name('event.midtrans.notify'); // credit card er IPN
   Route::get('bank-notify', 'FrontEnd\PaymentGateway\MidtransController@bankNotify')->name('bank.notify'); // banking er IPN
 
   //iyzico

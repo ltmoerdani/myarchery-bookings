@@ -102,7 +102,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `role_id`, `first_name`, `last_name`, `image`, `username`, `email`, `phone`, `address`, `details`, `password`, `status`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'Fahad', 'Hossain', '1632736531.png', 'admin', 'fahadahmadshemul@gmail.com', '082319382109', 'Dhaka, Bangladesh', 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam exercitationem, deserunt praesentium consectetur quo neque temporibus fuga eveniet est aliquid distinctio? Magnam possimus voluptatem suscipit voluptates natus, autem officia quas?', '$2y$10$6Y4HCFAAIfqpklq2UIKhQuFetg9/LooM9m9jHdLjVs3dmc.5BMLf6', 1, NULL, '2023-01-21 12:43:45');
+(1, NULL, 'Admin', 'My Archery', '1632736531.png', 'admin', 'admin@myarchery.id', '082319382109', 'Jakarta, Indonesia', 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam exercitationem, deserunt praesentium consectetur quo neque temporibus fuga eveniet est aliquid distinctio? Magnam possimus voluptatem suscipit voluptates natus, autem officia quas?', '$2y$10$6Y4HCFAAIfqpklq2UIKhQuFetg9/LooM9m9jHdLjVs3dmc.5BMLf6', 1, NULL, '2023-01-21 12:43:45');
 
 -- --------------------------------------------------------
 
