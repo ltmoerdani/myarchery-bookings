@@ -12,7 +12,9 @@ website booking myarchery
 
 # How To Running
 1. clone project to htdocs mamp/xampp/wamp or setup manual use apache web server
-2. go to running :D
+2. import database
+3. running migration and seeders from php artisan laravel
+4. go to running :D
 
 # License
 license by Evento

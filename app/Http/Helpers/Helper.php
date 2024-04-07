@@ -233,7 +233,7 @@ if (!function_exists('storeTranscation')) {
       $pre_balance = NULL;
       $after_balance = NULL;
     }
-    //store data to transcation table 
+    //store data to transcation table
     $transcation = Transaction::create([
       'transcation_id' => time(),
       'booking_id' => $booking->id,
@@ -257,7 +257,7 @@ if (!function_exists('storeTranscation')) {
 if (!function_exists('storeProductTranscation')) {
   function storeProductTranscation($orderInfo)
   {
-    //store data to transcation table 
+    //store data to transcation table
     $transcation = Transaction::create([
       'transcation_id' => time(),
       'booking_id' => $orderInfo->id,
