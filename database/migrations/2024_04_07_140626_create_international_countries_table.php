@@ -18,62 +18,62 @@ return new class extends Migration
       $table->string('name');
       $table->string(
         'iso3'
-      );
+      )->nullable();
       $table->string(
         'iso2'
-      );
-      $table->integer('numeric_code');
+      )->nullable();
+      $table->string('numeric_code')->nullable();
       $table->string(
         'phone_code'
-      );
+      )->nullable();
       $table->string(
         'capital'
-      );
+      )->nullable();
       $table->string(
         'currency'
-      );
+      )->nullable();
       $table->string(
         'currency_name'
-      );
+      )->nullable();
       $table->string(
         'currency_symbol'
-      );
+      )->nullable();
       $table->string(
         'tld'
-      );
+      )->nullable();
       $table->string(
         'native'
-      );
+      )->nullable();
       $table->string(
         'region'
-      );
-      $table->integer(
+      )->nullable();
+      $table->string(
         'region_id'
-      );
+      )->nullable();
       $table->string(
         'sub_region'
-      );
-      $table->integer(
+      )->nullable();
+      $table->string(
         'sub_region_id'
-      );
+      )->nullable();
       $table->string(
         'nationality'
-      );
+      )->nullable();
       $table->longText(
         'timezones'
-      );
+      )->nullable();
       $table->string(
         'latitude'
-      );
+      )->nullable();
       $table->string(
         'longitude'
-      );
+      )->nullable();
       $table->string(
         'emoji'
-      );
+      )->nullable();
       $table->string(
         'emojiU'
-      );
+      )->nullable();
       $table->timestamps();
     });
   }

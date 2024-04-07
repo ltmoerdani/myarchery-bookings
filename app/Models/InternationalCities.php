@@ -19,7 +19,6 @@ class InternationalCities extends Model
     'country_id',
     'country_code',
     'country_name',
-    'state_code',
     'latitude',
     'longitude',
     'wikiDataId',

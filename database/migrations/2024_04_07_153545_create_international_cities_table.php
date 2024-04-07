@@ -24,10 +24,10 @@ return new class extends Migration
         ->onDelete('cascade');
       $table->string(
         'state_code'
-      );
+      )->nullable();
       $table->string(
         'state_name'
-      );
+      )->nullable();
       $table
         ->foreignId('country_id')
         ->constrained('international_countries')
@@ -35,10 +35,10 @@ return new class extends Migration
         ->onDelete('cascade');
       $table->string(
         'country_code'
-      );
+      )->nullable();
       $table->string(
         'country_name'
-      );
+      )->nullable();
       $table->string(
         'latitude'
       )->nullable();

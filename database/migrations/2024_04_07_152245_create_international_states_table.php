@@ -25,10 +25,10 @@ return new class extends Migration
         ->onDelete('cascade');
       $table->string(
         'country_code'
-      );
+      )->nullable();
       $table->string(
         'country_name'
-      );
+      )->nullable();
       $table->string(
         'state_code'
       )->nullable();
