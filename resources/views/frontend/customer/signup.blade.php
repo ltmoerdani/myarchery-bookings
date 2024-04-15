@@ -15,7 +15,7 @@
 
 @section('hero-section')
   <!-- Page Banner Start -->
-  <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
+  <!-- <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
     data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
     <div class="container">
       <div class="banner-inner">
@@ -40,7 +40,7 @@
         </nav>
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- Page Banner End -->
 @endsection
 @section('content')
@@ -56,9 +56,9 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="fname"> {{ __('First Name') }} *</label>
+                  <label for="fname"> {{ __('Full Name') }} *</label>
                   <input type="text" name="fname" id="fname" value="{{ old('fname') }}" class="form-control"
-                    placeholder="{{ __('Enter Your First Name') }}">
+                    placeholder="{{ __('Enter Your Full Name') }}">
                   @error('fname')
                     <p class="text-danger">{{ $message }}</p>
                   @enderror
@@ -66,10 +66,10 @@
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="lname"> {{ __('Last Name') }}</label>
-                  <input type="text" name="lname" id="lname" value="{{ old('lname') }}" class="form-control"
-                    placeholder="{{ __('Enter Your Last Name') }}">
-                  @error('lname')
+                  <label for="email">{{ __('Email') }} *</label>
+                  <input type="email" name="email" value="{{ old('email') }}" id="email" class="form-control"
+                    placeholder="{{ __('Enter Your Email Address') }}">
+                  @error('email')
                     <p class="text-danger">{{ $message }}</p>
                   @enderror
                 </div>
@@ -86,10 +86,59 @@
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
-                  <label for="email">{{ __('Email Address') }} *</label>
-                  <input type="email" name="email" value="{{ old('email') }}" id="email" class="form-control"
-                    placeholder="{{ __('Enter Your Email Address') }}">
-                  @error('email')
+                  <label for="gender"> {{ __('Gender') }} *</label>
+                  <!-- <input type="text" name="gender" id="gender" value="{{ old('gender') }}" class="form-control"
+                    placeholder="{{ __('Enter Your Last Name') }}"> -->
+                  <select class="form-select" aria-label="gender" name="gender" id="gender" class="form-control">
+                    <option selected>Choose</option>
+                    <option value="M">{{ __('Male') }}</option>
+                    <option value="F">{{ __('Female') }}</option>
+                  </select>
+                  @error('gender')
+                    <p class="text-danger">{{ $message }}</p>
+                  @enderror
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="phone"> {{ __('Phone Number') }} *</label>
+                  <input type="text" name="phone" id="phone" value="{{ old('phone') }}" class="form-control"
+                    placeholder="{{ __('Enter Your Phone Number') }}">
+                  @error('phone')
+                    <p class="text-danger">{{ $message }}</p>
+                  @enderror
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="birthdate">{{ __('Birth Date') }} *</label>
+                  <input type="text" name="birthdate" value="{{ old('birthdate') }}" id="birthdate" class="form-control"
+                    placeholder="{{ __('DD/MM/YY') }}">
+                  @error('birthdate')
+                    <p class="text-danger">{{ $message }}</p>
+                  @enderror
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="country">{{ __('Country') }} *</label>
+                  <select class="form-select" aria-label="country" name="country" id="countries" class="form-control">
+                    <option selected>Choose</option>
+                    @foreach($country as $d)
+                      <option value="{{ $d->id }}">{{ $d->name }}</option>
+                    @endforeach
+                  </select>
+                  @error('country')
+                    <p class="text-danger">{{ $message }}</p>
+                  @enderror
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="state">{{ __('State') }} *</label>
+                  <input type="text" name="state" value="{{ old('state') }}" id="states" class="form-control"
+                    placeholder="{{ __('Enter Your State') }}">
+                  @error('state')
                     <p class="text-danger">{{ $message }}</p>
                   @enderror
                 </div>

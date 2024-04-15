@@ -39,6 +39,10 @@ Route::get('login/google/callback', 'FrontEnd\CustomerController@handleGoogleCal
 
 Route::middleware('change.lang')->prefix('/customer')->group(function () {
   Route::middleware('guest:customer', 'change.lang')->group(function () {
+
+    // Get Region
+    Route::get('/get-state/{id}', 'BackEnd\Region\RegionController@getState')->name('get.region.state');
+
     Route::get('/login', 'FrontEnd\CustomerController@login')->name('customer.login');
     Route::get('/signup', 'FrontEnd\CustomerController@signup')->name('customer.signup');
     Route::post('/create', 'FrontEnd\CustomerController@create')->name('customer.create');

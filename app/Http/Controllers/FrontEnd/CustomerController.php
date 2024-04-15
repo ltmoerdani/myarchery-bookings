@@ -25,6 +25,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
+use App\Models\InternationalCountries;
 
 class CustomerController extends Controller
 {
@@ -45,15 +46,14 @@ class CustomerController extends Controller
   //signup
   public function signup()
   {
-    return view('frontend.customer.signup');
+    $country = InternationalCountries::select('id','name')->get();
+    return view('frontend.customer.signup', compact('country'));
   }
   //create
   public function create(Request $request)
   {
-
     $rules = [
       'fname' => 'required',
-      'lname' => 'required',
       'email' => 'required|email|unique:customers',
       'username' => [
         'required',
@@ -61,6 +61,11 @@ class CustomerController extends Controller
         "not_in:$this->admin_user_name",
         Rule::unique('customers', 'username')
       ],
+      'gender' => 'required',
+      'phone' => 'required',
+      'birthdate' => 'required',
+      'country' => 'required',
+      'state' => 'required',
       'password' => 'required|confirmed|min:6',
     ];
 
@@ -89,7 +94,11 @@ class CustomerController extends Controller
     $in['verification_token'] = $token;
 
     // send a mail to user for verify his/her email address
-    $this->sendVerificationMail($request, $token);
+    // $this->sendVerificationMail($request, $token);
+    
+    // Skip verification email 
+    $in['email_verified_at'] = date('Y-m-d H:i:s');
+    
     Customer::create($in);
 
     return redirect()->route('customer.login');
@@ -189,7 +198,6 @@ class CustomerController extends Controller
     if ($request->input('redirectPath') == 'checkout') {
       $url = url()->previous();
     }
-
     // when user have to redirect to course details page after login.
     if (isset($url)) {
       $request->session()->put('redirectTo', $url);
