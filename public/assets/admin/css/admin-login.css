@@ -9,7 +9,8 @@
 .form {
   position: relative;
   z-index: 1;
-  background: #202940;
+  /* background: #202940; */
+  background: #fff;
   max-width: 360px;
   margin: 0 auto 100px;
   padding: 45px;
@@ -21,14 +22,16 @@
 .form input {
   font-family: "Roboto", sans-serif;
   outline: 0;
-  background: #1a2035;
-  color: #fff;
+  /* background: #fff; */
+  background: #e9f0fd;
+  color: #2f374b;
   width: 100%;
   border: 0;
   margin: 0 0 15px;
   padding: 15px;
   box-sizing: border-box;
-  border: 1px solid #2f374b;
+  /* border: 1px solid #2f374b; */
+  border: 1px solid #fff;
   font-size: 14px;
 }
 
@@ -36,11 +39,12 @@
   font-family: "Roboto", sans-serif;
   text-transform: uppercase;
   outline: 0;
-  background: #4CAF50;
+  /* background: #4caf50; */
+  background: #20469b;
   width: 100%;
   border: 0;
   padding: 15px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 14px;
   -webkit-transition: all 0.3 ease;
   transition: all 0.3 ease;
@@ -50,7 +54,8 @@
 .form button:hover,
 .form button:active,
 .form button:focus {
-  background: #43A047;
+  /* background: #43a047; */
+  background: #1a3a80;
 }
 
 .form .message {
@@ -60,7 +65,7 @@
 }
 
 .form .message a {
-  color: #4CAF50;
+  color: #4caf50;
   text-decoration: none;
 }
 
@@ -106,7 +111,7 @@
 }
 
 .container .info span .fa {
-  color: #EF3B3A;
+  color: #ef3b3a;
 }
 
 .login-logo {
@@ -116,9 +121,9 @@
 }
 
 body {
-  background: #76b852;
+  background: #ffff;
   /* fallback for old browsers */
-  background: #1a2035;
+  background: #ffff;
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

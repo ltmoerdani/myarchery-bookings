@@ -1,6 +1,6 @@
     <!-- Jquery -->
     <script>
-      var baseUrl = "{{ url('/') }}";
+        var baseUrl = "{{ url('/') }}";
     </script>
     <script src="{{ asset('assets/front/js/jquery.min.js') }}"></script>
     <!-- Popper -->
@@ -17,6 +17,8 @@
     <script src="{{ asset('assets/front/js/imagesloaded.pkgd.min.js') }}"></script>
     <!-- Slick Slider -->
     <script src="{{ asset('assets/front/js/slick.min.js') }}"></script>
+    <!-- Select2 JS -->
+    <script src="{{ asset('assets/admin/js/select2.min.js') }}"></script>
     <!-- Main JS -->
     <script src="{{ asset('assets/front/js/vanilla-lazyload.min.js') }}"></script>
     <script src="{{ asset('assets/front/js/jquery-syotimer.min.js') }}"></script>
@@ -28,55 +30,55 @@
     <script src="{{ asset('assets/front/js/pwa.js') }}" defer></script>
 
     <script>
-      @if (Session::has('message'))
+        @if (Session::has('message'))
 
-        var type = "{{ Session::get('alert-type') }}";
-        if (type) {
-          type = type
-        } else {
-          var type = "{{ Session::get('alert-type', 'info') }}";
-        }
-        switch (type) {
-          case 'info':
-            toastr.options = {
-              "closeButton": true,
-              "progressBar": true,
-              "timeOut": 10000,
-              "extendedTimeOut": 10000,
-              "positionClass": "toast-top-right",
+            var type = "{{ Session::get('alert-type') }}";
+            if (type) {
+                type = type
+            } else {
+                var type = "{{ Session::get('alert-type', 'info') }}";
             }
-            toastr.info("{{ Session::get('message') }}");
-            break;
-          case 'success':
-            toastr.options = {
-              "closeButton": true,
-              "progressBar": true,
-              "timeOut ": 10000,
-              "extendedTimeOut": 10000,
-              "positionClass": "toast-top-right",
+            switch (type) {
+                case 'info':
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut": 10000,
+                        "extendedTimeOut": 10000,
+                        "positionClass": "toast-top-right",
+                    }
+                    toastr.info("{{ Session::get('message') }}");
+                    break;
+                case 'success':
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut ": 10000,
+                        "extendedTimeOut": 10000,
+                        "positionClass": "toast-top-right",
+                    }
+                    toastr.success("{{ Session::get('message') }}");
+                    break;
+                case 'warning':
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut ": 10000,
+                        "extendedTimeOut": 10000,
+                        "positionClass": "toast-top-right",
+                    }
+                    toastr.warning("{{ Session::get('message') }}");
+                    break;
+                case 'error':
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut ": 10000,
+                        "extendedTimeOut": 10000,
+                        "positionClass": "toast-top-right",
+                    }
+                    toastr.error("{{ Session::get('message') }}");
+                    break;
             }
-            toastr.success("{{ Session::get('message') }}");
-            break;
-          case 'warning':
-            toastr.options = {
-              "closeButton": true,
-              "progressBar": true,
-              "timeOut ": 10000,
-              "extendedTimeOut": 10000,
-              "positionClass": "toast-top-right",
-            }
-            toastr.warning("{{ Session::get('message') }}");
-            break;
-          case 'error':
-            toastr.options = {
-              "closeButton": true,
-              "progressBar": true,
-              "timeOut ": 10000,
-              "extendedTimeOut": 10000,
-              "positionClass": "toast-top-right",
-            }
-            toastr.error("{{ Session::get('message') }}");
-            break;
-        }
-      @endif
+        @endif
     </script>
