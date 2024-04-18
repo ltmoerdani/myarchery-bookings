@@ -141,6 +141,7 @@ return array(
     'App\\Http\\Controllers\\FrontEnd\\Shop\\PaymentGateway\\YocoController' => $baseDir . '/app/Http/Controllers/FrontEnd/Shop/PaymentGateway/YocoController.php',
     'App\\Http\\Controllers\\FrontEnd\\Shop\\ShopController' => $baseDir . '/app/Http/Controllers/FrontEnd/Shop/ShopController.php',
     'App\\Http\\Controllers\\FrontEnd\\SupportTicketController' => $baseDir . '/app/Http/Controllers/FrontEnd/SupportTicketController.php',
+    'App\\Http\\Helpers\\HelperResponse' => $baseDir . '/app/Http/Helpers/HelperResponse.php',
     'App\\Http\\Helpers\\Instamojo' => $baseDir . '/app/Http/Helpers/Instamojo.php',
     'App\\Http\\Helpers\\UploadFile' => $baseDir . '/app/Http/Helpers/UploadFile.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',

@@ -923,6 +923,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'App\\Http\\Controllers\\FrontEnd\\Shop\\PaymentGateway\\YocoController' => __DIR__ . '/../..' . '/app/Http/Controllers/FrontEnd/Shop/PaymentGateway/YocoController.php',
         'App\\Http\\Controllers\\FrontEnd\\Shop\\ShopController' => __DIR__ . '/../..' . '/app/Http/Controllers/FrontEnd/Shop/ShopController.php',
         'App\\Http\\Controllers\\FrontEnd\\SupportTicketController' => __DIR__ . '/../..' . '/app/Http/Controllers/FrontEnd/SupportTicketController.php',
+        'App\\Http\\Helpers\\HelperResponse' => __DIR__ . '/../..' . '/app/Http/Helpers/HelperResponse.php',
         'App\\Http\\Helpers\\Instamojo' => __DIR__ . '/../..' . '/app/Http/Helpers/Instamojo.php',
         'App\\Http\\Helpers\\UploadFile' => __DIR__ . '/../..' . '/app/Http/Helpers/UploadFile.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
