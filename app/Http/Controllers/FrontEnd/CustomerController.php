@@ -26,6 +26,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\InternationalCountries;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -46,21 +47,23 @@ class CustomerController extends Controller
   //signup
   public function signup()
   {
-    $country = InternationalCountries::select('id','name')->get();
+    $country = InternationalCountries::select('id', 'name')->get();
     return view('frontend.customer.signup', compact('country'));
   }
   //create
   public function create(Request $request)
   {
+
     $rules = [
       'fname' => 'required',
-      'email' => 'required|email|unique:customers',
-      'username' => [
-        'required',
-        'alpha_dash',
-        "not_in:$this->admin_user_name",
-        Rule::unique('customers', 'username')
-      ],
+      // 'email' => 'required|email|unique:customers',
+      // 'username' => [
+      //   'required',
+      //   'alpha_dash',
+      //   "not_in:$this->admin_user_name",
+      //   Rule::unique('customers', 'username')
+      // ],
+      'email' => ['required', 'email', Rule::unique('customers', 'email')],
       'gender' => 'required',
       'phone' => 'required',
       'birthdate' => 'required',
@@ -95,10 +98,34 @@ class CustomerController extends Controller
 
     // send a mail to user for verify his/her email address
     // $this->sendVerificationMail($request, $token);
-    
-    // Skip verification email 
+
+    // Skip verification email
+    $country_data_list =
+      json_decode($in['country']);
+    $state_data_list =
+      json_decode($in['state']);
+    $checking_name = explode(" ", strtolower($in['fname']));
+
+    $in['username'] = '';
+    //create username for unique by one user
+    $genderToInt = strtolower($in['gender']) == 'm' ? 1 : 2;
+    $reformatDate =  Carbon::parse($in['birthdate'] . '00:00:00');
+
+    if (count($checking_name) > 1) {
+      $in['username'] = $checking_name[0] . $checking_name[1] . $genderToInt . $reformatDate->format('Ymd');
+    } else {
+      $in['username'] = $checking_name[0] . $genderToInt . $reformatDate->format('Ymd');
+    }
+
     $in['email_verified_at'] = date('Y-m-d H:i:s');
-    
+    $in['country_id'] = (int)$country_data_list->id;
+    $in['country'] = $country_data_list->name;
+    $in['state_id'] = (int)$state_data_list->id;
+    $in['state'] = $state_data_list->name;
+    unset($in['states']);
+    unset($in['password_confirmation']);
+    dd($in);
+
     Customer::create($in);
 
     return redirect()->route('customer.login');

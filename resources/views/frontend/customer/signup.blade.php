@@ -108,7 +108,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            {{-- <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="username">{{ __('Username') }} *</label>
                                     <input type="text" name="username" value="{{ old('username') }}" id="username"
@@ -117,12 +117,12 @@
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="gender"> {{ __('Gender') }} *</label>
                                     <!-- <input type="text" name="gender" id="gender" value="{{ old('gender') }}" class="form-control"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                placeholder="{{ __('Enter Your Last Name') }}"> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            placeholder="{{ __('Enter Your Last Name') }}"> -->
                                     <select class="form-select" aria-label="gender" name="gender" id="gender"
                                         class="form-control">
                                         <option selected>Choose</option>
@@ -147,7 +147,7 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="birthdate">{{ __('Birth Date') }} *</label>
-                                    <input type="text" name="birthdate" value="{{ old('birthdate') }}" id="birthdate"
+                                    <input type="date" name="birthdate" value="{{ old('birthdate') }}" id="birthdate"
                                         class="form-control" placeholder="{{ __('DD/MM/YY') }}">
                                     @error('birthdate')
                                         <p class="text-danger">{{ $message }}</p>
@@ -174,15 +174,15 @@
                                 <div class="form-group">
                                     <label for="state">{{ __('State') }} *</label>
                                     <select class="form-select js-example-basic-single" data-placeholder="Choose state"
-                                        aria-label="states" name="state" id="states" class="form-control">
-                                        <option value="1">Select country first</option>
-                                        <option value="2">Select country first</option>
+                                        aria-label="states" name="states" id="states" class="form-control">
+                                        <option value="" selected disabled>Choose State</option>
                                     </select>
                                     @error('state')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
+                            <input type="hidden" class="form-control state" name="state" id="state" />
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="password">{{ __('Password') }} *</label>
@@ -237,6 +237,7 @@
         $("#countries").on("change", function() {
             const chooseCountry = $(this).val();
             $('#states').html('');
+            $('#state').val('');
             if (chooseCountry) {
                 const id = JSON.parse(chooseCountry).id;
                 $.ajax({
@@ -244,18 +245,29 @@
                     url: `${baseUrl}/customer/get-state/${id}`,
                     success: function(response) {
                         if (response.data.length > 0) {
-                            $('#states').append('<option>Choose state</option>');
+                            $('#states').append('<option selected disabled>Choose state</option>');
                             $.each(response.data, function(index, values) {
-                                // console.log("index:", index);
-                                // console.log("values:", values);
                                 $('#states').append(
-                                    `<option value="${values.id}">${values.name}</option>`);
+                                    `<option value="${values.id}">${values.name}</option>`
+                                );
                             })
                         } else {
                             $('#states').html('');
+                            $('#state').val('');
                         }
                     }
                 });
+            }
+        })
+        $("#states").on("change", function() {
+            const id = $(this).val();
+            if (id) {
+                const nameSelected = $("#states option:selected").text();
+                const mapValue = {
+                    id,
+                    name: nameSelected
+                };
+                $(".state").val(JSON.stringify(mapValue));
             }
         })
     </script>
