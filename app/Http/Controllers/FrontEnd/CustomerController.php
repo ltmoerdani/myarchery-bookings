@@ -124,7 +124,14 @@ class CustomerController extends Controller
     $in['state'] = $state_data_list->name;
     unset($in['states']);
     unset($in['password_confirmation']);
-    dd($in);
+
+    $checkUsernameAvailable = Customer::where('username', '=', $in['username'])->count();
+    // print_r($checkUsernameAvailable);
+    // dd($in);
+    if ($checkUsernameAvailable > 0) {
+      Session::flash('error', 'User cant be registered!');
+      return redirect()->route('customer.signup');
+    }
 
     Customer::create($in);
 

@@ -53,6 +53,9 @@
                                     <div class="main-info">
                                         <h5>{{ __('User') }}</h5>
                                         <ul class="list">
+                                            @if (Auth::guard('customer')->user()->fname != null)
+                                                <li><b>{{ __('Full Name') . ' : ' }}</b></li>
+                                            @endif
                                             @if (Auth::guard('customer')->user()->email != null)
                                                 <li><b>{{ __('Email') . ' : ' }}</b></li>
                                             @endif
@@ -79,6 +82,7 @@
                                             @endif
                                         </ul>
                                         <ul class="list w-60p">
+                                            <li>{{ Auth::guard('customer')->user()->fname }}</li>
                                             <li>{{ Auth::guard('customer')->user()->email }}</li>
                                             <li>{{ Auth::guard('customer')->user()->username }}</li>
                                             <li>{{ Auth::guard('customer')->user()->phone }}</li>
