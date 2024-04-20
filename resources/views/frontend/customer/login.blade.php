@@ -107,8 +107,8 @@
                         @endif
 
                         <div class="form-group">
-                            <label for="username">{{ __('Username') . ' *' }} </label>
-                            <input type="text" placeholder="{{ __('Enter Your Username') }}" name="username"
+                            <label for="username">{{ __('Username Or Email') . ' *' }} </label>
+                            <input type="text" placeholder="{{ __('Enter Your Username Or Email') }}" name="username"
                                 id="username" value="" class="form-control">
                             @error('username')
                                 <p class="text-danger">{{ $message }}</p>
