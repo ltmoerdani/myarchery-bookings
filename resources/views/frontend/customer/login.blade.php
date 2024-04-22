@@ -80,7 +80,7 @@
                         @csrf
 
                         @if ($basicInfo->facebook_login_status == 1 || $basicInfo->google_login_status == 1)
-                            <div class="form-group overflow-hidden">
+                            <!-- <div class="form-group overflow-hidden">
                                 <div class="row justify-content-between mb-3">
                                     @if ($basicInfo->facebook_login_status == 1)
                                         <a class="text-center text-white {{ $basicInfo->google_login_status == 1 ? 'w-50' : 'w-100' }} pt-2 py-2 bg-facebook"
@@ -96,7 +96,7 @@
                                             {{ __('Login with Google') }}</a>
                                     @endif
                                 </div>
-                            </div>
+                            </div> -->
                         @endif
 
                         @if (Session::has('success'))
