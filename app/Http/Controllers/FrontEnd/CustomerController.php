@@ -239,7 +239,6 @@ class CustomerController extends Controller
     return view('frontend.customer.login');
   }
 
-
   //authenticate
   public function authentication(Request $request)
   {
@@ -350,6 +349,7 @@ class CustomerController extends Controller
       }
     }
   }
+
   //forget_passord
   public function forget_passord()
   {

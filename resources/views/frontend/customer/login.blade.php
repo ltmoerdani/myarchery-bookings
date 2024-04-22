@@ -116,8 +116,15 @@
                         </div>
                         <div class="form-group">
                             <label for="password">{{ __('Password') . ' *' }}</label>
-                            <input type="password" name="password" value="" id="password" class="form-control"
-                                placeholder="{{ __('Enter Password') }}">
+                            <div class="input-group mb-2">
+                                <input type="password" name="password" id="password" class="form-control"
+                                    placeholder="{{ __('Enter Password') }}">
+                                <div class="input-group-prepend password-button-showhide" style="cursor:pointer">
+                                    <div class="input-group-text" id="class-showhide-password">
+                                        <i class="fa fa-eye"></i>
+                                    </div>
+                                </div>
+                            </div>
                             @error('password')
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
@@ -149,4 +156,17 @@
         </div>
     </div>
     <!-- LogIn Area End -->
+@endsection
+@section('custom-script')
+    <script>
+        const btnPassShowHide = document.querySelector(".password-button-showhide");
+        const inputPass = document.querySelector("#password");
+        const iconPass = document.querySelector("#class-showhide-password");
+
+        btnPassShowHide.addEventListener("click", function() {
+            inputPass.type = inputPass.type === 'password' ? 'text' : 'password';
+            iconPass.innerHTML = inputPass.type === 'password' ? `<i class="fa fa-eye"></i>` :
+                `<i class="fa fa-eye-slash"></i>`
+        });
+    </script>
 @endsection
