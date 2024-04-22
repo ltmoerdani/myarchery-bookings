@@ -55,21 +55,29 @@
                     @if (Session::has('alert'))
                         <div class="alert alert-danger">{{ Session::get('alert') }}</div>
                     @endif
+
                     <form id="login-form" name="login_form" class="login-form" action="{{ route('organizer.authentication') }}"
                         method="POST">
                         @csrf
                         <div class="form-group">
-                            <label for="username">{{ __('Username') }} *</label>
+                            <label for="username">{{ __('Username Or Email') }} *</label>
                             <input type="text" name="username" value="" id="username" class="form-control"
-                                placeholder="{{ __('Enter Username') }}">
+                                placeholder="{{ __('Enter Your Username Or Email') }}">
                             @error('username')
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="password">{{ __('Password') }} *</label>
-                            <input type="password" name="password" id="password" value="" class="form-control"
-                                placeholder="{{ __('Enter Password') }}">
+                            <div class="input-group mb-2">
+                                <input type="password" name="password" id="password" class="form-control"
+                                    placeholder="{{ __('Enter Password') }}">
+                                <div class="input-group-prepend password-button-showhide" style="cursor:pointer">
+                                    <div class="input-group-text" id="class-showhide-password">
+                                        <i class="fa fa-eye"></i>
+                                    </div>
+                                </div>
+                            </div>
                             @error('password')
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
@@ -99,4 +107,17 @@
         </div>
     </div>
     <!-- LogIn Area End -->
+@endsection
+@section('custom-script')
+    <script>
+        const btnPassShowHide = document.querySelector(".password-button-showhide");
+        const inputPass = document.querySelector("#password");
+        const iconPass = document.querySelector("#class-showhide-password");
+
+        btnPassShowHide.addEventListener("click", function() {
+            inputPass.type = inputPass.type === 'password' ? 'text' : 'password';
+            iconPass.innerHTML = inputPass.type === 'password' ? `<i class="fa fa-eye"></i>` :
+                `<i class="fa fa-eye-slash"></i>`
+        });
+    </script>
 @endsection

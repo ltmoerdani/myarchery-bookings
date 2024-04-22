@@ -42,7 +42,7 @@ class OrganizerController extends Controller
     $information['total_event_bookings'] = Booking::where('organizer_id', Auth::guard('organizer')->user()->id)->get()->count();
     $information['transcation_count'] = Transaction::where('organizer_id', Auth::guard('organizer')->user()->id)->get()->count();
 
-    //income of event bookings 
+    //income of event bookings
     $eventBookingTotalIncomes = DB::table('bookings')
       ->select(DB::raw('month(created_at) as month'), DB::raw('sum(price) as total'))
       ->where('paymentStatus', '=', 'completed')
@@ -125,7 +125,8 @@ class OrganizerController extends Controller
   {
     return view('frontend.organizer.signup');
   }
-  //create
+
+  //create user organizer
   public function create(Request $request)
   {
     $rules = [
@@ -245,12 +246,19 @@ class OrganizerController extends Controller
 
     return redirect()->route('organizer.login');
   }
-  //authenticate
-  public function authentication(Request $request)
+
+  public function createBackup(Request $request)
   {
     $rules = [
-      'username' => 'required',
-      'password' => 'required'
+      'name' => 'required',
+      'username' => [
+        'required',
+        'alpha_dash',
+        'unique:organizers',
+        "not_in:$this->admin_user_name"
+      ],
+      'email' => 'required|email|unique:organizers',
+      'password' => 'required|confirmed|min:6',
     ];
 
     $info = Basic::select('google_recaptcha_status')->first();
@@ -272,32 +280,175 @@ class OrganizerController extends Controller
       return redirect()->back()->withErrors($validator->errors());
     }
 
-    if (
-      Auth::guard('organizer')->attempt([
-        'username' => $request->username,
-        'password' => $request->password
-      ])
-    ) {
-      $authAdmin = Auth::guard('organizer')->user();
-      $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_email_verification', 'organizer_admin_approval')->first();
 
-      // check whether the admin's account is active or not
-      if ($setting->organizer_email_verification == 1 && $authAdmin->email_verified_at == NULL && $authAdmin->status == 0) {
-        Session::flash('alert', 'Please Verify Your Email Address!');
 
-        // logout auth admin as condition not satisfied
-        Auth::guard('organizer')->logout();
+    $in = $request->all();
 
+    $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_email_verification', 'organizer_admin_approval')->first();
+
+    if ($setting->organizer_email_verification == 1) {
+      // first, get the mail template information from db
+      $mailTemplate = MailTemplate::where('mail_type', 'verify_email')->first();
+
+      $mailSubject = $mailTemplate->mail_subject;
+      $mailBody = $mailTemplate->mail_body;
+
+      // second, send a password reset link to user via email
+      $info = DB::table('basic_settings')
+        ->select('website_title', 'smtp_status', 'smtp_host', 'smtp_port', 'encryption', 'smtp_username', 'smtp_password', 'from_mail', 'from_name')
+        ->first();
+
+      $name = $request->username;
+      $token =  $request->email;
+
+      $link = '<a href=' . url("organizers/email/verify?token=" . $token) . '>Click Here</a>';
+
+      $mailBody = str_replace('{username}', $name, $mailBody);
+      $mailBody = str_replace('{verification_link}', $link, $mailBody);
+      $mailBody = str_replace('{website_title}', $info->website_title, $mailBody);
+
+      // initialize a new mail
+      $mail = new PHPMailer(true);
+      $mail->CharSet = 'UTF-8';
+      $mail->Encoding = 'base64';
+
+      // if smtp status == 1, then set some value for PHPMailer
+      if ($info->smtp_status == 1) {
+
+        $mail->isSMTP();
+        $mail->Host       = $info->smtp_host;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $info->smtp_username;
+        $mail->Password   = $info->smtp_password;
+
+        if ($info->encryption == 'TLS') {
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        }
+
+        $mail->Port       = $info->smtp_port;
+      }
+
+      // finally add other informations and send the mail
+      try {
+        $mail->setFrom($info->from_mail, $info->from_name);
+        $mail->addAddress($request->email);
+
+        $mail->isHTML(true);
+        $mail->Subject = $mailSubject;
+        $mail->Body = $mailBody;
+
+        $mail = $mail->send();
+
+        Session::flash('success', ' Verification mail has been sent to your email address!');
+      } catch (\Exception $e) {
+        Session::flash('error', 'Mail could not be sent!');
         return redirect()->back();
-      } elseif ($setting->organizer_email_verification == 0 && $setting->organizer_admin_approval == 1) {
-        Session::put('secret_login', 0);
-        return redirect()->route('organizer.dashboard');
+      }
+
+      $in['status'] = 0;
+    } else {
+      Session::flash('success', 'Sign up successfully completed.Please Login Now');
+    }
+    if ($setting->organizer_admin_approval == 1) {
+      $in['status'] = 0;
+    }
+
+    if ($setting->organizer_admin_approval == 0 && $setting->organizer_email_verification == 0) {
+      $in['status'] = 1;
+    }
+
+    $in['password'] = Hash::make($request->password);
+    $organizer = Organizer::create($in);
+    $language = $this->getLanguage();
+    $in['organizer_id'] = $organizer->id;
+    $in['language_id'] = $language->id;
+    OrganizerInfo::create($in);
+
+    return redirect()->route('organizer.login');
+  }
+
+  //authenticate
+  public function authentication(Request $request)
+  {
+    $rules = [
+      'username' => 'required',
+      'password' => 'required'
+    ];
+
+    $info = Basic::select('google_recaptcha_status')->first();
+    if ($info->google_recaptcha_status == 1) {
+      $rules['g-recaptcha-response'] = 'required|captcha';
+    }
+
+    $messages = [
+      'username.required' => 'Username Or Email is required!'
+    ];
+
+    if ($info->google_recaptcha_status == 1) {
+      $messages['g-recaptcha-response.required'] = 'Please verify that you are not a robot.';
+      $messages['g-recaptcha-response.captcha'] = 'Captcha error! try again later or contact site admin.';
+    }
+
+    $validator = Validator::make($request->all(), $rules, $messages);
+
+    if ($validator->fails()) {
+      return redirect()->back()->withErrors($validator->errors());
+    }
+
+    $login_type = filter_var($request->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+    if ($login_type == 'email') {
+      if (Auth::guard('organizer')->attempt([
+        'email' => $request->username,
+        'password' => $request->password
+      ])) {
+        $authAdmin = Auth::guard('organizer')->user();
+        $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_email_verification', 'organizer_admin_approval')->first();
+
+        // check whether the admin's account is active or not
+        if ($setting->organizer_email_verification == 1 && $authAdmin->email_verified_at == NULL && $authAdmin->status == 0) {
+          Session::flash('alert', 'Please Verify Your Email Address!');
+
+          // logout auth admin as condition not satisfied
+          Auth::guard('organizer')->logout();
+
+          return redirect()->back();
+        } elseif ($setting->organizer_email_verification == 0 && $setting->organizer_admin_approval == 1) {
+          Session::put('secret_login', 0);
+          return redirect()->route('organizer.dashboard');
+        } else {
+          Session::put('secret_login', 0);
+          return redirect()->route('organizer.dashboard');
+        }
       } else {
-        Session::put('secret_login', 0);
-        return redirect()->route('organizer.dashboard');
+        return redirect()->back()->with('alert', 'Oops, email or password does not match!');
       }
     } else {
-      return redirect()->back()->with('alert', 'Oops, Username or password does not match!');
+      if (Auth::guard('organizer')->attempt([
+        'username' => $request->username,
+        'password' => $request->password
+      ])) {
+        $authAdmin = Auth::guard('organizer')->user();
+        $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_email_verification', 'organizer_admin_approval')->first();
+
+        // check whether the admin's account is active or not
+        if ($setting->organizer_email_verification == 1 && $authAdmin->email_verified_at == NULL && $authAdmin->status == 0) {
+          Session::flash('alert', 'Please Verify Your Email Address!');
+
+          // logout auth admin as condition not satisfied
+          Auth::guard('organizer')->logout();
+
+          return redirect()->back();
+        } elseif ($setting->organizer_email_verification == 0 && $setting->organizer_admin_approval == 1) {
+          Session::put('secret_login', 0);
+          return redirect()->route('organizer.dashboard');
+        } else {
+          Session::put('secret_login', 0);
+          return redirect()->route('organizer.dashboard');
+        }
+      } else {
+        return redirect()->back()->with('alert', 'Oops, username or password does not match!');
+      }
     }
   }
   //forget_passord

@@ -93,6 +93,12 @@
                                 @if (Session::has('error'))
                                     <div class="alert alert-danger">{{ Session::get('error') }}</div>
                                 @endif
+                                @if (Session::has('success'))
+                                    <div class="alert alert-success">{{ Session::get('success') }}</div>
+                                @endif
+                                @if (Session::has('alert'))
+                                    <div class="alert alert-danger">{{ Session::get('alert') }}</div>
+                                @endif
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
@@ -128,7 +134,7 @@
                                 <div class="form-group">
                                     <label for="gender"> {{ __('Gender') }} *</label>
                                     <!-- <input type="text" name="gender" id="gender" value="{{ old('gender') }}" class="form-control"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            placeholder="{{ __('Enter Your Last Name') }}"> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                placeholder="{{ __('Enter Your Last Name') }}"> -->
                                     <select class="form-select" aria-label="gender" name="gender" id="gender"
                                         class="form-control">
                                         <option selected>Choose</option>
@@ -191,8 +197,15 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="password">{{ __('Password') }} *</label>
-                                    <input type="password" name="password" id="password" class="form-control"
-                                        placeholder="{{ __('Enter Password') }}">
+                                    <div class="input-group mb-2">
+                                        <input type="password" name="password" id="password" class="form-control"
+                                            placeholder="{{ __('Enter Password') }}">
+                                        <div class="input-group-prepend password-button-showhide" style="cursor:pointer">
+                                            <div class="input-group-text" id="class-showhide-password">
+                                                <i class="fa fa-eye"></i>
+                                            </div>
+                                        </div>
+                                    </div>
                                     @error('password')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
@@ -201,8 +214,16 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="re-password">{{ __('Re-enter Password') }} *</label>
-                                    <input type="password" name="password_confirmation" id="re-password"
-                                        class="form-control" placeholder="{{ __('Re-enter Password') }}">
+                                    <div class="input-group mb-2">
+                                        <input type="password" name="password_confirmation" id="re-password"
+                                            class="form-control" placeholder="{{ __('Re-enter Password') }}">
+                                        <div class="input-group-prepend repassword-button-showhide"
+                                            style="cursor:pointer">
+                                            <div class="input-group-text" id="class-showhide-repassword">
+                                                <i class="fa fa-eye"></i>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -275,5 +296,27 @@
                 $(".state").val(JSON.stringify(mapValue));
             }
         })
+    </script>
+@endsection
+@section('custom-script')
+    <script>
+        const btnPassShowHide = document.querySelector(".password-button-showhide");
+        const btnRePassShowHide = document.querySelector(".repassword-button-showhide");
+        const inputPass = document.querySelector("#password");
+        const inputRePass = document.querySelector("#re-password");
+        const iconPass = document.querySelector("#class-showhide-password");
+        const iconRePass = document.querySelector("#class-showhide-repassword");
+
+        btnPassShowHide.addEventListener("click", function() {
+            inputPass.type = inputPass.type === 'password' ? 'text' : 'password';
+            iconPass.innerHTML = inputPass.type === 'password' ? `<i class="fa fa-eye"></i>` :
+                `<i class="fa fa-eye-slash"></i>`
+        });
+
+        btnRePassShowHide.addEventListener("click", function() {
+            inputRePass.type = inputRePass.type === 'password' ? 'text' : 'password';
+            iconRePass.innerHTML = inputRePass.type === 'password' ? `<i class="fa fa-eye"></i>` :
+                `<i class="fa fa-eye-slash"></i>`
+        });
     </script>
 @endsection
