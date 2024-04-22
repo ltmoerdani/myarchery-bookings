@@ -124,7 +124,14 @@ class CustomerController extends Controller
     $in['state'] = $state_data_list->name;
     unset($in['states']);
     unset($in['password_confirmation']);
-    dd($in);
+
+    $checkUsernameAvailable = Customer::where('username', '=', $in['username'])->count();
+    // print_r($checkUsernameAvailable);
+    // dd($in);
+    if ($checkUsernameAvailable > 0) {
+      Session::flash('error', 'User cant be registered!');
+      return redirect()->route('customer.signup');
+    }
 
     Customer::create($in);
 
@@ -252,7 +259,9 @@ class CustomerController extends Controller
       $rules['g-recaptcha-response'] = 'required|captcha';
     }
 
-    $messages = [];
+    $messages = [
+      'username.required' => 'Username Or Email is required!'
+    ];
 
     if ($info->google_recaptcha_status == 1) {
       $messages['g-recaptcha-response.required'] = 'Please verify that you are not a robot.';
@@ -266,40 +275,79 @@ class CustomerController extends Controller
       return redirect()->back()->withErrors($validator->errors());
     }
 
-    if (
-      Auth::guard('customer')->attempt([
-        'username' => $request->username,
-        'password' => $request->password
-      ])
-    ) {
-      $authAdmin = Auth::guard('customer')->user();
+    $login_type = filter_var($request->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    if ($login_type == 'email') {
+      if (
+        Auth::guard('customer')->attempt([
+          'email' => $request->username,
+          'password' => $request->password
+        ])
+      ) {
+        $authAdmin = Auth::guard('customer')->user();
 
-      // check whether the admin's account is active or not
-      if ($authAdmin->status == 0) {
-        Session::flash('alert', 'Sorry, your account has been deactivated!');
-        // logout auth admin as condition not satisfied
-        Auth::guard('customer')->logout();
+        // check whether the admin's account is active or not
+        if ($authAdmin->status == 0) {
+          Session::flash('alert', 'Sorry, your account has been deactivated!');
+          // logout auth admin as condition not satisfied
+          Auth::guard('customer')->logout();
 
-        return redirect()->back();
-      } elseif ($authAdmin->email_verified_at == null) {
-        Session::flash('alert', 'Sorry, Please verify your email address !');
-        // logout auth admin as condition not satisfied
-        Auth::guard('customer')->logout();
+          return redirect()->back();
+        } elseif ($authAdmin->email_verified_at == null) {
+          Session::flash('alert', 'Sorry, Please verify your email address !');
+          // logout auth admin as condition not satisfied
+          Auth::guard('customer')->logout();
 
-        return redirect()->back();
-      } else {
-        // otherwise, redirect auth user to next url
-        if ($redirectURL == null) {
-          return redirect()->route('customer.dashboard');
+          return redirect()->back();
         } else {
-          // before, redirect to next url forget the session value
-          $request->session()->forget('redirectTo');
+          // otherwise, redirect auth user to next url
+          if ($redirectURL == null) {
+            return redirect()->route('customer.dashboard');
+          } else {
+            // before, redirect to next url forget the session value
+            $request->session()->forget('redirectTo');
 
-          return redirect($redirectURL);
+            return redirect($redirectURL);
+          }
         }
+      } else {
+        return redirect()->back()->with('alert', 'Oops, email or password does not match!');
       }
     } else {
-      return redirect()->back()->with('alert', 'Oops, Username or password does not match!');
+      if (
+        Auth::guard('customer')->attempt([
+          'username' => $request->username,
+          'password' => $request->password
+        ])
+      ) {
+        $authAdmin = Auth::guard('customer')->user();
+
+        // check whether the admin's account is active or not
+        if ($authAdmin->status == 0) {
+          Session::flash('alert', 'Sorry, your account has been deactivated!');
+          // logout auth admin as condition not satisfied
+          Auth::guard('customer')->logout();
+
+          return redirect()->back();
+        } elseif ($authAdmin->email_verified_at == null) {
+          Session::flash('alert', 'Sorry, Please verify your email address !');
+          // logout auth admin as condition not satisfied
+          Auth::guard('customer')->logout();
+
+          return redirect()->back();
+        } else {
+          // otherwise, redirect auth user to next url
+          if ($redirectURL == null) {
+            return redirect()->route('customer.dashboard');
+          } else {
+            // before, redirect to next url forget the session value
+            $request->session()->forget('redirectTo');
+
+            return redirect($redirectURL);
+          }
+        }
+      } else {
+        return redirect()->back()->with('alert', 'Oops, username or password does not match!');
+      }
     }
   }
   //forget_passord

@@ -86,8 +86,14 @@
                     <form id="login-form" name="login_form" class="login-form" action="{{ route('customer.create') }}"
                         method="POST">
                         @csrf
+                        <input type="hidden" class="form-control state" name="state" />
 
                         <div class="row">
+                            <div class="col-12">
+                                @if (Session::has('error'))
+                                    <div class="alert alert-danger">{{ Session::get('error') }}</div>
+                                @endif
+                            </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="fname"> {{ __('Full Name') }} *</label>
@@ -122,7 +128,7 @@
                                 <div class="form-group">
                                     <label for="gender"> {{ __('Gender') }} *</label>
                                     <!-- <input type="text" name="gender" id="gender" value="{{ old('gender') }}" class="form-control"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            placeholder="{{ __('Enter Your Last Name') }}"> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            placeholder="{{ __('Enter Your Last Name') }}"> -->
                                     <select class="form-select" aria-label="gender" name="gender" id="gender"
                                         class="form-control">
                                         <option selected>Choose</option>
@@ -182,7 +188,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <input type="hidden" class="form-control state" name="state" id="state" />
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="password">{{ __('Password') }} *</label>

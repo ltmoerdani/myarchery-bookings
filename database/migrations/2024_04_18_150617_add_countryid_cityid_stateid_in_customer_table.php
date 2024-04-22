@@ -14,9 +14,9 @@ return new class extends Migration
   public function up()
   {
     Schema::table('customers', function (Blueprint $table) {
-      $table->bigInteger('country_id')->after('address');
-      $table->bigInteger('state_id')->after('country');
-      $table->bigInteger('city_id')->after('state');
+      $table->bigInteger('country_id')->nullable()->after('address');
+      $table->bigInteger('state_id')->nullable()->after('country');
+      $table->bigInteger('city_id')->nullable()->after('state');
     });
   }
 
