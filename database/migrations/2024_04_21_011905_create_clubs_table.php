@@ -25,17 +25,18 @@ return new class extends Migration
       )->nullable();
       $table
         ->foreignId('country_id')
+        ->nullable()
         ->constrained('international_countries')
         ->references('id')
         ->onDelete('cascade');
       $table->string(
         'country_name'
       )->nullable();
-      $table->bigInteger('state_id');
+      $table->bigInteger('state_id')->nullable();
       $table->string(
         'state_name'
       )->nullable();
-      $table->bigInteger('city_id');
+      $table->bigInteger('city_id')->nullable();
       $table->string(
         'city_name'
       )->nullable();
