@@ -125,65 +125,61 @@ class EventController extends Controller
     return $pi->id;
   }
 
-  public function store(StoreRequest $request)
-  {
+  public function store(StoreRequest $request){
     DB::transaction(function () use ($request) {
 
-      //calculate duration 
-      if ($request->date_type == 'single') {
-        $start = Carbon::parse($request->start_date . $request->start_time);
-        $end =  Carbon::parse($request->end_date . $request->end_time);
+    //calculate duration 
+    if ($request->date_type == 'single') {
+      $start = Carbon::parse($request->start_date . $request->start_time);
+      $end =  Carbon::parse($request->end_date . $request->end_time);
+      $diffent = DurationCalulate($start, $end);
+    } //calculate duration end
+
+    $in = $request->all();
+    $in['duration'] = $request->date_type == 'single' ? $diffent : '';
+    $in['organizer_id'] = $request->organizer_id;
+      
+    $img = $request->file('thumbnail');
+    if ($request->hasFile('thumbnail')) {
+      $filename = time() . '.' . $img->getClientOriginalExtension();
+      $directory = public_path('assets/admin/img/event/thumbnail/');
+      @mkdir($directory, 0775, true);
+      $request->file('thumbnail')->move($directory, $filename);
+      $in['thumbnail'] = $filename;
+    }
+
+    $in['f_price'] = $request->price;
+    $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
+    $event = Event::create($in);
+
+    if ($request->date_type == 'multiple') {
+      $i = 1;
+      foreach ($request->m_start_date as $key => $date) {
+        $start = Carbon::parse($date . $request->m_start_time[$key]);
+        $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
         $diffent = DurationCalulate($start, $end);
-      }
-      //calculate duration end
-
-      $in = $request->all();
-      $in['duration'] = $request->date_type == 'single' ? $diffent : '';
-
-      $img = $request->file('thumbnail');
-
-      $in['organizer_id'] = $request->organizer_id;
-      if ($request->hasFile('thumbnail')) {
-        $filename = time() . '.' . $img->getClientOriginalExtension();
-        $directory = public_path('assets/admin/img/event/thumbnail/');
-        @mkdir($directory, 0775, true);
-        $request->file('thumbnail')->move($directory, $filename);
-        $in['thumbnail'] = $filename;
-      }
-      $in['f_price'] = $request->price;
-      $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
-      $event = Event::create($in);
-
-      if ($request->date_type == 'multiple') {
-        $i = 1;
-        foreach ($request->m_start_date as $key => $date) {
-          $start = Carbon::parse($date . $request->m_start_time[$key]);
-          $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
-          $diffent = DurationCalulate($start, $end);
-
-          EventDates::create([
-            'event_id' => $event->id,
-            'start_date' => $date,
-            'start_time' => $request->m_start_time[$key],
-            'end_date' => $request->m_end_date[$key],
-            'end_time' => $request->m_end_time[$key],
-            'duration' => $diffent,
-            'start_date_time' => $start,
-            'end_date_time' => $end,
+        EventDates::create([
+          'event_id' => $event->id,
+          'start_date' => $date,
+          'start_time' => $request->m_start_time[$key],
+          'end_date' => $request->m_end_date[$key],
+          'end_time' => $request->m_end_time[$key],
+          'duration' => $diffent,
+          'start_date_time' => $start,
+          'end_date_time' => $end,
+        ]);
+        if ($i == 1) {
+          $event->update([
+            'duration' => $diffent
           ]);
-          if ($i == 1) {
-            $event->update([
-              'duration' => $diffent
-            ]);
-          }
-          $i++;
         }
-        //update event date time
-        $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
-
-        $event->end_date_time = $event_date->end_date_time;
-        $event->save();
+        $i++;
       }
+      //update event date time
+      $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
+      $event->end_date_time = $event_date->end_date_time;
+      $event->save();
+    }
 
 
       $in['event_id'] = $event->id;

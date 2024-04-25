@@ -85,6 +85,10 @@
                   <a href="{{ route('add.event.event', ['type' => 'venue']) }}" class="dropdown-item">
                     {{ __('Venue Event') }}
                   </a>
+
+                  <a href="{{ route('add.event.event', ['type' => 'turnament']) }}" class="dropdown-item">
+                    {{ __('Turnament Event') }}
+                  </a>
                 </div>
               </div>
 

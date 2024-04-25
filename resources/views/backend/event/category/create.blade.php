@@ -20,6 +20,7 @@
               @foreach ($langs as $lang)
                 <option value="{{ $lang->id }}">{{ $lang->name }}</option>
               @endforeach
+              <!-- <option value="0">All Language</option> -->
             </select>
             <p id="err_language_id" class="mt-1 mb-0 text-danger em"></p>
           </div>
