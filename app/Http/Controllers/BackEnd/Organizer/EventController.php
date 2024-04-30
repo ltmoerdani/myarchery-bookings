@@ -62,16 +62,24 @@ class EventController extends Controller
     return view('organizer.event.event_type');
   }
   //online_event
-  public function add_event()
+  public function add_event(Request $request)
   {
     // get all the languages from db
     $languages = Language::get();
-    $countries = Country::get();
-    $information['getCurrencyInfo']  = $this->getCurrencyInfo();
     $information['languages'] = $languages;
-    $information['countries'] = $countries;
-    return view('organizer.event.create', $information);
+    $information['getCurrencyInfo']  = $this->getCurrencyInfo();
+
+    if ($request->query('type') == 'tournament') {
+      $countries = Country::get();
+      $information['countries'] = $countries;
+      return view('organizer.event.create_tournament', $information);
+    } else {
+      $countries = Country::get();
+      $information['countries'] = $countries;
+      return view('organizer.event.create', $information);
+    }
   }
+
   //city_state
   public function city_state($id)
   {
@@ -117,7 +125,50 @@ class EventController extends Controller
     $pi->save();
     return response()->json(['status' => 'success', 'file_id' => $pi->id]);
   }
+
   public function imagermv(Request $request)
+  {
+    $pi = EventImage::where('id', $request->fileid)->first();
+    @unlink(public_path('assets/admin/img/event-gallery/') . $pi->image);
+    $pi->delete();
+    return $pi->id;
+  }
+
+  public function gallerystoreTournament(Request $request)
+  {
+    $img = $request->file('file');
+    $allowedExts = array('jpg', 'png', 'jpeg');
+    $rules = [
+      'file' => [
+        'dimensions:width=1170,height=570',
+        function ($attribute, $value, $fail) use ($img, $allowedExts) {
+          $ext = $img->getClientOriginalExtension();
+          if (!in_array($ext, $allowedExts)) {
+            return $fail("Only png, jpg, jpeg images are allowed");
+          }
+        },
+      ]
+    ];
+    $messages = [
+      'file.dimensions' => 'The file has invalid image dimensions ' . $img->getClientOriginalName()
+    ];
+    $validator = Validator::make($request->all(), $rules, $messages);
+    if ($validator->fails()) {
+      $validator->getMessageBag()->add('error', 'true');
+      return response()->json($validator->errors());
+    }
+    $filename = uniqid() . '.jpg';
+    $img->move(public_path('assets/admin/img/event-gallery/'), $filename);
+    $pi = new EventImage;
+    if (!empty($request->event_id)) {
+      $pi->event_id = $request->event_id;
+    }
+    $pi->image = $filename;
+    $pi->save();
+    return response()->json(['status' => 'success', 'file_id' => $pi->id]);
+  }
+
+  public function imagermvTournament(Request $request)
   {
     $pi = EventImage::where('id', $request->fileid)->first();
     @unlink(public_path('assets/admin/img/event-gallery/') . $pi->image);
@@ -129,7 +180,7 @@ class EventController extends Controller
   {
     DB::transaction(function () use ($request) {
 
-      //calculate duration 
+      //calculate duration
       if ($request->date_type == 'single') {
         $start = Carbon::parse($request->start_date . $request->start_time);
         $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -330,7 +381,7 @@ class EventController extends Controller
 
   public function update(UpdateRequest $request)
   {
-    //calculate duration 
+    //calculate duration
     if ($request->date_type == 'single') {
       $start = Carbon::parse($request->start_date . $request->start_time);
       $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -479,7 +530,7 @@ class EventController extends Controller
       $event_image->delete();
     }
 
-    //bookings 
+    //bookings
     $bookings = $event->booking()->get();
     foreach ($bookings as $booking) {
       // first, delete the attachment
@@ -529,7 +580,7 @@ class EventController extends Controller
         $event_image->delete();
       }
 
-      //bookings 
+      //bookings
       $bookings = $event->booking()->get();
       foreach ($bookings as $booking) {
         // first, delete the attachment
