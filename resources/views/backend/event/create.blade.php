@@ -86,7 +86,7 @@
                   <p class="text-warning">{{ __('Image Size : 320x230') }}</p>
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
                   <div class="col-lg-12">
                     <div class="form-group mt-1">
                       <label for="">{{ __('Date Type') . '*' }}</label>
@@ -104,7 +104,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
                 <div class="row countDownStatus">
                   <div class="col-lg-12">

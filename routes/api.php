@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
   return $request->user();
 });
+
+
+// delete soon
+Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');

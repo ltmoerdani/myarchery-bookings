@@ -10,6 +10,8 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Models\Language;
 use App\Models\Event;
+use App\Models\EventType;
+use App\Models\EventKurs;
 use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\EventDates;
@@ -69,7 +71,7 @@ class EventController extends Controller
   public function add_event()
   {
     $information = [];
-    $languages = Language::get();
+    $languages = Language::where('id', 8)->get(); // default english
     $information['languages'] = $languages;
     $countries = Country::get();
     $information['countries'] = $countries;
@@ -126,64 +128,72 @@ class EventController extends Controller
   }
 
   public function store(StoreRequest $request){
+    // db transaction
     DB::transaction(function () use ($request) {
-
-    //calculate duration 
-    if ($request->date_type == 'single') {
-      $start = Carbon::parse($request->start_date . $request->start_time);
-      $end =  Carbon::parse($request->end_date . $request->end_time);
-      $diffent = DurationCalulate($start, $end);
-    } //calculate duration end
-
-    $in = $request->all();
-    $in['duration'] = $request->date_type == 'single' ? $diffent : '';
-    $in['organizer_id'] = $request->organizer_id;
-      
-    $img = $request->file('thumbnail');
-    if ($request->hasFile('thumbnail')) {
-      $filename = time() . '.' . $img->getClientOriginalExtension();
-      $directory = public_path('assets/admin/img/event/thumbnail/');
-      @mkdir($directory, 0775, true);
-      $request->file('thumbnail')->move($directory, $filename);
-      $in['thumbnail'] = $filename;
-    }
-
-    $in['f_price'] = $request->price;
-    $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
-    $event = Event::create($in);
-
-    if ($request->date_type == 'multiple') {
-      $i = 1;
-      foreach ($request->m_start_date as $key => $date) {
-        $start = Carbon::parse($date . $request->m_start_time[$key]);
-        $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
+      //calculate duration 
+      if ($request->date_type == 'single') {
+        $start = Carbon::parse($request->start_date . $request->start_time);
+        $end =  Carbon::parse($request->end_date . $request->end_time);
         $diffent = DurationCalulate($start, $end);
-        EventDates::create([
-          'event_id' => $event->id,
-          'start_date' => $date,
-          'start_time' => $request->m_start_time[$key],
-          'end_date' => $request->m_end_date[$key],
-          'end_time' => $request->m_end_time[$key],
-          'duration' => $diffent,
-          'start_date_time' => $start,
-          'end_date_time' => $end,
-        ]);
-        if ($i == 1) {
-          $event->update([
-            'duration' => $diffent
-          ]);
-        }
-        $i++;
-      }
-      //update event date time
-      $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
-      $event->end_date_time = $event_date->end_date_time;
-      $event->save();
-    }
+      } //calculate duration end
 
+      $in = $request->all();
+      $in['duration'] = $request->date_type == 'single' ? $diffent : '';
+      $in['organizer_id'] = $request->organizer_id;
+        
+      $img = $request->file('thumbnail');
+      if ($request->hasFile('thumbnail')) {
+        $filename = time() . '.' . $img->getClientOriginalExtension();
+        $directory = public_path('assets/admin/img/event/thumbnail/');
+        @mkdir($directory, 0775, true);
+        $request->file('thumbnail')->move($directory, $filename);
+        $in['thumbnail'] = $filename;
+      }
+
+      $in['f_price'] = $request->price;
+      $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
+      $event = Event::create($in);
+
+      if ($request->date_type == 'multiple') {
+        $i = 1;
+        foreach ($request->m_start_date as $key => $date) {
+          $start = Carbon::parse($date . $request->m_start_time[$key]);
+          $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
+          $diffent = DurationCalulate($start, $end);
+          EventDates::create([
+            'event_id' => $event->id,
+            'start_date' => $date,
+            'start_time' => $request->m_start_time[$key],
+            'end_date' => $request->m_end_date[$key],
+            'end_time' => $request->m_end_time[$key],
+            'duration' => $diffent,
+            'start_date_time' => $start,
+            'end_date_time' => $end,
+          ]);
+          if ($i == 1) {
+            $event->update([
+              'duration' => $diffent
+            ]);
+          }
+          $i++;
+        }
+        //update event date time
+        $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
+        $event->end_date_time = $event_date->end_date_time;
+        $event->save();
+      }
+
+      $slders = $request->slider_images;
+      foreach ($slders as $key => $id) {
+        $event_image = EventImage::where('id', $id)->first();
+        if ($event_image) {
+          $event_image->event_id = $event->id;
+          $event_image->save();
+        }
+      }
 
       $in['event_id'] = $event->id;
-      if ($request->event_type == 'online') {
+      if ($request->event_type == 'turnament') {
         if (!$request->pricing_type) {
           $in['pricing_type'] = 'normal';
         }
@@ -192,37 +202,75 @@ class EventController extends Controller
         Ticket::create($in);
       }
 
-      $slders = $request->slider_images;
-
-      foreach ($slders as $key => $id) {
-        $event_image = EventImage::where('id', $id)->first();
-        if ($event_image) {
-          $event_image->event_id = $event->id;
-          $event_image->save();
-        }
+      // event type public or private
+      if ($request->type) { 
+        $input['event_type'] = $request->type;
+        $input['event_id'] = $event->id;
+        $input['shared_type'] = 'event type '.$request->type;
+        $input['link_event'] = $request->link_event_type;
+        $input['code'] = $request->code_event_type;
+        $input['description'] = $request->description_event_type;
+        EventType::create($input);
       }
-      $languages = Language::all();
 
+      // event kurs
+      $currency['event_id'] = $event->id;
+      $currency['currency_id'] = 1;
+      EventKurs::create($currency);
+      if ($request->currency == "dual") { 
+        $currency['event_id'] = $event->id;
+        $currency['currency_id'] = 2;
+        EventKurs::create($currency);
+      }
+
+      // if ($request->event_type == 'turnament') {
+      //   if (!$request->pricing_type) {
+      //     $in['pricing_type'] = 'normal';
+      //   }
+      //   $in['early_bird_discount'] = $request->early_bird_discount_type;
+      //   $in['early_bird_discount_type'] = $request->discount_type;
+      //   Ticket::create($in);
+      // }
+
+      // $languages = Language::all();
+      // foreach ($languages as $language) {
+      //   $event_content = new EventContent();
+      //   $event_content->language_id = $language->id;
+      //   $event_content->event_category_id = $request[$language->code . '_category_id'];
+      //   $event_content->event_id = $event->id;
+      //   $event_content->title = $request[$language->code . '_title'];
+
+      //   if ($request->event_type == 'venue') {
+      //     $event_content->address = $request[$language->code . '_address'];
+      //     $event_content->country = $request[$language->code . '_country'];
+      //     $event_content->state = $request[$language->code . '_state'];
+      //     $event_content->city = $request[$language->code . '_city'];
+      //     $event_content->zip_code = $request[$language->code . '_zip_code'];
+      //   }
+
+      //   $event_content->slug = createSlug($request[$language->code . '_title']);
+      //   $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
+      //   $event_content->refund_policy = $request[$language->code . '_refund_policy'];
+      //   $event_content->meta_keywords = $request[$language->code . '_meta_keywords'];
+      //   $event_content->meta_description = $request[$language->code . '_meta_description'];
+      //   $event_content->save();
+      // }
+
+      $languages = Language::whereIn('id',$request->clone_lang)->get();
       foreach ($languages as $language) {
         $event_content = new EventContent();
         $event_content->language_id = $language->id;
-        $event_content->event_category_id = $request[$language->code . '_category_id'];
+        $event_content->event_category_id = $request['en_category_id'];
         $event_content->event_id = $event->id;
-        $event_content->title = $request[$language->code . '_title'];
-        if ($request->event_type == 'venue') {
-          $event_content->address = $request[$language->code . '_address'];
-          $event_content->country = $request[$language->code . '_country'];
-          $event_content->state = $request[$language->code . '_state'];
-          $event_content->city = $request[$language->code . '_city'];
-          $event_content->zip_code = $request[$language->code . '_zip_code'];
-        }
-        $event_content->slug = createSlug($request[$language->code . '_title']);
-        $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
-        $event_content->refund_policy = $request[$language->code . '_refund_policy'];
-        $event_content->meta_keywords = $request[$language->code . '_meta_keywords'];
-        $event_content->meta_description = $request[$language->code . '_meta_description'];
+        $event_content->title = $request['en_title'];
+        $event_content->slug = createSlug($request['en_title']);
+        $event_content->description = Purifier::clean($request['en_description'], 'youtube');
+        $event_content->refund_policy = $request['en_refund_policy'];
+        $event_content->meta_keywords = $request['en_meta_keywords'];
+        $event_content->meta_description = $request['en_meta_description'];
         $event_content->save();
       }
+      
     });
     Session::flash('success', 'Added Successfully');
     return response()->json(['status' => 'success'], 200);

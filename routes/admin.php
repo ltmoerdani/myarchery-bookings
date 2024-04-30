@@ -12,6 +12,7 @@ use App\Http\Controllers\BackEnd\Event\CategoryController;
 Route::get('admin/get-state-city/{id}', 'BackEnd\Event\EventController@city_state')->name('get.city.state');
 
 Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function () {
+
   // admin redirect to dashboard route
   Route::get('/dashboard', 'BackEnd\AdminController@redirectToDashboard')->name('admin.dashboard');
   Route::group(['middleware' => 'permission:Transaction'], function () {

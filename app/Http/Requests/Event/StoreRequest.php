@@ -80,40 +80,33 @@ class StoreRequest extends FormRequest
       }
     }
 
-
-
-
-
-
     if ($this->event_type == 'venue') {
       $ruleArray['latitude'] = 'required_if:event_type,venue';
       $ruleArray['longitude'] = 'required_if:event_type,venue';
     }
 
-    $languages = Language::all();
-
-
-    foreach ($languages as $language) {
-      $slug = createSlug($this[$language->code . '_title']);
-      $ruleArray[$language->code . '_title'] = [
-        'required',
-        'max:255',
-        function ($attribute, $value, $fail) use ($slug, $language) {
-          $cis = EventContent::where('language_id', $language->id)->get();
-          foreach ($cis as $key => $ci) {
-            if (strtolower($slug) == strtolower($ci->slug)) {
-              $fail('The title field must be unique for ' . $language->name . ' language.');
-            }
-          }
-        }
-      ];
-      $ruleArray[$language->code . '_title'] = 'required';
-      $ruleArray[$language->code . '_category_id'] = 'required';
-      $ruleArray[$language->code . '_description'] = 'min:30';
-      $ruleArray[$language->code . '_address'] = 'required_if:event_type,venue';
-      $ruleArray[$language->code . '_country'] = 'required_if:event_type,venue';
-      $ruleArray[$language->code . '_city'] = 'required_if:event_type,venue';
-    }
+    // $languages = Language::all();
+    // foreach ($languages as $language) {
+    //   $slug = createSlug($this[$language->code . '_title']);
+    //   $ruleArray[$language->code . '_title'] = [
+    //     'required',
+    //     'max:255',
+    //     function ($attribute, $value, $fail) use ($slug, $language) {
+    //       $cis = EventContent::where('language_id', $language->id)->get();
+    //       foreach ($cis as $key => $ci) {
+    //         if (strtolower($slug) == strtolower($ci->slug)) {
+    //           $fail('The title field must be unique for ' . $language->name . ' language.');
+    //         }
+    //       }
+    //     }
+    //   ];
+    //   $ruleArray[$language->code . '_title'] = 'required';
+    //   $ruleArray[$language->code . '_category_id'] = 'required';
+    //   $ruleArray[$language->code . '_description'] = 'min:30';
+    //   $ruleArray[$language->code . '_address'] = 'required_if:event_type,venue';
+    //   $ruleArray[$language->code . '_country'] = 'required_if:event_type,venue';
+    //   $ruleArray[$language->code . '_city'] = 'required_if:event_type,venue';
+    // }
     return $ruleArray;
   }
 
