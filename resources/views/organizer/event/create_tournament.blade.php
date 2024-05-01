@@ -98,19 +98,58 @@
                                                             </label>
                                                             <div class="selectgroup w-100">
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="date_type" value="single"
-                                                                        class="selectgroup-input eventDateType" checked>
+                                                                    <input type="radio" name="countdown_status"
+                                                                        value="1"
+                                                                        class="selectgroup-input countDownStatusType"
+                                                                        checked>
                                                                     <span
-                                                                        class="selectgroup-button">{{ __('Single') }}</span>
+                                                                        class="selectgroup-button">{{ __('Active') }}</span>
                                                                 </label>
 
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="date_type" value="multiple"
-                                                                        class="selectgroup-input eventDateType">
+                                                                    <input type="radio" name="countdown_status"
+                                                                        value="0"
+                                                                        class="selectgroup-input countDownStatusType">
                                                                     <span
-                                                                        class="selectgroup-button">{{ __('Multiple') }}</span>
+                                                                        class="selectgroup-button">{{ __('Disable') }}</span>
                                                                 </label>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
+                                                        <div class="form-group">
+                                                            <label>
+                                                                {{ __('Countdown Status') . '*' }}
+                                                            </label>
+                                                            <div class="selectgroup w-100">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="currency_type"
+                                                                        value="idr"
+                                                                        class="selectgroup-input eventDateType" checked>
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Single Currency') }}</span>
+                                                                </label>
+
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="currency_type"
+                                                                        value="idr,usd"
+                                                                        class="selectgroup-input eventDateType">
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Dual Currency') }}</span>
+                                                                </label>
+                                                            </div>
+                                                            <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
+                                                                in
+                                                                both IDR
+                                                                (primary) and USD.</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -130,8 +169,8 @@
                                                     for="">{{ __('Total Number of Available Tickets') . '*' }}</label>
                                                 <div class="selectgroup w-100">
                                                     <label class="selectgroup-item">
-                                                        <input type="radio" name="ticket_available_type" value="unlimited"
-                                                            class="selectgroup-input" checked>
+                                                        <input type="radio" name="ticket_available_type"
+                                                            value="unlimited" class="selectgroup-input" checked>
                                                         <span class="selectgroup-button">{{ __('Unlimited') }}</span>
                                                     </label>
 
