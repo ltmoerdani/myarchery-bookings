@@ -415,9 +415,11 @@ class OrganizerController extends Controller
           return redirect()->back();
         } elseif ($setting->organizer_email_verification == 0 && $setting->organizer_admin_approval == 1) {
           Session::put('secret_login', 0);
+          Session::put('organizer_theme_version', 'light');
           return redirect()->route('organizer.dashboard');
         } else {
           Session::put('secret_login', 0);
+          Session::put('organizer_theme_version', 'light');
           return redirect()->route('organizer.dashboard');
         }
       } else {
@@ -441,9 +443,11 @@ class OrganizerController extends Controller
           return redirect()->back();
         } elseif ($setting->organizer_email_verification == 0 && $setting->organizer_admin_approval == 1) {
           Session::put('secret_login', 0);
+          Session::put('organizer_theme_version', 'light');
           return redirect()->route('organizer.dashboard');
         } else {
           Session::put('secret_login', 0);
+          Session::put('organizer_theme_version', 'light');
           return redirect()->route('organizer.dashboard');
         }
       } else {

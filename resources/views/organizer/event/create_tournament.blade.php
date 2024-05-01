@@ -87,173 +87,38 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="form-group mt-1">
-                                            <label for="">{{ __('Date Type') . '*' }}</label>
-                                            <div class="selectgroup w-100">
-                                                <label class="selectgroup-item">
-                                                    <input type="radio" name="date_type" value="single"
-                                                        class="selectgroup-input eventDateType" checked>
-                                                    <span class="selectgroup-button">{{ __('Single') }}</span>
-                                                </label>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
+                                                        <div class="form-group">
+                                                            <label>
+                                                                {{ __('Countdown Status') . '*' }}
+                                                            </label>
+                                                            <div class="selectgroup w-100">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="date_type" value="single"
+                                                                        class="selectgroup-input eventDateType" checked>
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Single') }}</span>
+                                                                </label>
 
-                                                <label class="selectgroup-item">
-                                                    <input type="radio" name="date_type" value="multiple"
-                                                        class="selectgroup-input eventDateType">
-                                                    <span class="selectgroup-button">{{ __('Multiple') }}</span>
-                                                </label>
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="date_type" value="multiple"
+                                                                        class="selectgroup-input eventDateType">
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Multiple') }}</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row countDownStatus">
-                                    <div class="col-lg-12">
-                                        <div class="form-group mt-1">
-                                            <label for="">{{ __('Countdown Status') . '*' }}</label>
-                                            <div class="selectgroup w-100">
-                                                <label class="selectgroup-item">
-                                                    <input type="radio" name="countdown_status" value="1"
-                                                        class="selectgroup-input" checked>
-                                                    <span class="selectgroup-button">{{ __('Active') }}</span>
-                                                </label>
-
-                                                <label class="selectgroup-item">
-                                                    <input type="radio" name="countdown_status" value="0"
-                                                        class="selectgroup-input">
-                                                    <span class="selectgroup-button">{{ __('Deactive') }}</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row" id="single_dates">
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label>{{ __('Start Date') . '*' }}</label>
-                                            <input type="date" name="start_date" placeholder="Enter Start Date"
-                                                class="form-control">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label for="">{{ __('Start Time') . '*' }}</label>
-                                            <input type="time" name="start_time" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label>{{ __('End Date') . '*' }}</label>
-                                            <input type="date" name="end_date" placeholder="Enter End Date"
-                                                class="form-control">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label for="">{{ __('End Time') . '*' }}</label>
-                                            <input type="time" name="end_time" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-12 d-none" id="multiple_dates">
-                                        <div class="form-group">
-                                            <table class="table table-bordered ">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ __('Start Date') }}</th>
-                                                        <th>{{ __('Start Time') }}</th>
-                                                        <th>{{ __('End Date') }}</th>
-                                                        <th>{{ __('End Time') }}</th>
-                                                        <th><a href="javascrit:void(0)"
-                                                                class="btn btn-success addDateRow"><i
-                                                                    class="fas fa-plus-circle"></i></a></th>
-                                                    </tr>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <label for="">{{ __('Start Date') . '*' }}</label>
-                                                                <input type="date" name="m_start_date[]"
-                                                                    class="form-control">
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <label for="">{{ __('Start Time') . '*' }}</label>
-                                                                <input type="time" name="m_start_time[]"
-                                                                    class="form-control">
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <label for="">{{ __('End Date') . '*' }} </label>
-                                                                <input type="date" name="m_end_date[]"
-                                                                    class="form-control">
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <label for="">{{ __('End Time') . '*' }} </label>
-                                                                <input type="time" name="m_end_time[]"
-                                                                    class="form-control">
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <a href="javascript:void(0)"
-                                                                class="btn btn-danger deleteDateRow">
-                                                                <i class="fas fa-minus"></i></a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row ">
-                                    <div class="col-lg-4">
-                                        <div class="form-group">
-                                            <label for="">{{ __('Status') . '*' }}</label>
-                                            <select name="status" class="form-control">
-                                                <option selected disabled>{{ __('Select a Status') }}</option>
-                                                <option value="1">{{ __('Active') }}</option>
-                                                <option value="0">{{ __('Deactive') }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="form-group">
-                                            <label for="">{{ __('Is Feature') . '*' }}</label>
-                                            <select name="is_featured" class="form-control">
-                                                <option selected disabled>{{ __('Select') }}</option>
-                                                <option value="yes">{{ __('Yes') }}</option>
-                                                <option value="no">{{ __('No') }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    @if (request()->input('type') == 'venue')
-                                        <div class="col-lg-4">
-                                            <div class="form-group">
-                                                <label for="">{{ __('Latitude') }}</label>
-                                                <input type="text" name="latitude" placeholder="{{ __('Latitude') }}"
-                                                    class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="form-group">
-                                                <label for="">{{ __('Longitude') }}</label>
-                                                <input type="text" placeholder="{{ __('Longitude') }}"
-                                                    name="longitude" class="form-control">
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
                                 @if (request()->input('type') == 'online')
                                     {{-- /*****--Ticekt limtit & ticket for each customer start--****** --}}
 
@@ -265,8 +130,8 @@
                                                     for="">{{ __('Total Number of Available Tickets') . '*' }}</label>
                                                 <div class="selectgroup w-100">
                                                     <label class="selectgroup-item">
-                                                        <input type="radio" name="ticket_available_type"
-                                                            value="unlimited" class="selectgroup-input" checked>
+                                                        <input type="radio" name="ticket_available_type" value="unlimited"
+                                                            class="selectgroup-input" checked>
                                                         <span class="selectgroup-button">{{ __('Unlimited') }}</span>
                                                     </label>
 
@@ -393,7 +258,6 @@
                                         </div>
                                     </div>
                                 @endif
-
 
                                 <div id="accordion" class="mt-3">
                                     @foreach ($languages as $language)
