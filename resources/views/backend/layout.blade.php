@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     {{-- required meta tags --}}
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,38 +21,39 @@
 
     {{-- additional style --}}
     @yield('style')
-  </head>
+</head>
 
-  <body data-background-color="{{ $settings->admin_theme_version == 'light' ? 'white' : 'dark' }}">
+<body data-background-color="{{ $settings->admin_theme_version == 'light' ? 'white' : 'dark' }}">
     {{-- loader start --}}
     <div class="request-loader">
-      <img src="{{ asset('assets/admin/img/loader.gif') }}" alt="loader">
+        <img src="{{ asset('assets/admin/img/loader.gif') }}" alt="loader">
     </div>
     {{-- loader end --}}
 
     <div class="wrapper">
-      {{-- top navbar area start --}}
-      @includeIf('backend.partials.top-navbar')
-      {{-- top navbar area end --}}
+        {{-- top navbar area start --}}
+        @includeIf('backend.partials.top-navbar')
+        {{-- top navbar area end --}}
 
-      {{-- side navbar area start --}}
-      @includeIf('backend.partials.side-navbar')
-      {{-- side navbar area end --}}
+        {{-- side navbar area start --}}
+        @includeIf('backend.partials.side-navbar')
+        {{-- side navbar area end --}}
 
-      <div class="main-panel">
-        <div class="content">
-          <div class="page-inner">
-            @yield('content')
-          </div>
+        <div class="main-panel">
+            <div class="content">
+                <div class="page-inner">
+                    @yield('content')
+                </div>
+            </div>
+
+            {{-- footer area start --}}
+            @includeIf('backend.partials.footer')
+            {{-- footer area end --}}
         </div>
-
-        {{-- footer area start --}}
-        @includeIf('backend.partials.footer')
-        {{-- footer area end --}}
-      </div>
     </div>
 
     {{-- include scripts --}}
     @includeIf('backend.partials.scripts')
-  </body>
+</body>
+
 </html>
