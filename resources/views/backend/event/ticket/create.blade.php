@@ -88,7 +88,7 @@
                 @csrf
                 <input type="hidden" name="event_type" value="{{ request()->input('event_type') }}">
                 <input type="hidden" name="event_id" value="{{ request()->input('event_id') }}">
-                @if (request()->input('event_type') == 'venue')
+                @if (request()->input('event_type') == 'venue' || request()->input('event_type') == 'turnament')
                   <div class="row ">
                     {{-- /*****--variationwise ticket & early bird discount--****** --}}
                     <div class="col-lg-12">

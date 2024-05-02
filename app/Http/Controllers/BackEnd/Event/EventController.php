@@ -10,8 +10,10 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Models\Language;
 use App\Models\Event;
-use App\Models\EventType;
+use App\Models\EventPublisher;
 use App\Models\EventKurs;
+use App\Models\ContingentType;
+use App\Models\Competitions;
 use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\EventDates;
@@ -203,24 +205,73 @@ class EventController extends Controller
       }
 
       // event type public or private
-      if ($request->type) { 
-        $input['event_type'] = $request->type;
+      if ($request->event_publisher) { 
         $input['event_id'] = $event->id;
-        $input['shared_type'] = 'event type '.$request->type;
-        $input['link_event'] = $request->link_event_type;
-        $input['code'] = $request->code_event_type;
-        $input['description'] = $request->description_event_type;
-        EventType::create($input);
+        $input['event_type'] = $request->event_publisher;
+        $input['shared_type'] = 'event type '.$request->event_publisher;
+        $input['link_event'] = $request->link_event_publisher;
+        $input['code'] = $request->code_publisher;
+        $input['description'] = $request->description_event_publisher;
+        EventPublisher::create($input);
       }
 
-      // event kurs
-      $currency['event_id'] = $event->id;
-      $currency['currency_id'] = 1;
-      EventKurs::create($currency);
-      if ($request->currency == "dual") { 
+      // contingent type
+      if ($request->contingent_type) { 
+        $input['event_id'] = $event->id;
+        $input['contingent_type'] = $request->contingent_type;
+        $input['select_type'] = $request->contingent_type;
+        $input['country_id'] = $request->contingent_country_id;
+        $input['country'] = $request->contingent_country;
+        $input['province_id'] = $request->contingent_province_id;
+        $input['province'] = $request->contingent_province;
+        $input['state_id'] = $request->contingent_state_id;
+        $input['state'] = $request->contingent_state;
+        $input['city_id'] = $request->contingent_city_id;
+        $input['city'] = $request->contingent_city;
+        ContingentType::create($input); 
+      }
+
+      // event kurs/currency
+      foreach($currency as $c){
         $currency['event_id'] = $event->id;
-        $currency['currency_id'] = 2;
+        $currency['currency_id'] = $c;
         EventKurs::create($currency);
+      }
+
+      // Add Competition Category
+      $i = 1;
+      foreach ($request->competition_categories as $key => $c) {
+        Competitions::create([
+          'event_id' => $event->id,
+          'name' => $competition_class_type[$key].' '.$competition_class_name[$key].' '.$competition_distance[$key],
+          'competition_type_id' => $request->competition_type_id[$key],
+          'competition_category_id' => $request->competition_category_id[$key],
+          'gender' => null,
+          'contingent' => null,
+          'distance' => $competition_distance[$key],
+          'class_type' => $competition_class_type[$key],
+          'class_name' => $competition_class_name[$key],
+          'description' => $competition_description[$key],
+        ]);
+
+        // Individual
+        if($request->competition_type_1 == 1){ 
+          $ticket['event_id'] = $event->id;
+          $ticket['event_type'] = 'individual';
+          $ticket['title'] = $competition_class_type[$key].' '.$competition_class_name[$key].' '.$competition_distance[$key];
+          $ticket['ticket_available_type'] = 'limited';
+          $ticket['ticket_available'] = 100;
+          $ticket['max_ticket_buy_type'] = 'limited';
+          $ticket['max_buy_ticket'] = 10;
+          $ticket['pricing_type'] = 'normal';
+          $ticket['price'] = 300000;
+          $ticket['f_price'] = 300000;
+          $ticket['early_bird_discount'] = null;
+          $ticket['early_bird_discount_type'] = 'fixed';
+          Ticket::create($ticket);
+        }
+
+        $i++;
       }
 
       // if ($request->event_type == 'turnament') {
