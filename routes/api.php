@@ -25,6 +25,7 @@ Route::get('get-state/{id}', 'BackEnd\Region\RegionController@getState')->name('
 Route::get('get-city/{id_country}/{id_state}', 'BackEnd\Region\RegionController@getCity')->name('get.region.city');
 
 Route::get('get-clubs', 'BackEnd\ClubController@getClubs')->name('get.clubs');
+Route::get('generate-code', 'BackEnd\Event\EventController@codeGenerate')->name('generate.code.event');
 
 // delete soon
 Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');

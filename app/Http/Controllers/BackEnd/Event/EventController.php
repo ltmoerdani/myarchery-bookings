@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
 use Spatie\GoogleCalendar\Event as GoogleCalendarEvent;
-
+use App\Http\Helpers\HelperEvent;
 
 
 class EventController extends Controller
@@ -646,5 +646,9 @@ class EventController extends Controller
     }
     Session::flash('success', 'Deleted Successfully');
     return response()->json(['status' => 'success'], 200);
+  }
+
+  public function codeGenerate(Request $request){
+    return HelperEvent::AutoGenerateCode();
   }
 }
