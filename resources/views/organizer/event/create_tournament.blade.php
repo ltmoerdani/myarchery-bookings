@@ -259,6 +259,40 @@
                                         <div class="card border border-1">
                                             <div class="card-body">
                                                 <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="mb-1">
+                                                            {{ __('Set Category') . '*' }}
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-12 mt-3">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>{{ __('Category') }}</th>
+                                                                        <th>{{ __('Type Class') }}</th>
+                                                                        <th>{{ __('Class Name') }}</th>
+                                                                        <th>{{ __('Distance') }}</th>
+                                                                        <th>
+                                                                            <a href="javascrit:void(0)"
+                                                                                class="btn btn-success addCompetitionRow">
+                                                                                <i class="fas fa-plus-circle"></i>
+                                                                            </a>
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
                                                             {{ __('Individual') . '*' }}
