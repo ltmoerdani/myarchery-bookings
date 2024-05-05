@@ -19,9 +19,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-// delete soon
-Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
-
+// API Data Master
 Route::get('get-country', 'BackEnd\Region\RegionController@getCountry')->name('get.region.country');
 Route::get('get-state/{id}', 'BackEnd\Region\RegionController@getState')->name('get.region.state');
 Route::get('get-city/{id_country}/{id_state}', 'BackEnd\Region\RegionController@getCity')->name('get.region.city');
+
+Route::get('get-clubs', 'BackEnd\ClubController@getClubs')->name('get.clubs');
+
+// delete soon
+Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
