@@ -140,7 +140,7 @@ class EventController extends Controller
     $allowedExts = array('jpg', 'png', 'jpeg');
     $rules = [
       'file' => [
-        'dimensions:width=1170,height=570',
+        // 'dimensions:width=1170,height=570',
         function ($attribute, $value, $fail) use ($img, $allowedExts) {
           $ext = $img->getClientOriginalExtension();
           if (!in_array($ext, $allowedExts)) {

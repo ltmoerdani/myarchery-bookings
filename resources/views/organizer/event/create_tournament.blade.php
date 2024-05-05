@@ -63,7 +63,6 @@
                                 <div class=" mb-0" id="errpreimg">
 
                                 </div>
-                                <p class="text-warning">{{ __('Image Size') . ' 1170x570' }}</p>
                             </div>
                             <form id="eventForm" action="{{ route('organizer.event_management.store_event') }}"
                                 method="POST" enctype="multipart/form-data">
@@ -83,7 +82,6 @@
                                             <input type="file" class="img-input" name="thumbnail">
                                         </div>
                                     </div>
-                                    <p class="text-warning">{{ __('Image Size') . ' : 320x230' }}</p>
                                 </div>
 
                                 <div class="row">
@@ -127,7 +125,7 @@
                                                     <div class="col-12 mt-2">
                                                         <div class="form-group">
                                                             <label>
-                                                                {{ __('Countdown Status') . '*' }}
+                                                                {{ __('Currency Type') . '*' }}
                                                             </label>
                                                             <div class="selectgroup w-100">
                                                                 <label class="selectgroup-item">
@@ -156,147 +154,190 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
+                                                        <div class="form-group">
+                                                            <label>
+                                                                {{ __('Event Type') . '*' }}
+                                                            </label>
+                                                            <div class="selectgroup w-100">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="event_type"
+                                                                        value="public" class="selectgroup-input eventType"
+                                                                        checked>
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Public') }}</span>
+                                                                </label>
 
-                                @if (request()->input('type') == 'online')
-                                    {{-- /*****--Ticekt limtit & ticket for each customer start--****** --}}
-
-                                    <div class="row">
-
-                                        <div class="col-lg-6">
-                                            <div class="form-group mt-1">
-                                                <label
-                                                    for="">{{ __('Total Number of Available Tickets') . '*' }}</label>
-                                                <div class="selectgroup w-100">
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="ticket_available_type"
-                                                            value="unlimited" class="selectgroup-input" checked>
-                                                        <span class="selectgroup-button">{{ __('Unlimited') }}</span>
-                                                    </label>
-
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="ticket_available_type"
-                                                            value="limited" class="selectgroup-input">
-                                                        <span class="selectgroup-button">{{ __('Limited') }}</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 d-none" id="ticket_available">
-                                            <div class="form-group">
-                                                <label>{{ __('Enter total number of available tickets') . '*' }}</label>
-                                                <input type="number" name="ticket_available"
-                                                    placeholder="{{ __('Enter total number of available tickets') }}"
-                                                    class="form-control">
-                                            </div>
-                                        </div>
-                                        @if ($websiteInfo->event_guest_checkout_status != 1)
-                                            <div class="col-lg-6">
-                                                <div class="form-group mt-1">
-                                                    <label
-                                                        for="">{{ __('Maximum number of tickets for each customer') . '*' }}</label>
-                                                    <div class="selectgroup w-100">
-                                                        <label class="selectgroup-item">
-                                                            <input type="radio" name="max_ticket_buy_type"
-                                                                value="unlimited" class="selectgroup-input" checked>
-                                                            <span class="selectgroup-button">{{ __('Unlimited') }}</span>
-                                                        </label>
-
-                                                        <label class="selectgroup-item">
-                                                            <input type="radio" name="max_ticket_buy_type"
-                                                                value="limited" class="selectgroup-input">
-                                                            <span class="selectgroup-button">{{ __('Limited') }}</span>
-                                                        </label>
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="event_type"
+                                                                        value="private"
+                                                                        class="selectgroup-input eventType">
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Private') }}</span>
+                                                                </label>
+                                                            </div>
+                                                            <small>
+                                                                *Publish your event publicly or keep it private. For private
+                                                                events, share the link exclusively with selected
+                                                                individuals.
+                                                            </small>
+                                                        </div>
+                                                        <div class="row mt-3 px-3">
+                                                            <div class="col-12 mb-2">
+                                                                <label class="fw-bold">
+                                                                    {{ __('Code') }}
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-12 col-md-6 my-1">
+                                                                <input class="form-control" type="text" name="code"
+                                                                    id="code" placeholder="type your code" />
+                                                            </div>
+                                                            <div class="col-12 col-md-6 my-1">
+                                                                <Button type="button"
+                                                                    class="btn btn-block btn-secondary">
+                                                                    <i class="fa fa-ticket-alt mr-1"></i> Generate
+                                                                </Button>
+                                                            </div>
+                                                            <div class="col-12 mt-2">
+                                                                <small>
+                                                                    *Only fill in this field if you want registrants with a
+                                                                    code to proceed. You can enter your own code or choose
+                                                                    to generate one.
+                                                                </small>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @else
-                                            <input type="hidden" name="max_ticket_buy_type" value="unlimited">
-                                        @endif
-                                        <div class="col-lg-6 d-none" id="max_buy_ticket">
-                                            <div class="form-group">
-                                                <label>{{ __('Enter Maximum number of tickets for each customer') . '*' }}</label>
-                                                <input type="number" name="max_buy_ticket"
-                                                    placeholder="{{ __('Enter Maximum number of tickets for each customer') }}"
-                                                    class="form-control">
-                                            </div>
                                         </div>
-
-                                        <div class="col-lg-6">
-                                            <div class="">
-                                                <div class="form-group">
-                                                    <label for="">{{ __('Price') }}
-                                                        ({{ $getCurrencyInfo->base_currency_text }}) *
-                                                    </label>
-                                                    <input type="number" name="price" id="ticket-pricing"
-                                                        class="form-control"
-                                                        placeholder="{{ __('Enter Ticket Price') }}">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Start Date') . '*' }}
+                                                        </label>
+                                                        <input class="form-control" type="date"
+                                                            placeholder="Choose Date" name="start_date" id="start_date"
+                                                            required />
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Start Time') . '*' }}
+                                                        </label>
+                                                        <input class="form-control" type="time"
+                                                            placeholder="Choose Date" name="start_time" id="start_time"
+                                                            required />
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('End Date') . '*' }}
+                                                        </label>
+                                                        <input class="form-control" type="date"
+                                                            placeholder="Choose Date" name="end_date" id="end_date"
+                                                            required />
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('End Time') . '*' }}
+                                                        </label>
+                                                        <input class="form-control" type="time"
+                                                            placeholder="Choose Date" name="end_time" id="end_time"
+                                                            required />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="checkbox" name="pricing_type" value="free" class=""
-                                                    id="free_ticket">
-                                                <label for="free_ticket">{{ __('Tickets are Free') }}</label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" id="early_bird_discount_free">
-                                        <div class="col-lg-12">
-                                            <div class="form-group mt-1">
-                                                <label for="">{{ __('Early Bird Discount') . '*' }}</label>
-                                                <div class="selectgroup w-100">
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="early_bird_discount_type"
-                                                            value="disable" class="selectgroup-input" checked>
-                                                        <span class="selectgroup-button">{{ __('Disable') }}</span>
-                                                    </label>
-
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="early_bird_discount_type"
-                                                            value="enable" class="selectgroup-input">
-                                                        <span class="selectgroup-button">{{ __('Enable') }}</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 d-none" id="early_bird_dicount">
-                                            <div class="row">
-                                                <div class="col-lg-3">
-                                                    <div class="form-group">
-                                                        <label for="">{{ __('Discount') }} * </label>
-                                                        <select name="discount_type" class="form-control">
-                                                            <option disabled>{{ __('Select Discount Type') }}</option>
-                                                            <option value="fixed">{{ __('Fixed') }}</option>
-                                                            <option value="percentage">{{ __('Percentage') }}</option>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Individual') . '*' }}
+                                                        </label>
+                                                        <select class="custom-select" id="individu" name="individu"
+                                                            required disabled readonly>
+                                                            <option selected disabled value="active">Active</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Team') }}
+                                                        </label>
+                                                        <select class="custom-select" id="team" name="team"
+                                                            required>
+                                                            <option selected value="active">Active</option>
+                                                            <option value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Mixed Team') }}
+                                                        </label>
+                                                        <select class="custom-select" id="mixed_team" name="mixed_team"
+                                                            required>
+                                                            <option selected value="active">Active</option>
+                                                            <option value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Official') }}
+                                                        </label>
+                                                        <select class="custom-select" id="official" name="official"
+                                                            required>
+                                                            <option selected value="active">Active</option>
+                                                            <option value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-3">
-                                                    <div class="form-group">
-                                                        <label for="">{{ __('Amount') }} * </label>
-                                                        <input type="number" name="early_bird_discount_amount"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3">
-                                                    <div class="form-group">
-                                                        <label for="">{{ __('Discount End Date') }} *</label>
-                                                        <input type="date" name="early_bird_discount_date"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3">
-                                                    <div class="form-group">
-                                                        <label for="">{{ __('Discount End Time') }} *</label>
-                                                        <input type="time" name="early_bird_discount_time"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <label class="mb-1">
+                                                            {{ __('Upload File') }}
+                                                        </label>
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input"
+                                                                id="upload_file" name="upload_file"
+                                                                aria-describedby="upload_file" accept=".doc,.docx,.pdf"
+                                                                style="background:#fff">
+                                                            <label class="custom-file-label" for="upload_file"
+                                                                style="background:#fff">Choose
+                                                                file</label>
+                                                        </div>
+                                                        <small>
+                                                            *Doc and PDF only. Max 2mb
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <label class="mb-1">
+                                                            {{ __('Status') }}
+                                                        </label>
+                                                        <select class="custom-select" id="status" name="status"
+                                                            required>
+                                                            <option selected value="active">Active</option>
+                                                            <option value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div id="accordion" class="mt-3">
                                     @foreach ($languages as $language)
@@ -513,8 +554,8 @@
 @section('variables')
     <script>
         "use strict";
-        var storeUrl = "{{ route('organizer.event.imagesstore') }}";
-        var removeUrl = "{{ route('organizer.event.imagermv') }}";
+        var storeUrl = "{{ route('organizer.event.imagesstore-tournament') }}";
+        var removeUrl = "{{ route('organizer.event.imagermv-tournament') }}";
         var loadImgs = 0;
     </script>
 @endsection
