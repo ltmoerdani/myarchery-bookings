@@ -28,7 +28,7 @@
   <div class="product-type">
 
     <div class="row">
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <a href="{{ route('add.event.event', ['type' => 'online']) }}" class="d-block text-decoration-none">
           <div class="card card-stats card-round p-50">
             <div class="card-body ">
@@ -50,7 +50,7 @@
           </div>
         </a>
       </div>
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <a href="{{ route('add.event.event', ['type' => 'venue']) }}" class="d-block text-decoration-none">
           <div class="card card-stats card-round p-50">
             <div class="card-body ">
@@ -72,7 +72,7 @@
           </div>
         </a>
       </div>
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <a href="{{ route('add.event.event', ['type' => 'turnament']) }}" class="d-block text-decoration-none">
           <div class="card card-stats card-round p-50">
             <div class="card-body ">

@@ -14,6 +14,10 @@ use App\Models\EventPublisher;
 use App\Models\EventKurs;
 use App\Models\ContingentType;
 use App\Models\Competitions;
+use App\Models\CompetitionCategories;
+use App\Models\CompetitionClassType;
+use App\Models\CompetitionClassName;
+use App\Models\CompetitionDistance;
 use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\EventDates;
@@ -81,6 +85,13 @@ class EventController extends Controller
     $information['organizers'] = $organizers;
 
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
+    $information['competition_categories'] = CompetitionCategories::all();
+    $information['competition_class_type'] = CompetitionClassType::all();
+    $information['competition_class_name'] = CompetitionClassName::all();
+    $information['competition_distance'] = CompetitionDistance::all();
+
+    $clone_lang = Language::where('id','!=', 8)->get(); // lang clone
+    $information['clone_lang'] = $clone_lang;
 
     return view('backend.event.create', $information);
   }
@@ -194,16 +205,6 @@ class EventController extends Controller
         }
       }
 
-      $in['event_id'] = $event->id;
-      if ($request->event_type == 'turnament') {
-        if (!$request->pricing_type) {
-          $in['pricing_type'] = 'normal';
-        }
-        $in['early_bird_discount'] = $request->early_bird_discount_type;
-        $in['early_bird_discount_type'] = $request->discount_type;
-        Ticket::create($in);
-      }
-
       // event type public or private
       if ($request->event_publisher) { 
         $input['event_id'] = $event->id;
@@ -232,6 +233,7 @@ class EventController extends Controller
       }
 
       // event kurs/currency
+      $currency = $request->currency;
       foreach($currency as $c){
         $currency['event_id'] = $event->id;
         $currency['currency_id'] = $c;
@@ -256,32 +258,26 @@ class EventController extends Controller
 
         // Individual
         if($request->competition_type_1 == 1){ 
-          $ticket['event_id'] = $event->id;
-          $ticket['event_type'] = 'individual';
-          $ticket['title'] = $competition_class_type[$key].' '.$competition_class_name[$key].' '.$competition_distance[$key];
-          $ticket['ticket_available_type'] = 'limited';
-          $ticket['ticket_available'] = 100;
-          $ticket['max_ticket_buy_type'] = 'limited';
-          $ticket['max_buy_ticket'] = 10;
-          $ticket['pricing_type'] = 'normal';
-          $ticket['price'] = 300000;
-          $ticket['f_price'] = 300000;
-          $ticket['early_bird_discount'] = null;
-          $ticket['early_bird_discount_type'] = 'fixed';
-          Ticket::create($ticket);
+          $gender = ['Putra','Putri'];
+          foreach($gender as $g){
+            $ticket['event_id'] = $event->id;
+            $ticket['event_type'] = 'individual';
+            $ticket['title'] = $competition_class_type[$key].' '.$competition_class_name[$key].' '.$g.' '.$competition_distance[$key];
+            $ticket['ticket_available_type'] = 'limited';
+            $ticket['ticket_available'] = 100;
+            $ticket['max_ticket_buy_type'] = 'limited';
+            $ticket['max_buy_ticket'] = 10;
+            $ticket['pricing_type'] = 'normal';
+            $ticket['price'] = 300000;
+            $ticket['f_price'] = 300000;
+            $ticket['early_bird_discount'] = 0;
+            $ticket['early_bird_discount_type'] = 'fixed';
+            Ticket::create($ticket);
+          }
         }
 
         $i++;
       }
-
-      // if ($request->event_type == 'turnament') {
-      //   if (!$request->pricing_type) {
-      //     $in['pricing_type'] = 'normal';
-      //   }
-      //   $in['early_bird_discount'] = $request->early_bird_discount_type;
-      //   $in['early_bird_discount_type'] = $request->discount_type;
-      //   Ticket::create($in);
-      // }
 
       // $languages = Language::all();
       // foreach ($languages as $language) {

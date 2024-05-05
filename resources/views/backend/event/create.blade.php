@@ -125,6 +125,59 @@
                   </div>
                 </div>
 
+                <!-- <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group mt-1">
+                      <label for="">{{ __('Currency Type') . '*' }}</label>
+                      <div class="selectgroup w-100">
+                        <label class="selectgroup-item">
+                          <input type="radio" name="currency" value="1" class="selectgroup-input" checked>
+                          <span class="selectgroup-button">{{ __('Single Currency') }}</span>
+                        </label>
+
+                        <label class="selectgroup-item">
+                          <input type="radio" name="currency" value="0" class="selectgroup-input">
+                          <span class="selectgroup-button">{{ __('Dual Currency') }}</span>
+                        </label>
+                      </div>
+                      *Select 'Dual Currency' to display prices in both IDR (primary) and USD.
+                    </div>
+                  </div>
+                </div> -->
+
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group mt-1">
+                      <label for="">{{ __('Event Publisher') . '*' }}</label>
+                      <div class="selectgroup w-100">
+                        <label class="selectgroup-item">
+                          <input type="radio" name="event_publisher" value="1" class="selectgroup-input" checked>
+                          <span class="selectgroup-button">{{ __('Public') }}</span>
+                        </label>
+
+                        <label class="selectgroup-item">
+                          <input type="radio" name="event_publisher" value="0" class="selectgroup-input">
+                          <span class="selectgroup-button">{{ __('Private') }}</span>
+                        </label>
+                      </div>
+                      *Publish your event publicly or keep it private. For private events, share the link exclusively with selected individuals.
+                    </div>
+                    <div class="form-group mt-1">
+                      <label for="">{{ __('Code') . '*' }}</label>
+                      <div class="selectgroup w-100">
+                        <label class="selectgroup-item">
+                          <input type="text" name="code_publisher" value="" class="form-control">
+                        </label>
+
+                        <label class="selectgroup-item">
+                          <button class="form-control btn btn-primary btn-xl" name="codeGanerate" value=""><i class="fa fa-ticket"></i>  {{ __('Generate') }}</button>
+                        </label>
+                      </div>
+                      *Only fill in this field if you want registrants with a code to proceed. You can enter your own code or choose to generate one. 
+                    </div>
+                  </div>
+                </div>
+                
                 <div class="row" id="single_dates">
                   <div class="col-lg-3">
                     <div class="form-group">
@@ -206,6 +259,7 @@
                 </div>
 
                 <div class="row ">
+                  @if (request()->input('type') != 'turnament')
                   <div class="col-lg-4">
                     <div class="form-group">
                       <label for="">{{ __('Status') . '*' }}</label>
@@ -238,6 +292,7 @@
                       <p class="text-warning">{{ __("Please leave it blank for Admin's event") }}</p>
                     </div>
                   </div>
+                  @endif
                   @if (request()->input('type') == 'venue')
                     <div class="col-lg-4">
                       <div class="form-group">
@@ -383,6 +438,187 @@
                   </div>
                 @endif
 
+                <br>
+                <div class="row">
+                  <div class="col-lg-12" id="competitions">
+                    <div class="form-group">
+                      <table class="table table-bordered ">
+                        <thead>
+                          <tr>
+                            <th>{{ __('Category') }}</th>
+                            <th>{{ __('Type Class') }}</th>
+                            <th>{{ __('Class Name') }}</th>
+                            <th>{{ __('Distance') }}</th>
+                            <th><a href="javascrit:void(0)" class="btn btn-success addCompetitionRow"><i
+                                  class="fas fa-plus-circle"></i></a></th>
+                          </tr>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_categories[]" class="form-control">
+                                  @foreach ($competition_categories as $cat)
+                                  <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_class_type[]" class="form-control">
+                                  @foreach ($competition_class_type as $type)
+                                  <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <input type="text" name="competition_class_name[]" value="" class="form-control">
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_distance[]" class="form-control">
+                                  @foreach ($competition_distance as $dis)
+                                  <option value="{{ $dis->id }}">{{ $dis->name }} M</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <a href="javascript:void(0)" class="btn btn-danger deleteDateRow">
+                                <i class="fas fa-minus"></i></a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_categories[]" class="form-control">
+                                  @foreach ($competition_categories as $cat)
+                                  <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_class_type[]" class="form-control">
+                                  @foreach ($competition_class_type as $type)
+                                  <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <input type="text" name="competition_class_name[]" value="" class="form-control">
+                              </div>
+                            </td>
+                            <td>
+                              <div class="form-group">
+                                <select name="competition_distance[]" class="form-control">
+                                  @foreach ($competition_distance as $dis)
+                                  <option value="{{ $dis->id }}">{{ $dis->name }} M</option>
+                                  @endforeach
+                                </select>
+                              </div>
+                            </td>
+                            <td>
+                              <a href="javascript:void(0)" class="btn btn-danger deleteDateRow">
+                                <i class="fas fa-minus"></i></a>
+                            </td>
+                          </tr>
+                        </tbody>
+                        </thead>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group mt-1">
+                      <label for="">{{ __('Delegation Type') . '*' }}</label>
+                      <div class="selectgroup w-100">
+                        <label class="selectgroup-item">
+                          <input type="radio" name="delegation_type" value="1" class="selectgroup-input" checked>
+                          <span class="selectgroup-button">{{ __('Open') }}</span>
+                        </label>
+
+                        <label class="selectgroup-item">
+                          <input type="radio" name="delegation_type" value="0" class="selectgroup-input">
+                          <span class="selectgroup-button">{{ __('Selected') }}</span>
+                        </label>
+                      </div>
+                      *You can set the content type to 'Open', allowing partisipants to freely enter names like country, club, or school, or 'Selected', where partisipants choose from predefined options such as a specific club or schools.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3">
+                    <div class="form-group">
+                      <label for="">{{ __('Individual') }}</label>
+                      <select name="competition_type_individual" class="form-control" disabled>
+                        <option value="1" selected disabled>{{ __('Active') }}</option>
+                        <option value="0">{{ __('Deactive') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-3">
+                    <div class="form-group">
+                      <label for="">{{ __('Team') }}</label>
+                      <select name="competition_type_team" class="form-control">
+                        <option selected>{{ __('Select a Status') }}</option>
+                        <option value="1">{{ __('Active') }}</option>
+                        <option value="0">{{ __('Deactive') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-3">
+                    <div class="form-group">
+                      <label for="">{{ __('Mix Team') }}</label>
+                      <select name="competition_type_mix_team" class="form-control">
+                        <option selected>{{ __('Select a Status') }}</option>
+                        <option value="1">{{ __('Active') }}</option>
+                        <option value="0">{{ __('Deactive') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-3">
+                    <div class="form-group">
+                      <label for="">{{ __('Official') }}</label>
+                      <select name="competition_type_official" class="form-control">
+                        <option selected>{{ __('Select a Status') }}</option>
+                        <option value="1">{{ __('Active') }}</option>
+                        <option value="0">{{ __('Deactive') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="">{{ __('Upload File') }}</label><br>
+                      <div role="button" class="btn btn-primary btn-sm upload-btn">
+                      {{ __('Choose Image') }}
+                      <input type="file" class="img-input" name="upload_file">
+                    </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="">{{ __('Status') }}</label>
+                      <select name="status_file" class="form-control">
+                        <option selected>{{ __('Select a Status') }}</option>
+                        <option value="1">{{ __('Active') }}</option>
+                        <option value="0">{{ __('Deactive') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
 
                 <div id="accordion" class="mt-3">
                   @foreach ($languages as $language)
@@ -542,6 +778,17 @@
                     </div>
                   @endforeach
                 </div>
+                @foreach ($clone_lang as $lang)
+                  <div class="form-check py-0">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="clone_lang[]"
+                        onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $lang->id }}', event)">
+                        <span class="form-check-sign">{{ __('Clone for') }} <strong
+                          class="text-capitalize text-secondary">{{ $lang->name }}</strong>
+                        {{ __('language') }}</span>
+                    </label>
+                  </div>
+                @endforeach
 
                 <div id="sliders"></div>
               </form>
