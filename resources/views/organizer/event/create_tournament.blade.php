@@ -46,7 +46,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-8 offset-lg-2">
+                        <div class="col-lg-12">
                             <div class="alert alert-danger pb-1 dis-none" id="eventErrors">
                                 <button type="button" class="close" data-dismiss="alert">×</button>
                                 <ul></ul>
@@ -68,6 +68,7 @@
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="event_type" value="{{ request()->input('type') }}">
+                                <input type="hidden" id="base_url" value="{{ url('/') }}">
                                 <div class="form-group">
                                     <label for="">{{ __('Thumbnail Image') . '*' }}</label>
                                     <br>
@@ -198,7 +199,7 @@
                                                             </div>
                                                             <div class="col-12 col-md-6 my-1">
                                                                 <Button type="button"
-                                                                    class="btn btn-block btn-secondary">
+                                                                    class="btn btn-block btn-secondary btn-generate-code">
                                                                     <i class="fa fa-ticket-alt mr-1"></i> Generate
                                                                 </Button>
                                                             </div>
@@ -257,6 +258,13 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="card border border-1">
+                                            <input type="hidden" disabled readonly id="competition_categories_value"
+                                                value="{{ $competition_categories }}" />
+                                            <input type="hidden" disabled readonly id="competition_class_type_value"
+                                                value="{{ $competition_class_type }}" />
+                                            <input type="hidden" disabled readonly id="competition_distance_value"
+                                                value="{{ $competition_distance }}" />
+
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-12">
@@ -269,20 +277,154 @@
                                                             <table class="table table-bordered">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>{{ __('Category') }}</th>
-                                                                        <th>{{ __('Type Class') }}</th>
-                                                                        <th>{{ __('Class Name') }}</th>
-                                                                        <th>{{ __('Distance') }}</th>
-                                                                        <th>
+                                                                        <th class="text-center">{{ __('Category') }}
+                                                                        </th>
+                                                                        <th class="text-center">
+                                                                            {{ __('Type Class') }}
+                                                                        </th>
+                                                                        <th class="text-center">
+                                                                            {{ __('Class Name') }}
+                                                                        </th>
+                                                                        <th class="text-center">{{ __('Distance') }}
+                                                                        </th>
+                                                                        <th class="text-center">
                                                                             <a href="javascrit:void(0)"
-                                                                                class="btn btn-success addCompetitionRow">
+                                                                                class="btn btn-sm btn-success addSetCategory">
                                                                                 <i class="fas fa-plus-circle"></i>
                                                                             </a>
                                                                         </th>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody></tbody>
+                                                                <tbody id="dynamic_content_set_category">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_categories[]"
+                                                                                    id="competition_categories[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_categories as $cat)
+                                                                                        <option
+                                                                                            value="{{ $cat->id }}">
+                                                                                            {{ $cat->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_class_type[]"
+                                                                                    id="competition_class_type[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_class_type as $type)
+                                                                                        <option
+                                                                                            value="{{ $type->id }}">
+                                                                                            {{ $type->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <input type="text"
+                                                                                    name="competition_class_name[]"
+                                                                                    id="competition_class_name[]"
+                                                                                    value="" class="form-control">
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_distance[]"
+                                                                                    id="competition_distance[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_distance as $dis)
+                                                                                        <option
+                                                                                            value="{{ $dis->id }}">
+                                                                                            {{ $dis->name }} Meter
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <a href="javascript:void(0)"
+                                                                                id="buttonDelete[]"
+                                                                                class="btn btn-sm btn-danger deleteSetCategory">
+                                                                                <i class="fas fa-minus"></i></a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
                                                             </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
+                                                        <div class="form-group">
+                                                            <label>
+                                                                {{ __('Delegation Type') . '*' }}
+                                                            </label>
+                                                            <div class="selectgroup w-100">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="delegation_type"
+                                                                        value="open" id="delegation_type"
+                                                                        class="selectgroup-input delegationType" checked>
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Open') }}</span>
+                                                                </label>
+
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="delegation_type"
+                                                                        value="selected" id="delegation_type"
+                                                                        class="selectgroup-input delegationType">
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Selected') }}</span>
+                                                                </label>
+                                                            </div>
+                                                            <p class="mb-0 p-0">
+                                                                *You can set the content type to 'Open', allowing
+                                                                partisipants to freely enter names like country, club, or
+                                                                school, or 'Selected', where partisipants choose from
+                                                                predefined options such as a specific club or schools.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mt-2 select-type-field d-none">
+                                                        <div class="form-group">
+                                                            <label class="mb-1">
+                                                                {{ __('Select Type') . '*' }}
+                                                            </label>
+                                                            <select class="custom-select" id="select_type"
+                                                                name="select_type" required>
+                                                                <option selected value="province">Province</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mt-2 select-country-field d-none">
+                                                        <div class="form-group">
+                                                            <label class="mb-1">
+                                                                {{ __('Select Country') . '*' }}
+                                                            </label>
+                                                            <select class="custom-select" id="select_country"
+                                                                name="select_country" required>
+                                                                <option selected value="country">Country</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mt-2 select-state-field d-none">
+                                                        <div class="form-group">
+                                                            <label class="mb-1">
+                                                                {{ __('Select State') . '*' }}
+                                                            </label>
+                                                            <select class="custom-select" id="select_state"
+                                                                name="select_state" required>
+                                                                <option selected value="state">state</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -591,5 +733,7 @@
         var storeUrl = "{{ route('organizer.event.imagesstore-tournament') }}";
         var removeUrl = "{{ route('organizer.event.imagermv-tournament') }}";
         var loadImgs = 0;
+
+        // let i = 0;
     </script>
 @endsection
