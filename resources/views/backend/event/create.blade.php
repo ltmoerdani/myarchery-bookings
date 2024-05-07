@@ -145,6 +145,7 @@
                   </div>
                 </div> -->
 
+                @if (request()->input('type') != 'turnament')
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="form-group mt-1">
@@ -177,6 +178,7 @@
                     </div>
                   </div>
                 </div>
+                @endif
                 
                 <div class="row" id="single_dates">
                   <div class="col-lg-3">
@@ -259,13 +261,13 @@
                 </div>
 
                 <div class="row ">
-                  @if (request()->input('type') != 'turnament')
+                  @if (request()->input('type') != 'turnamenttt')
                   <div class="col-lg-4">
                     <div class="form-group">
                       <label for="">{{ __('Status') . '*' }}</label>
                       <select name="status" class="form-control">
-                        <option selected disabled>{{ __('Select a Status') }}</option>
-                        <option value="1">{{ __('Active') }}</option>
+                        <option disabled>{{ __('Select a Status') }}</option>
+                        <option value="1" selected>{{ __('Active') }}</option>
                         <option value="0">{{ __('Deactive') }}</option>
                       </select>
                     </div>
@@ -274,8 +276,8 @@
                     <div class="form-group">
                       <label for="">{{ __('Is Feature') . '*' }}</label>
                       <select name="is_featured" class="form-control">
-                        <option selected disabled>{{ __('Select') }}</option>
-                        <option value="yes">{{ __('Yes') }}</option>
+                        <option disabled>{{ __('Select') }}</option>
+                        <option value="yes" selected>{{ __('Yes') }}</option>
                         <option value="no">{{ __('No') }}</option>
                       </select>
                     </div>
@@ -496,7 +498,7 @@
                               <div class="form-group">
                                 <select name="competition_categories[]" class="form-control">
                                   @foreach ($competition_categories as $cat)
-                                  <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                  <option value="{{ $cat->name }}">{{ $cat->name }}</option>
                                   @endforeach
                                 </select>
                               </div>
@@ -505,7 +507,7 @@
                               <div class="form-group">
                                 <select name="competition_class_type[]" class="form-control">
                                   @foreach ($competition_class_type as $type)
-                                  <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                  <option value="{{ $type->name }}">{{ $type->name }}</option>
                                   @endforeach
                                 </select>
                               </div>
@@ -519,7 +521,7 @@
                               <div class="form-group">
                                 <select name="competition_distance[]" class="form-control">
                                   @foreach ($competition_distance as $dis)
-                                  <option value="{{ $dis->id }}">{{ $dis->name }} M</option>
+                                  <option value="{{ $dis->name }}">{{ $dis->name }} M</option>
                                   @endforeach
                                 </select>
                               </div>

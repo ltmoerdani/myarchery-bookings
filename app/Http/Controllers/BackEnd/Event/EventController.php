@@ -141,128 +141,176 @@ class EventController extends Controller
   }
 
   public function store(StoreRequest $request){
-    // db transaction
-    DB::transaction(function () use ($request) {
-      //calculate duration 
-      if ($request->date_type == 'single') {
-        $start = Carbon::parse($request->start_date . $request->start_time);
-        $end =  Carbon::parse($request->end_date . $request->end_time);
-        $diffent = DurationCalulate($start, $end);
-      } //calculate duration end
+    $now_time = \Carbon\Carbon::now();
+    $events = DB::table('event_contents')
+        ->join('events', 'events.id', '=', 'event_contents.event_id')
+        ->where([['event_contents.event_category_id', '=', 35], ['event_contents.language_id', '=', 23], ['events.status', 1], ['events.end_date_time', '>=', $now_time], ['events.is_featured', '=', 'yes']])
+        ->orderBy('events.created_at', 'desc')
+        ->get();
+    var_dump($events);die;
 
-      $in = $request->all();
-      $in['duration'] = $request->date_type == 'single' ? $diffent : '';
-      $in['organizer_id'] = $request->organizer_id;
-        
-      $img = $request->file('thumbnail');
-      if ($request->hasFile('thumbnail')) {
-        $filename = time() . '.' . $img->getClientOriginalExtension();
-        $directory = public_path('assets/admin/img/event/thumbnail/');
-        @mkdir($directory, 0775, true);
-        $request->file('thumbnail')->move($directory, $filename);
-        $in['thumbnail'] = $filename;
-      }
-
-      $in['f_price'] = $request->price;
-      $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
-      $event = Event::create($in);
-
-      if ($request->date_type == 'multiple') {
-        $i = 1;
-        foreach ($request->m_start_date as $key => $date) {
-          $start = Carbon::parse($date . $request->m_start_time[$key]);
-          $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
+    try
+      {
+      // db transaction
+      DB::transaction(function () use ($request) {
+        //calculate duration 
+        if ($request->date_type == 'single') {
+          $start = Carbon::parse($request->start_date . $request->start_time);
+          $end =  Carbon::parse($request->end_date . $request->end_time);
           $diffent = DurationCalulate($start, $end);
-          EventDates::create([
-            'event_id' => $event->id,
-            'start_date' => $date,
-            'start_time' => $request->m_start_time[$key],
-            'end_date' => $request->m_end_date[$key],
-            'end_time' => $request->m_end_time[$key],
-            'duration' => $diffent,
-            'start_date_time' => $start,
-            'end_date_time' => $end,
-          ]);
-          if ($i == 1) {
-            $event->update([
-              'duration' => $diffent
+        } //calculate duration end
+
+        $in = $request->all();
+        $in['duration'] = $request->date_type == 'single' ? $diffent : '';
+        $in['organizer_id'] = $request->organizer_id;
+          
+        $img = $request->file('thumbnail');
+        if ($request->hasFile('thumbnail')) {
+          $filename = time() . '.' . $img->getClientOriginalExtension();
+          $directory = public_path('assets/admin/img/event/thumbnail/');
+          @mkdir($directory, 0775, true);
+          $request->file('thumbnail')->move($directory, $filename);
+          $in['thumbnail'] = $filename;
+        }
+
+        $in['f_price'] = $request->price;
+        $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
+        $event = Event::create($in);
+
+        if ($request->date_type == 'multiple') {
+          $i = 1;
+          foreach ($request->m_start_date as $key => $date) {
+            $start = Carbon::parse($date . $request->m_start_time[$key]);
+            $end =  Carbon::parse($request->m_end_date[$key] . $request->m_end_time[$key]);
+            $diffent = DurationCalulate($start, $end);
+            EventDates::create([
+              'event_id' => $event->id,
+              'start_date' => $date,
+              'start_time' => $request->m_start_time[$key],
+              'end_date' => $request->m_end_date[$key],
+              'end_time' => $request->m_end_time[$key],
+              'duration' => $diffent,
+              'start_date_time' => $start,
+              'end_date_time' => $end,
             ]);
+            if ($i == 1) {
+              $event->update([
+                'duration' => $diffent
+              ]);
+            }
+            $i++;
           }
-          $i++;
+          //update event date time
+          $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
+          $event->end_date_time = $event_date->end_date_time;
+          $event->save();
         }
-        //update event date time
-        $event_date = EventDates::where('event_id', $event->id)->orderBy('end_date_time', 'desc')->first();
-        $event->end_date_time = $event_date->end_date_time;
-        $event->save();
-      }
 
-      $slders = $request->slider_images;
-      foreach ($slders as $key => $id) {
-        $event_image = EventImage::where('id', $id)->first();
-        if ($event_image) {
-          $event_image->event_id = $event->id;
-          $event_image->save();
+        $slders = $request->slider_images;
+        foreach ($slders as $key => $id) {
+          $event_image = EventImage::where('id', $id)->first();
+          if ($event_image) {
+            $event_image->event_id = $event->id;
+            $event_image->save();
+          }
         }
-      }
 
-      // event type public or private
-      if ($request->event_publisher) { 
-        $input['event_id'] = $event->id;
-        $input['event_type'] = $request->event_publisher;
-        $input['shared_type'] = 'event type '.$request->event_publisher;
-        $input['link_event'] = $request->link_event_publisher;
-        $input['code'] = $request->code_publisher;
-        $input['description'] = $request->description_event_publisher;
-        EventPublisher::create($input);
-      }
+        // event type public or private
+        if ($request->event_publisher) { 
+          $input['event_id'] = $event->id;
+          $input['event_type'] = $request->event_publisher;
+          $input['shared_type'] = 'event type '.$request->event_publisher;
+          $input['link_event'] = $request->link_event_publisher;
+          $input['code'] = $request->code_publisher;
+          $input['description'] = $request->description_event_publisher;
+          EventPublisher::create($input);
+        }
 
-      // contingent type
-      if ($request->contingent_type) { 
-        $input['event_id'] = $event->id;
-        $input['contingent_type'] = $request->contingent_type;
-        $input['select_type'] = $request->contingent_type;
-        $input['country_id'] = $request->contingent_country_id;
-        $input['country'] = $request->contingent_country;
-        $input['province_id'] = $request->contingent_province_id;
-        $input['province'] = $request->contingent_province;
-        $input['state_id'] = $request->contingent_state_id;
-        $input['state'] = $request->contingent_state;
-        $input['city_id'] = $request->contingent_city_id;
-        $input['city'] = $request->contingent_city;
-        ContingentType::create($input); 
-      }
+        // contingent type
+        if ($request->contingent_type) { 
+          $input['event_id'] = $event->id;
+          $input['contingent_type'] = $request->contingent_type;
+          $input['select_type'] = $request->contingent_type;
+          $input['country_id'] = $request->contingent_country_id;
+          $input['country'] = $request->contingent_country;
+          $input['province_id'] = $request->contingent_province_id;
+          $input['province'] = $request->contingent_province;
+          $input['state_id'] = $request->contingent_state_id;
+          $input['state'] = $request->contingent_state;
+          $input['city_id'] = $request->contingent_city_id;
+          $input['city'] = $request->contingent_city;
+          ContingentType::create($input); 
+        }
 
-      // event kurs/currency
-      $currency = $request->currency;
-      foreach($currency as $c){
-        $currency['event_id'] = $event->id;
-        $currency['currency_id'] = $c;
-        EventKurs::create($currency);
-      }
+        // // event kurs/currency
+        // $currency = $request->currency;
+        // foreach($currency as $c){
+        //   $currency['event_id'] = $event->id;
+        //   $currency['currency_id'] = $c;
+        //   EventKurs::create($currency);
+        // }
 
-      // Add Competition Category
-      $i = 1;
-      foreach ($request->competition_categories as $key => $c) {
-        Competitions::create([
-          'event_id' => $event->id,
-          'name' => $competition_class_type[$key].' '.$competition_class_name[$key].' '.$competition_distance[$key],
-          'competition_type_id' => $request->competition_type_id[$key],
-          'competition_category_id' => $request->competition_category_id[$key],
-          'gender' => null,
-          'contingent' => null,
-          'distance' => $competition_distance[$key],
-          'class_type' => $competition_class_type[$key],
-          'class_name' => $competition_class_name[$key],
-          'description' => $competition_description[$key],
-        ]);
+        // Add Competition Category
+        $i = 1;
+        foreach ($request->competition_categories as $key => $c) {
+          Competitions::create([
+            'event_id' => $event->id,
+            'name' => $request->competition_categories[$key].' '. $request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$request->competition_distance[$key],
+            'competition_type_id' => 1, //$request->competition_type_id[$key],
+            'competition_category_id' => 2, //$request->competition_category_id[$key],
+            'gender' => null,
+            'contingent' => null,
+            'distance' => $request->competition_distance[$key],
+            'class_type' => $request->competition_class_type[$key],
+            'class_name' => $request->competition_class_name[$key],
+            'description' => null,
+          ]);
 
-        // Individual
-        if($request->competition_type_1 == 1){ 
-          $gender = ['Putra','Putri'];
-          foreach($gender as $g){
+          // Individual
+          if($request->competition_type_individual == 1){ 
+            $gender = ['Putra','Putri'];
+            foreach($gender as $g){
+              $ticket['event_id'] = $event->id;
+              $ticket['event_type'] = 'turnament';
+              $ticket['title'] = 'individual '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+              $ticket['ticket_available_type'] = 'limited';
+              $ticket['ticket_available'] = 100;
+              $ticket['max_ticket_buy_type'] = 'limited';
+              $ticket['max_buy_ticket'] = 10;
+              $ticket['pricing_type'] = 'normal';
+              $ticket['price'] = 300000;
+              $ticket['f_price'] = 300000;
+              $ticket['early_bird_discount'] = 0;
+              $ticket['early_bird_discount_type'] = 'fixed';
+              Ticket::create($ticket);
+            }
+          }
+
+          // Team
+          if($request->competition_type_team == 1){ 
+            $gender = ['Putra','Putri'];
+            foreach($gender as $g){
+              $ticket['event_id'] = $event->id;
+              $ticket['event_type'] = 'turnament';
+              $ticket['title'] = 'Team '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+              $ticket['ticket_available_type'] = 'limited';
+              $ticket['ticket_available'] = 100;
+              $ticket['max_ticket_buy_type'] = 'limited';
+              $ticket['max_buy_ticket'] = 10;
+              $ticket['pricing_type'] = 'normal';
+              $ticket['price'] = 300000;
+              $ticket['f_price'] = 300000;
+              $ticket['early_bird_discount'] = 0;
+              $ticket['early_bird_discount_type'] = 'fixed';
+              Ticket::create($ticket);
+            }
+          }
+
+          // Team
+          if($request->competition_type_mix_team == 1){ 
             $ticket['event_id'] = $event->id;
-            $ticket['event_type'] = 'individual';
-            $ticket['title'] = $competition_class_type[$key].' '.$competition_class_name[$key].' '.$g.' '.$competition_distance[$key];
+            $ticket['event_type'] = 'turnament';
+            $ticket['title'] = 'Mix Team '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
@@ -274,53 +322,72 @@ class EventController extends Controller
             $ticket['early_bird_discount_type'] = 'fixed';
             Ticket::create($ticket);
           }
+
+          // Team
+          if($request->competition_type_official == 1){ 
+            $ticket['event_id'] = $event->id;
+            $ticket['event_type'] = 'turnament';
+            $ticket['title'] = 'Official '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+            $ticket['ticket_available_type'] = 'limited';
+            $ticket['ticket_available'] = 100;
+            $ticket['max_ticket_buy_type'] = 'limited';
+            $ticket['max_buy_ticket'] = 10;
+            $ticket['pricing_type'] = 'normal';
+            $ticket['price'] = 300000;
+            $ticket['f_price'] = 300000;
+            $ticket['early_bird_discount'] = 0;
+            $ticket['early_bird_discount_type'] = 'fixed';
+            Ticket::create($ticket);
+          }
+
+          $i++;
         }
 
-        $i++;
-      }
+        // $languages = Language::all();
+        // foreach ($languages as $language) {
+        //   $event_content = new EventContent();
+        //   $event_content->language_id = $language->id;
+        //   $event_content->event_category_id = $request[$language->code . '_category_id'];
+        //   $event_content->event_id = $event->id;
+        //   $event_content->title = $request[$language->code . '_title'];
 
-      // $languages = Language::all();
-      // foreach ($languages as $language) {
-      //   $event_content = new EventContent();
-      //   $event_content->language_id = $language->id;
-      //   $event_content->event_category_id = $request[$language->code . '_category_id'];
-      //   $event_content->event_id = $event->id;
-      //   $event_content->title = $request[$language->code . '_title'];
+        //   if ($request->event_type == 'venue') {
+        //     $event_content->address = $request[$language->code . '_address'];
+        //     $event_content->country = $request[$language->code . '_country'];
+        //     $event_content->state = $request[$language->code . '_state'];
+        //     $event_content->city = $request[$language->code . '_city'];
+        //     $event_content->zip_code = $request[$language->code . '_zip_code'];
+        //   }
 
-      //   if ($request->event_type == 'venue') {
-      //     $event_content->address = $request[$language->code . '_address'];
-      //     $event_content->country = $request[$language->code . '_country'];
-      //     $event_content->state = $request[$language->code . '_state'];
-      //     $event_content->city = $request[$language->code . '_city'];
-      //     $event_content->zip_code = $request[$language->code . '_zip_code'];
-      //   }
+        //   $event_content->slug = createSlug($request[$language->code . '_title']);
+        //   $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
+        //   $event_content->refund_policy = $request[$language->code . '_refund_policy'];
+        //   $event_content->meta_keywords = $request[$language->code . '_meta_keywords'];
+        //   $event_content->meta_description = $request[$language->code . '_meta_description'];
+        //   $event_content->save();
+        // }
 
-      //   $event_content->slug = createSlug($request[$language->code . '_title']);
-      //   $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
-      //   $event_content->refund_policy = $request[$language->code . '_refund_policy'];
-      //   $event_content->meta_keywords = $request[$language->code . '_meta_keywords'];
-      //   $event_content->meta_description = $request[$language->code . '_meta_description'];
-      //   $event_content->save();
-      // }
-
-      $languages = Language::whereIn('id',$request->clone_lang)->get();
-      foreach ($languages as $language) {
-        $event_content = new EventContent();
-        $event_content->language_id = $language->id;
-        $event_content->event_category_id = $request['en_category_id'];
-        $event_content->event_id = $event->id;
-        $event_content->title = $request['en_title'];
-        $event_content->slug = createSlug($request['en_title']);
-        $event_content->description = Purifier::clean($request['en_description'], 'youtube');
-        $event_content->refund_policy = $request['en_refund_policy'];
-        $event_content->meta_keywords = $request['en_meta_keywords'];
-        $event_content->meta_description = $request['en_meta_description'];
-        $event_content->save();
-      }
-      
-    });
-    Session::flash('success', 'Added Successfully');
-    return response()->json(['status' => 'success'], 200);
+        $languages = Language::whereIn('id',$request->clone_lang)->get();
+        foreach ($languages as $language) {
+          $event_content = new EventContent();
+          $event_content->language_id = $language->id;
+          $event_content->event_category_id = $request['en_category_id'];
+          $event_content->event_id = $event->id;
+          $event_content->title = $request['en_title'];
+          $event_content->slug = createSlug($request['en_title']);
+          $event_content->description = Purifier::clean($request['en_description'], 'youtube');
+          $event_content->refund_policy = $request['en_refund_policy'];
+          $event_content->meta_keywords = $request['en_meta_keywords'];
+          $event_content->meta_description = $request['en_meta_description'];
+          $event_content->save();
+        }
+        
+      });
+      Session::flash('success', 'Added Successfully');
+      return response()->json(['status' => 'success'], 200);
+    } catch (\Exception $e) {
+      return $e->getMessage();
+    }
   }
 
   /**
