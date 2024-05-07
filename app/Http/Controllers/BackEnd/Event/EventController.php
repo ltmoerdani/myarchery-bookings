@@ -90,7 +90,7 @@ class EventController extends Controller
     $information['competition_class_name'] = CompetitionClassName::all();
     $information['competition_distance'] = CompetitionDistance::all();
 
-    $clone_lang = Language::where('id','!=', 8)->get(); // lang clone
+    $clone_lang = Language::where('id', '!=', 8)->get(); // lang clone
     $information['clone_lang'] = $clone_lang;
 
     return view('backend.event.create', $information);
@@ -140,20 +140,20 @@ class EventController extends Controller
     return $pi->id;
   }
 
-  public function store(StoreRequest $request){
+  public function store(StoreRequest $request)
+  {
     $now_time = \Carbon\Carbon::now();
     $events = DB::table('event_contents')
-        ->join('events', 'events.id', '=', 'event_contents.event_id')
-        ->where([['event_contents.event_category_id', '=', 35], ['event_contents.language_id', '=', 23], ['events.status', 1], ['events.end_date_time', '>=', $now_time], ['events.is_featured', '=', 'yes']])
-        ->orderBy('events.created_at', 'desc')
-        ->get();
-    var_dump($events);die;
+      ->join('events', 'events.id', '=', 'event_contents.event_id')
+      ->where([['event_contents.event_category_id', '=', 35], ['event_contents.language_id', '=', 23], ['events.status', 1], ['events.end_date_time', '>=', $now_time], ['events.is_featured', '=', 'yes']])
+      ->orderBy('events.created_at', 'desc')
+      ->get();
+    // var_dump($events);die;
 
-    try
-      {
+    try {
       // db transaction
       DB::transaction(function () use ($request) {
-        //calculate duration 
+        //calculate duration
         if ($request->date_type == 'single') {
           $start = Carbon::parse($request->start_date . $request->start_time);
           $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -163,7 +163,7 @@ class EventController extends Controller
         $in = $request->all();
         $in['duration'] = $request->date_type == 'single' ? $diffent : '';
         $in['organizer_id'] = $request->organizer_id;
-          
+
         $img = $request->file('thumbnail');
         if ($request->hasFile('thumbnail')) {
           $filename = time() . '.' . $img->getClientOriginalExtension();
@@ -216,10 +216,10 @@ class EventController extends Controller
         }
 
         // event type public or private
-        if ($request->event_publisher) { 
+        if ($request->event_publisher) {
           $input['event_id'] = $event->id;
           $input['event_type'] = $request->event_publisher;
-          $input['shared_type'] = 'event type '.$request->event_publisher;
+          $input['shared_type'] = 'event type ' . $request->event_publisher;
           $input['link_event'] = $request->link_event_publisher;
           $input['code'] = $request->code_publisher;
           $input['description'] = $request->description_event_publisher;
@@ -227,7 +227,7 @@ class EventController extends Controller
         }
 
         // contingent type
-        if ($request->contingent_type) { 
+        if ($request->contingent_type) {
           $input['event_id'] = $event->id;
           $input['contingent_type'] = $request->contingent_type;
           $input['select_type'] = $request->contingent_type;
@@ -239,7 +239,7 @@ class EventController extends Controller
           $input['state'] = $request->contingent_state;
           $input['city_id'] = $request->contingent_city_id;
           $input['city'] = $request->contingent_city;
-          ContingentType::create($input); 
+          ContingentType::create($input);
         }
 
         // // event kurs/currency
@@ -255,7 +255,7 @@ class EventController extends Controller
         foreach ($request->competition_categories as $key => $c) {
           Competitions::create([
             'event_id' => $event->id,
-            'name' => $request->competition_categories[$key].' '. $request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$request->competition_distance[$key],
+            'name' => $request->competition_categories[$key] . ' ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key],
             'competition_type_id' => 1, //$request->competition_type_id[$key],
             'competition_category_id' => 2, //$request->competition_category_id[$key],
             'gender' => null,
@@ -267,12 +267,12 @@ class EventController extends Controller
           ]);
 
           // Individual
-          if($request->competition_type_individual == 1){ 
-            $gender = ['Putra','Putri'];
-            foreach($gender as $g){
+          if ($request->competition_type_individual == 1) {
+            $gender = ['Putra', 'Putri'];
+            foreach ($gender as $g) {
               $ticket['event_id'] = $event->id;
               $ticket['event_type'] = 'turnament';
-              $ticket['title'] = 'individual '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+              $ticket['title'] = 'individual ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $g . ' ' . $request->competition_distance[$key];
               $ticket['ticket_available_type'] = 'limited';
               $ticket['ticket_available'] = 100;
               $ticket['max_ticket_buy_type'] = 'limited';
@@ -287,12 +287,12 @@ class EventController extends Controller
           }
 
           // Team
-          if($request->competition_type_team == 1){ 
-            $gender = ['Putra','Putri'];
-            foreach($gender as $g){
+          if ($request->competition_type_team == 1) {
+            $gender = ['Putra', 'Putri'];
+            foreach ($gender as $g) {
               $ticket['event_id'] = $event->id;
               $ticket['event_type'] = 'turnament';
-              $ticket['title'] = 'Team '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+              $ticket['title'] = 'Team ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $g . ' ' . $request->competition_distance[$key];
               $ticket['ticket_available_type'] = 'limited';
               $ticket['ticket_available'] = 100;
               $ticket['max_ticket_buy_type'] = 'limited';
@@ -307,10 +307,10 @@ class EventController extends Controller
           }
 
           // Team
-          if($request->competition_type_mix_team == 1){ 
+          if ($request->competition_type_mix_team == 1) {
             $ticket['event_id'] = $event->id;
             $ticket['event_type'] = 'turnament';
-            $ticket['title'] = 'Mix Team '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+            $ticket['title'] = 'Mix Team ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $g . ' ' . $request->competition_distance[$key];
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
@@ -324,10 +324,10 @@ class EventController extends Controller
           }
 
           // Team
-          if($request->competition_type_official == 1){ 
+          if ($request->competition_type_official == 1) {
             $ticket['event_id'] = $event->id;
             $ticket['event_type'] = 'turnament';
-            $ticket['title'] = 'Official '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+            $ticket['title'] = 'Official ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $g . ' ' . $request->competition_distance[$key];
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
@@ -367,7 +367,7 @@ class EventController extends Controller
         //   $event_content->save();
         // }
 
-        $languages = Language::whereIn('id',$request->clone_lang)->get();
+        $languages = Language::whereIn('id', $request->clone_lang)->get();
         foreach ($languages as $language) {
           $event_content = new EventContent();
           $event_content->language_id = $language->id;
@@ -381,7 +381,6 @@ class EventController extends Controller
           $event_content->meta_description = $request['en_meta_description'];
           $event_content->save();
         }
-        
       });
       Session::flash('success', 'Added Successfully');
       return response()->json(['status' => 'success'], 200);
@@ -480,7 +479,7 @@ class EventController extends Controller
 
   public function update(UpdateRequest $request)
   {
-    //calculate duration 
+    //calculate duration
     if ($request->date_type == 'single') {
       $start = Carbon::parse($request->start_date . $request->start_time);
       $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -626,7 +625,7 @@ class EventController extends Controller
       $event_image->delete();
     }
 
-    //bookings 
+    //bookings
     $bookings = $event->booking()->get();
     foreach ($bookings as $booking) {
       // first, delete the attachment
@@ -678,7 +677,7 @@ class EventController extends Controller
         $event_image->delete();
       }
 
-      //bookings 
+      //bookings
       $bookings = $event->booking()->get();
       foreach ($bookings as $booking) {
         // first, delete the attachment
@@ -715,7 +714,8 @@ class EventController extends Controller
     return response()->json(['status' => 'success'], 200);
   }
 
-  public function codeGenerate(Request $request){
+  public function codeGenerate(Request $request)
+  {
     return HelperEvent::AutoGenerateCode();
   }
 }

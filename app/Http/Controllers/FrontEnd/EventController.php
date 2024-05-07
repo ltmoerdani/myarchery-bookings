@@ -16,6 +16,7 @@ use App\Models\Organizer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class EventController extends Controller
@@ -108,7 +109,6 @@ class EventController extends Controller
       }
     }
 
-
     $events = EventContent::join('events', 'events.id', 'event_contents.event_id')
       ->where('event_contents.language_id', $language->id)
       ->when($category, function ($query, $category) {
@@ -134,13 +134,12 @@ class EventController extends Controller
       ->select('events.*', 'event_contents.title', 'event_contents.description', 'event_contents.city', 'event_contents.state', 'event_contents.country', 'event_contents.address', 'event_contents.zip_code', 'event_contents.slug')
       ->orderBy('events.id', 'desc')
       ->paginate(9);
-
     $max = Ticket::max('f_price');
     $min = Ticket::min('f_price');
     $information['max'] = $max;
     $information['min'] = $min;
     $information['events'] = $events;
-
+    // dd($information);
     return view('frontend.event.event', compact('information'));
   }
 
@@ -162,6 +161,7 @@ class EventController extends Controller
 
       $tickets_count = Ticket::where('event_id', $id)->get()->count();
       $information['tickets_count'] = $tickets_count;
+
       if ($tickets_count < 1) {
         $content = EventContent::join('events', 'events.id', 'event_contents.event_id')
           ->join('event_images', 'event_images.event_id', '=', 'events.id')
@@ -170,12 +170,14 @@ class EventController extends Controller
           ->where('events.id', $id)
           ->select('events.*', 'event_contents.title', 'event_contents.slug as eventSlug', 'event_contents.description', 'meta_keywords', 'meta_description', 'event_contents.event_category_id', 'event_categories.name', 'event_categories.slug', 'event_contents.city', 'event_contents.state', 'event_contents.country', 'event_contents.address', 'event_contents.zip_code', 'event_contents.refund_policy')
           ->first();
+
         if (is_null($content)) {
           Session::flash('alert-type', 'warning');
           Session::flash('message', 'No event content found for ' . $language->name . ' Language');
           return redirect()->route('index');
         }
       } else {
+        DB::enableQueryLog();
         $content = EventContent::join('events', 'events.id', 'event_contents.event_id')
           ->join('tickets', 'tickets.event_id', '=', 'events.id')
           ->join('event_images', 'event_images.event_id', '=', 'events.id')
@@ -184,6 +186,8 @@ class EventController extends Controller
           ->where('events.id', $id)
           ->select('events.*', 'event_contents.title', 'event_contents.slug as eventSlug', 'event_contents.description', 'meta_keywords', 'meta_description', 'event_contents.event_category_id', 'event_categories.name', 'event_categories.slug', 'tickets.price', 'tickets.variations', 'tickets.pricing_type', 'event_contents.city', 'event_contents.state', 'event_contents.country', 'event_contents.address', 'event_contents.zip_code', 'event_contents.refund_policy')
           ->first();
+        // dd(DB::getQueryLog());
+
         if (is_null($content)) {
           Session::flash('alert-type', 'warning');
           Session::flash('message', 'No event content found for ' . $language->name . ' Language');
