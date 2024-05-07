@@ -33,7 +33,7 @@ class DelegationTypeSeeder extends Seeder
                 'description' => 'Khusus Negara dan Provinsi Tertentu',
             ],
             [
-                'name' => 'City/district',
+                'name' => 'City/District',
                 'description' => 'Khusus Negara, Provinsi dan Kota Tertentu',
             ],
         ];
