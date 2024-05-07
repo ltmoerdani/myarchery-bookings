@@ -10,6 +10,13 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Event;
+use App\Models\EventKurs;
+use App\Models\ContingentType;
+use App\Models\Competitions;
+use App\Models\CompetitionCategories;
+use App\Models\CompetitionClassType;
+use App\Models\CompetitionClassName;
+use App\Models\CompetitionDistance;
 use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\EventDates;
@@ -72,6 +79,10 @@ class EventController extends Controller
     if ($request->query('type') == 'tournament') {
       $countries = Country::get();
       $information['countries'] = $countries;
+      $information['competition_categories'] = CompetitionCategories::all();
+      $information['competition_class_type'] = CompetitionClassType::all();
+      $information['competition_class_name'] = CompetitionClassName::all();
+      $information['competition_distance'] = CompetitionDistance::all();
       return view('organizer.event.create_tournament', $information);
     } else {
       $countries = Country::get();
@@ -140,7 +151,7 @@ class EventController extends Controller
     $allowedExts = array('jpg', 'png', 'jpeg');
     $rules = [
       'file' => [
-        'dimensions:width=1170,height=570',
+        // 'dimensions:width=1170,height=570',
         function ($attribute, $value, $fail) use ($img, $allowedExts) {
           $ext = $img->getClientOriginalExtension();
           if (!in_array($ext, $allowedExts)) {
