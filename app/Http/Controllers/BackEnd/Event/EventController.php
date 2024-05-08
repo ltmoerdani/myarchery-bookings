@@ -85,13 +85,13 @@ class EventController extends Controller
     $information['organizers'] = $organizers;
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
-    if($request->type == "tournament"){
+    if ($request->type == "tournament") {
       $information['competition_categories'] = CompetitionCategories::all();
       $information['competition_class_type'] = CompetitionClassType::all();
       $information['competition_class_name'] = CompetitionClassName::all();
       $information['competition_distance'] = CompetitionDistance::all();
       return view('backend.event.create_tournament', $information);
-    }else{
+    } else {
       return view('backend.event.create', $information);
     }
   }
@@ -144,7 +144,7 @@ class EventController extends Controller
   {
     DB::transaction(function () use ($request) {
 
-      //calculate duration 
+      //calculate duration
       if ($request->date_type == 'single') {
         $start = Carbon::parse($request->start_date . $request->start_time);
         $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -247,12 +247,13 @@ class EventController extends Controller
     return response()->json(['status' => 'success'], 200);
   }
 
-  public function store_tournament(StoreTournamentRequest $request){
-    try{
+  public function store_tournament(StoreTournamentRequest $request)
+  {
+    try {
       DB::transaction(function () use ($request) {
         $request->is_featured = 1;
         $request->date_type = "single";
-        //calculate duration 
+        //calculate duration
         if ($request->date_type == 'single') {
           $start = Carbon::parse($request->start_date . $request->start_time);
           $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -361,11 +362,11 @@ class EventController extends Controller
           ]);
 
           // Individual
-          $gender = ['Putra','Putri'];
-          foreach($gender as $g){
+          $gender = ['Putra', 'Putri'];
+          foreach ($gender as $g) {
             $ticket['event_id'] = $event->id;
             $ticket['event_type'] = 'turnament';
-            $ticket['title'] = 'individual '.$request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$g.' '.$request->competition_distance[$key];
+            $ticket['title'] = 'individual ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $g . ' ' . $request->competition_distance[$key];
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
@@ -377,15 +378,13 @@ class EventController extends Controller
             $ticket['early_bird_discount_type'] = 'fixed';
             Ticket::create($ticket);
           }
-          
+
           $i++;
         }
-
       });
 
       Session::flash('success', 'Added Successfully');
       return response()->json(['status' => 'success'], 200);
-
     } catch (\Exception $e) {
       return $e->getMessage();
     }
@@ -716,7 +715,8 @@ class EventController extends Controller
     return response()->json(['status' => 'success'], 200);
   }
 
-  public function codeGenerate(Request $request){
+  public function codeGenerate(Request $request)
+  {
     return HelperEvent::AutoGenerateCode();
   }
 }
