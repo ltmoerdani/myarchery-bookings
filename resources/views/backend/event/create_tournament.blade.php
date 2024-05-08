@@ -352,62 +352,6 @@
                                                                                 <i class="fas fa-minus"></i></a>
                                                                         </td>
                                                                     </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_categories[]"
-                                                                                    id="competition_categories[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_categories as $cat)
-                                                                                        <option
-                                                                                            value="{{ $cat->id }}">
-                                                                                            {{ $cat->name }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_class_type[]"
-                                                                                    id="competition_class_type[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_class_type as $type)
-                                                                                        <option
-                                                                                            value="{{ $type->id }}">
-                                                                                            {{ $type->name }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="text"
-                                                                                    name="competition_class_name[]"
-                                                                                    id="competition_class_name[]"
-                                                                                    value="" class="form-control">
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_distance[]"
-                                                                                    id="competition_distance[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_distance as $dis)
-                                                                                        <option
-                                                                                            value="{{ $dis->id }}">
-                                                                                            {{ $dis->name }} Meter
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <a href="javascript:void(0)"
-                                                                                id="buttonDelete[]"
-                                                                                class="btn btn-sm btn-danger deleteSetCategory">
-                                                                                <i class="fas fa-minus"></i></a>
-                                                                        </td>
-                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>

@@ -153,7 +153,7 @@
                                                         {{ $event->category }}
                                                     </td>
                                                     <td>
-                                                        @if ($event->event_type == 'venue')
+                                                        @if ($event->event_type == 'venue' || $event->event_type == 'tournament')
                                                             <a href="{{ route('organizer.event.ticket', ['language' => request()->input('language'), 'event_id' => $event->id, 'event_type' => $event->event_type]) }}"
                                                                 class="btn btn-success btn-sm">{{ __('Manage') }}</a>
                                                         @endif
