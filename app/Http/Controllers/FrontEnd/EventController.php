@@ -139,7 +139,6 @@ class EventController extends Controller
     $information['max'] = $max;
     $information['min'] = $min;
     $information['events'] = $events;
-    // dd($information);
     return view('frontend.event.event', compact('information'));
   }
 
@@ -177,7 +176,6 @@ class EventController extends Controller
           return redirect()->route('index');
         }
       } else {
-        DB::enableQueryLog();
         $content = EventContent::join('events', 'events.id', 'event_contents.event_id')
           ->join('tickets', 'tickets.event_id', '=', 'events.id')
           ->join('event_images', 'event_images.event_id', '=', 'events.id')
@@ -186,7 +184,6 @@ class EventController extends Controller
           ->where('events.id', $id)
           ->select('events.*', 'event_contents.title', 'event_contents.slug as eventSlug', 'event_contents.description', 'meta_keywords', 'meta_description', 'event_contents.event_category_id', 'event_categories.name', 'event_categories.slug', 'tickets.price', 'tickets.variations', 'tickets.pricing_type', 'event_contents.city', 'event_contents.state', 'event_contents.country', 'event_contents.address', 'event_contents.zip_code', 'event_contents.refund_policy')
           ->first();
-        // dd(DB::getQueryLog());
 
         if (is_null($content)) {
           Session::flash('alert-type', 'warning');
