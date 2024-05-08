@@ -318,10 +318,10 @@ class EventController extends Controller
         }
 
         // event type public or private
-        if ($request->event_publisher) { 
+        if ($request->event_publisher) {
           $input['event_id'] = $event->id;
           $input['event_type'] = $request->event_publisher;
-          $input['shared_type'] = 'event type '.$request->event_publisher;
+          $input['shared_type'] = 'event type ' . $request->event_publisher;
           $input['link_event'] = $request->link_event_publisher;
           $input['code'] = $request->code_publisher;
           $input['description'] = $request->description_event_publisher;
@@ -329,7 +329,7 @@ class EventController extends Controller
         }
 
         // contingent type
-        if ($request->delegation_type) { 
+        if ($request->contingent_type) {
           $input['event_id'] = $event->id;
           $input['contingent_type'] = $request->delegation_type;
           $input['select_type'] = $request->delegation_type;
@@ -341,7 +341,7 @@ class EventController extends Controller
           $input['state'] = $request->contingent_state;
           $input['city_id'] = $request->contingent_city_id;
           $input['city'] = $request->contingent_city;
-          ContingentType::create($input); 
+          ContingentType::create($input);
         }
 
         // Add Competition Category
@@ -349,7 +349,7 @@ class EventController extends Controller
         foreach ($request->competition_categories as $key => $c) {
           Competitions::create([
             'event_id' => $event->id,
-            'name' => $request->competition_categories[$key].' '. $request->competition_class_type[$key].' '.$request->competition_class_name[$key].' '.$request->competition_distance[$key],
+            'name' => $request->competition_categories[$key] . ' ' . $request->competition_class_type[$key] . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key],
             'competition_type_id' => 1, //$request->competition_type_id[$key],
             'competition_category_id' => 2, //$request->competition_category_id[$key],
             'gender' => null,
@@ -481,7 +481,7 @@ class EventController extends Controller
 
   public function update(UpdateRequest $request)
   {
-    //calculate duration 
+    //calculate duration
     if ($request->date_type == 'single') {
       $start = Carbon::parse($request->start_date . $request->start_time);
       $end =  Carbon::parse($request->end_date . $request->end_time);
@@ -627,7 +627,7 @@ class EventController extends Controller
       $event_image->delete();
     }
 
-    //bookings 
+    //bookings
     $bookings = $event->booking()->get();
     foreach ($bookings as $booking) {
       // first, delete the attachment
@@ -679,7 +679,7 @@ class EventController extends Controller
         $event_image->delete();
       }
 
-      //bookings 
+      //bookings
       $bookings = $event->booking()->get();
       foreach ($bookings as $booking) {
         // first, delete the attachment
@@ -714,5 +714,9 @@ class EventController extends Controller
     }
     Session::flash('success', 'Deleted Successfully');
     return response()->json(['status' => 'success'], 200);
+  }
+
+  public function codeGenerate(Request $request){
+    return HelperEvent::AutoGenerateCode();
   }
 }
