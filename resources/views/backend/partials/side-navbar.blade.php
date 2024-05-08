@@ -193,14 +193,14 @@
                                             </li>
 
                                             <li
-                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'turnament') active 
-                        @elseif (request()->routeIs('admin.add.event.event') && request()->input('type') == 'turnament') active
-                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'turnament') active 
-                        @elseif (request()->routeIs('admin.event.add.ticket') && request()->input('event_type') == 'turnament') active
-                        @elseif (request()->routeIs('admin.event.edit.ticket') && request()->input('event_type') == 'turnament') active @endif">
+                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'tournament') active 
+                        @elseif (request()->routeIs('admin.add.event.event') && request()->input('type') == 'tournament') active
+                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'tournament') active 
+                        @elseif (request()->routeIs('admin.event.add.ticket') && request()->input('event_type') == 'tournament') active
+                        @elseif (request()->routeIs('admin.event.edit.ticket') && request()->input('event_type') == 'tournament') active @endif">
                                                 <a
-                                                    href="{{ route('admin.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'turnament']) }}">
-                                                    <span class="sub-item">{{ __('Turnament Events') }}</span>
+                                                    href="{{ route('admin.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'tournament']) }}">
+                                                    <span class="sub-item">{{ __('Tournament Events') }}</span>
                                                 </a>
                                             </li>
 

@@ -83,6 +83,8 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
     Route::post('event-imagesstore', 'BackEnd\Event\EventController@gallerystore')->name('admin.event.imagesstore');
     Route::post('event-imagermv', 'BackEnd\Event\EventController@imagermv')->name('admin.event.imagermv');
     Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
+    // Tournament add event
+    Route::post('event-store-tournament', 'BackEnd\Event\EventController@store_tournament')->name('admin.event_management.store_event_tournament');
     Route::post('/event/{id}/update-status', 'BackEnd\Event\EventController@updateStatus')->name('admin.event_management.event.event_status');
     Route::post('/event/{id}/update-featured', 'BackEnd\Event\EventController@updateFeatured')->name('admin.event_management.event.update_featured');
     Route::post('/delete-event/{id}', 'BackEnd\Event\EventController@destroy')->name('admin.event_management.delete_event');

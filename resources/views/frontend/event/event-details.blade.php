@@ -521,7 +521,7 @@
                     <p
                       class="text-warning max_error_{{ $ticket->id }}{{ $ticket->max_ticket_buy_type == 'limited' ? $ticket->max_buy_ticket : '' }} ">
                     </p>
-                  @elseif($content->event_type == 'venue')
+                  @elseif($content->event_type == 'venue' || $content->event_type == 'tournament')
                     @php
                       $tickets = DB::table('tickets')
                           ->where('event_id', $content->id)

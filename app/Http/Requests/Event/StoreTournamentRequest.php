@@ -7,7 +7,7 @@ use App\Models\Language;
 use App\Rules\ImageMimeTypeRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class StoreTournamentRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -34,8 +34,8 @@ class StoreRequest extends FormRequest
         'dimensions:width=320,height=230',
         new ImageMimeTypeRule()
       ],
-      'status' => 'required',
-      'is_featured' => 'required'
+    //   'status' => 'required',
+    //   'is_featured' => 'required'
     ];
 
     if ($this->date_type == 'single') {

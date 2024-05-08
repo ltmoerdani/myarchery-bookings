@@ -1,11 +1,11 @@
-@extends('organizer.layout')
+@extends('backend.layout')
 
 @section('content')
     <div class="page-header">
         <h4 class="page-title">{{ __('Add Event Tournament') }}</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
-                <a href="{{ route('organizer.dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}">
                     <i class="flaticon-home"></i>
                 </a>
             </li>
@@ -37,7 +37,7 @@
                 <div class="card-header">
                     <div class="card-title d-inline-block">{{ __('Add Event Tournament') }}</div>
                     <a class="btn btn-info btn-sm float-right d-inline-block"
-                        href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">
+                        href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">
                         <span class="btn-label">
                             <i class="fas fa-backward"></i>
                         </span>
@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <label for="" class="mb-2"><strong>{{ __('Gallery Images') }} **</strong></label>
-                                <form action="{{ route('organizer.event.imagesstore') }}" id="my-dropzone"
+                                <form action="{{ route('admin.event.imagesstore') }}" id="my-dropzone"
                                     enctype="multipart/formdata" class="dropzone create">
                                     @csrf
                                     <div class="fallback">
@@ -64,7 +64,7 @@
 
                                 </div>
                             </div>
-                            <form id="eventForm" action="{{ route('organizer.event_management.store_event') }}"
+                            <form id="eventForm" action="{{ route('admin.event_management.store_event_tournament') }}"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="event_type" value="{{ request()->input('type') }}">
@@ -119,7 +119,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    <!-- <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
                                                 <div class="row">
@@ -154,7 +154,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -162,11 +162,11 @@
                                                     <div class="col-12 mt-2">
                                                         <div class="form-group">
                                                             <label>
-                                                                {{ __('Event Type') . '*' }}
+                                                                {{ __('Event Publisher') . '*' }}
                                                             </label>
                                                             <div class="selectgroup w-100">
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="event_type"
+                                                                    <input type="radio" name="event_publisher"
                                                                         value="public" class="selectgroup-input eventType"
                                                                         checked>
                                                                     <span
@@ -174,7 +174,7 @@
                                                                 </label>
 
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="event_type"
+                                                                    <input type="radio" name="event_publisher"
                                                                         value="private"
                                                                         class="selectgroup-input eventType">
                                                                     <span
@@ -296,6 +296,62 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="dynamic_content_set_category">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_categories[]"
+                                                                                    id="competition_categories[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_categories as $cat)
+                                                                                        <option
+                                                                                            value="{{ $cat->id }}">
+                                                                                            {{ $cat->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_class_type[]"
+                                                                                    id="competition_class_type[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_class_type as $type)
+                                                                                        <option
+                                                                                            value="{{ $type->id }}">
+                                                                                            {{ $type->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <input type="text"
+                                                                                    name="competition_class_name[]"
+                                                                                    id="competition_class_name[]"
+                                                                                    value="" class="form-control">
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="form-group">
+                                                                                <select name="competition_distance[]"
+                                                                                    id="competition_distance[]"
+                                                                                    class="form-control">
+                                                                                    @foreach ($competition_distance as $dis)
+                                                                                        <option
+                                                                                            value="{{ $dis->id }}">
+                                                                                            {{ $dis->name }} Meter
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <a href="javascript:void(0)"
+                                                                                id="buttonDelete[]"
+                                                                                class="btn btn-sm btn-danger deleteSetCategory">
+                                                                                <i class="fas fa-minus"></i></a>
+                                                                        </td>
+                                                                    </tr>
                                                                     <tr>
                                                                         <td>
                                                                             <div class="form-group">
@@ -505,8 +561,8 @@
                                                         </label>
                                                         <select class="custom-select" id="status" name="status"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option selected value="1">Active</option>
+                                                            <option value="0">Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -730,8 +786,8 @@
 @section('variables')
     <script>
         "use strict";
-        var storeUrl = "{{ route('organizer.event.imagesstore-tournament') }}";
-        var removeUrl = "{{ route('organizer.event.imagermv-tournament') }}";
+        var storeUrl = "{{ route('admin.event.imagesstore') }}";
+        var removeUrl = "{{ route('admin.event.imagermv') }}";
         var loadImgs = 0;
 
         // let i = 0;

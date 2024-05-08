@@ -89,7 +89,7 @@
                 <input type="hidden" name="event_type" value="{{ request()->input('event_type') }}">
                 <input type="hidden" name="event_id" value="{{ request()->input('event_id') }}">
                 <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
-                @if (request()->input('event_type') == 'venue' || request()->input('event_type') == 'turnament')
+                @if (request()->input('event_type') == 'venue' || request()->input('event_type') == 'tournament')
                   <div class="row ">
                     {{-- /*****--variationwise ticket & early bird discount--****** --}}
                     <div class="col-lg-12">

@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="col col-stats ml-3 ml-sm-0">
                                     <div class="numbers mx-auto text-center">
-                                        <h2 class="card-title mt-2 mb-4 text-uppercase">{{ __('Turnament Event') }}</h2>
+                                        <h2 class="card-title mt-2 mb-4 text-uppercase">{{ __('Tournament Event') }}</h2>
                                     </div>
                                 </div>
                             </div>

@@ -86,8 +86,8 @@
                     {{ __('Venue Event') }}
                   </a>
 
-                  <a href="{{ route('add.event.event', ['type' => 'turnament']) }}" class="dropdown-item">
-                    {{ __('Turnament Event') }}
+                  <a href="{{ route('add.event.event', ['type' => 'tournament']) }}" class="dropdown-item">
+                    {{ __('Tournament Event') }}
                   </a>
                 </div>
               </div>
@@ -160,7 +160,7 @@
                             {{ $event->category }}
                           </td>
                           <td>
-                            @if ($event->event_type == 'venue' || $event->event_type == 'turnament')
+                            @if ($event->event_type == 'venue' || $event->event_type == 'tournament')
                               <a href="{{ route('admin.event.ticket', ['language' => request()->input('language'), 'event_id' => $event->id, 'event_type' => $event->event_type]) }}"
                                 class="btn btn-success btn-sm">{{ __('Manage') }}</a>
                             @endif
