@@ -27,12 +27,14 @@ use App\Models\EventPublisher;
 use App\Models\EventKurs;
 use App\Models\ContingentType;
 use App\Models\Competitions;
+use App\Models\CompetitionType;
 use App\Models\CompetitionCategories;
 use App\Models\CompetitionClassType;
 use App\Models\CompetitionClassName;
 use App\Models\CompetitionDistance;
 use App\Models\Event\TicketContent;
 use App\Http\Helpers\HelperEvent;
+use App\Http\Helpers\HelperResponse;
 
 
 class EventController extends Controller
@@ -843,8 +845,12 @@ class EventController extends Controller
     return response()->json(['status' => 'success'], 200);
   }
 
-  public function codeGenerate(Request $request)
-  {
+  public function codeGenerate(){
     return HelperEvent::AutoGenerateCode();
+  }
+
+  public function getCompetitionType(){
+    $data = CompetitionType::get();
+    return HelperResponse::Success($data, "Get Data Success");
   }
 }
