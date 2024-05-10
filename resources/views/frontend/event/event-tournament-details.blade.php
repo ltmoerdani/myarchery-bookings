@@ -184,6 +184,8 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{--  qouta --}}
                             <div class="col-12 my-2">
                                 <ul class="bg-light nav mb-3 d-flex justify-content-center flex-wrap" id="pills-tab"
                                     role="tablist">
@@ -260,6 +262,7 @@
                                     </div>
                                 @endfor
                             </div>
+                            {{-- end qouta --}}
                             <div class="col-12">
                                 <div class="event-details-content-inner">
                                     <div class="event-info d-flex align-items-center mb-1">
@@ -626,6 +629,8 @@
                                     @elseif($content->event_type == 'venue' || $content->event_type == 'tournament')
 
                                     @endif --}}
+
+                                    {{-- ticket list --}}
                                     @php
                                         $tickets = DB::table('tickets')
                                             ->where('event_id', $content->id)
@@ -951,6 +956,8 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    {{-- end ticket list --}}
+
                                     {{-- @if ($tickets_count > 0)
                                         <div class="total">
                                             <b>{{ __('Total Price') . ' :' }} </b>
