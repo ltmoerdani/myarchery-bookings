@@ -217,7 +217,13 @@ class EventController extends Controller
 
 
       $information['related_events'] = $related_events;
-      return view('frontend.event.event-details', $information); //code...
+      if ($information['content']->event_type == 'tournament' || $information['content']->event_type == 'turnament') {
+        $tickets = Ticket::where('event_id', '=', $event_id)->get();
+        $information['tickets'] = $tickets;
+        return view('frontend.event.event-tournament-details', $information); //code...
+      } else {
+        return view('frontend.event.event-details', $information); //code...
+      }
     } catch (\Exception $th) {
       return view('errors.404');
     }
