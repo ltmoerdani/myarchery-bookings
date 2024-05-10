@@ -184,6 +184,65 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-12 my-2">
+                                <ul class="bg-light nav mb-3 d-flex justify-content-center flex-wrap" id="pills-tab"
+                                    role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link active nav-event-tournament" id="pills-home-tab" href="#"
+                                            data-toggle="pill" data-target="#pills-home" type="button" role="tab"
+                                            aria-controls="pills-home" aria-selected="false">Home</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a href="#" class="nav-link nav-event-tournament" id="pills-profile-tab"
+                                            data-toggle="pill" data-target="#pills-profile" type="button" role="tab"
+                                            aria-controls="pills-profile" aria-selected="false">Profile</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a href="#" class="nav-link nav-event-tournament" id="pills-contact-tab"
+                                            data-toggle="pill" data-target="#pills-contact" type="button" role="tab"
+                                            aria-controls="pills-contact" aria-selected="false">Contact</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
+                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
+                                            @for ($i = 1; $i <= 10; $i++)
+                                                <span class="badge badge-warning badge-warning-custom">
+                                                    U30 - {{ $i }} Meter
+                                                </span>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                        aria-labelledby="pills-profile-tab">
+                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
+                                            @for ($i = 1; $i <= 10; $i++)
+                                                <span class="badge badge-warning badge-warning-custom">
+                                                    Master - {{ $i }} Meter
+                                                </span>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                                        aria-labelledby="pills-contact-tab">
+                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
+                                            @for ($i = 1; $i <= 10; $i++)
+                                                <span class="badge badge-warning badge-warning-custom">
+                                                    U23 - {{ $i }} Meter
+                                                </span>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 my-2">
+                                <div class="card bg-light text-primary" style="font-weight: bold">
+                                    <div class="card-body py-1 px-0 d-flex justify-content-center">
+                                        Kouta Pertandingan
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-12 mb-2 d-flex justify-content-center justify-content-md-start flex-row flex-wrap"
                                 style="gap:10px;">
                                 @for ($i = 0; $i <= 5; $i++)
@@ -226,7 +285,8 @@
                                         <div class="our-location mb-50">
                                             <iframe
                                                 src="//maps.google.com/maps?width=100%25&amp;height=385&amp;hl=en&amp;q={{ $map_address }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-                                                height="385" class="map-h" allowfullscreen="" loading="lazy"></iframe>
+                                                height="385" class="map-h" allowfullscreen=""
+                                                loading="lazy"></iframe>
                                         </div>
                                     @endif
 
