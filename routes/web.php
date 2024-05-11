@@ -15,7 +15,7 @@ Route::get('login', function () {
   return view('frontend.organizer.login');
 })->name('login');
 
-// cron job for check iyzico payment 
+// cron job for check iyzico payment
 Route::get('/check-payment', 'CronJobController@checkIyzicoPendingPayment')->name('cron.check.payment');
 
 Route::get('midtrans/cancel', 'FrontEnd\HomeController@midtrans_cancel')->name('midtrans_cancel'); // banking er IPN
@@ -185,6 +185,10 @@ Route::middleware('change.lang')->group(function () {
   Route::get('addto/wishlist/{id}', 'FrontEnd\EventController@add_to_wishlist')->name('addto.wishlist');
   Route::get('remove/wishlist/{id}', 'FrontEnd\CustomerController@remove_wishlist')->name('remove.wishlist');
 
+  Route::post(
+    '/check-out-tournament',
+    'FrontEnd\CheckOutController@checkout2Tournament'
+  )->name('check-out-tournament');
   Route::post('/check-out2', 'FrontEnd\CheckOutController@checkout2')->name('check-out2');
   Route::get('/checkout', 'FrontEnd\CheckOutController@checkout')->name('check-out');
 

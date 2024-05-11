@@ -218,8 +218,122 @@ class EventController extends Controller
 
       $information['related_events'] = $related_events;
       if ($information['content']->event_type == 'tournament' || $information['content']->event_type == 'turnament') {
-        $tickets = Ticket::where('event_id', '=', $event_id)->get();
-        $information['tickets'] = $tickets;
+        // $tickets = Ticket::where('event_id', '=', $event_id)->get();
+        // $information['tickets'] = $tickets;
+        $information['category_tickets'] = [
+          [
+            "id" => 1,
+            "category_name" => "Barebow",
+            "sub_category" => [
+              [
+                "id" => 1,
+                "sub_category_name" => "Junior",
+                "distance" => "30",
+                "tickets" => [
+                  [
+                    "id" => 1,
+                    "ticket_title" => "Individu Putra",
+                    "available_qouta" => 10,
+                    "max_qouta" => 30,
+                  ],
+                  [
+                    "id" => 2,
+                    "ticket_title" => "Individu Putri",
+                    "available_qouta" => 10,
+                    "max_qouta" => 30,
+                  ],
+                  [
+                    "id" => 3,
+                    "ticket_title" => "Beregu Putra",
+                    "available_qouta" => 15,
+                    "max_qouta" => 30,
+                  ],
+                  [
+                    "id" => 3,
+                    "ticket_title" => "Beregu Putri",
+                    "available_qouta" => 0,
+                    "max_qouta" => 30,
+                  ],
+                ]
+              ],
+              [
+                "id" => 2,
+                "sub_category_name" => "Junior",
+                "distance" => "10",
+                "tickets" => [
+                  [
+                    "id" => 10,
+                    "ticket_title" => "Individu Putra",
+                    "available_qouta" => 10,
+                    "max_qouta" => 30,
+                  ],
+                  [
+                    "id" => 11,
+                    "ticket_title" => "Individu Putri",
+                    "available_qouta" => 10,
+                    "max_qouta" => 30,
+                  ],
+                ]
+              ],
+            ]
+          ],
+          [
+            "id" => 2,
+            "category_name" => "Recurve/Nasional",
+            "sub_category" => [
+              [
+                "id" => 1,
+                "sub_category_name" => "Master",
+                "distance" => "30",
+                "tickets" => [
+                  [
+                    "id" => 12,
+                    "ticket_title" => "Individu Putra",
+                    "available_qouta" => 0,
+                    "max_qouta" => 50,
+                  ],
+                  [
+                    "id" => 13,
+                    "ticket_title" => "Individu Putri",
+                    "available_qouta" => 10,
+                    "max_qouta" => 50,
+                  ],
+                  [
+                    "id" => 14,
+                    "ticket_title" => "Beregu Putra",
+                    "available_qouta" => 0,
+                    "max_qouta" => 25,
+                  ],
+                  [
+                    "id" => 15,
+                    "ticket_title" => "Beregu Putri",
+                    "available_qouta" => 15,
+                    "max_qouta" => 25,
+                  ],
+                ]
+              ],
+              [
+                "id" => 2,
+                "sub_category_name" => "Master",
+                "distance" => "70",
+                "tickets" => [
+                  [
+                    "id" => 16,
+                    "ticket_title" => "Individu Putra",
+                    "available_qouta" => 20,
+                    "max_qouta" => 30,
+                  ],
+                  [
+                    "id" => 17,
+                    "ticket_title" => "Individu Putri",
+                    "available_qouta" => 20,
+                    "max_qouta" => 30,
+                  ],
+                ]
+              ],
+            ]
+          ],
+        ];
         return view('frontend.event.event-tournament-details', $information); //code...
       } else {
         return view('frontend.event.event-details', $information); //code...

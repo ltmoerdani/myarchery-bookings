@@ -14,11 +14,88 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Event\TicketContent;
 use App\Models\Language;
+use App\Models\Organizer;
 use Carbon\Carbon;
 
 class CheckOutController extends Controller
 {
   //checkout
+  public function checkout2Tournament(Request $request)
+  {
+    $basic = Basic::select('event_guest_checkout_status')->first();
+    $event_guest_checkout_status = $basic->event_guest_checkout_status;
+    if ($event_guest_checkout_status != 1) {
+      if (!Auth::guard('customer')->user()) {
+        return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+      }
+    }
+    $select = false;
+    $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
+    if ($event_type->event_type == 'venue') {
+      foreach ($request->quantity as $qty) {
+        if ($qty > 0) {
+          $select = true;
+          break;
+        }
+        continue;
+      }
+    } else {
+      if ($request->pricing_type == 'free') {
+        $select = true;
+      } elseif ($request->pricing_type == 'normal') {
+        if ($request->quantity == 0) {
+          $select = false;
+        } else {
+          $select = true;
+        }
+      } else {
+        foreach ($request->quantity as $qty) {
+          if ($qty > 0) {
+            $select = true;
+            break;
+          }
+          continue;
+        }
+      }
+    }
+
+
+    if ($select == false) {
+      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+    }
+
+    $information = [];
+    $information['selTickets'] = '';
+    $event = Event::where('id', $request->event_id)->select('event_type')->first();
+
+    $event =  EventContent::join('events', 'events.id', 'event_contents.event_id')
+      ->where('events.id', $request->event_id)
+      ->select('events.*', 'event_contents.title', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
+      ->first();
+
+
+    Session::put('event', $event);
+    $online_gateways = OnlineGateway::where('status', 1)->get();
+    $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+    Session::put('online_gateways', $online_gateways);
+    Session::put('offline_gateways', $offline_gateways);
+    Session::put('event_date', $request->event_date);
+
+    //check customer logged in or not ?
+    if (Auth::guard('customer')->check() == false) {
+      return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+    }
+
+    if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
+      $information['customer'] = Auth::guard('customer')->user();
+      $information['organizer'] = Organizer::find($event->organizer_id);
+      $information['from_step_one'] = $request->all();
+
+      return view('frontend.event.event-form-order-detail', $information);
+    }
+    return redirect()->route('check-out');
+  }
+
   public function checkout2(Request $request)
   {
     $basic = Basic::select('event_guest_checkout_status')->first();
@@ -62,12 +139,12 @@ class CheckOutController extends Controller
     if ($select == false) {
       return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
     }
+
     $information = [];
     $information['selTickets'] = '';
     $event = Event::where('id', $request->event_id)->select('event_type')->first();
 
     $check = false;
-
 
     if ($event->event_type == 'online') {
       //**************** stock check start *************** */
@@ -86,7 +163,7 @@ class CheckOutController extends Controller
 
         //check guest checkout status enable or not
         if ($event_guest_checkout_status != 1) {
-          //check max buy by customer 
+          //check max buy by customer
           $max_buy = isTicketPurchaseOnline($request->event_id, $price->max_buy_ticket);
           if ($max_buy['status'] == 'true') {
             $check = true;
@@ -126,7 +203,7 @@ class CheckOutController extends Controller
         $price = Ticket::where('event_id', $request->event_id)->select('max_buy_ticket')->first();
         //check guest checkout status enable or not
         if ($event_guest_checkout_status != 1) {
-          //check max buy by customer 
+          //check max buy by customer
           $max_buy = isTicketPurchaseOnline($request->event_id, $price->max_buy_ticket);
           if ($max_buy['status'] == 'true') {
             $check = true;
@@ -265,7 +342,7 @@ class CheckOutController extends Controller
       Session::put('total_early_bird_dicount', NULL);
       Session::put('total_early_bird_dicount', round($total_early_bird_dicount, 2));
 
-      //stock check 
+      //stock check
       foreach ($selTickets as $selTicket) {
         $stock = TicketStockCheck($selTicket['ticket_id'], $selTicket['qty'], $selTicket['name']);
 
@@ -283,7 +360,6 @@ class CheckOutController extends Controller
         }
       }
     }
-
 
     if ($check == true) {
       $notification = array('message' => 'Something went wrong..!', 'alert-type' => 'error');
@@ -304,8 +380,10 @@ class CheckOutController extends Controller
     if (Auth::guard('customer')->check() == false) {
       return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
     }
+
     return redirect()->route('check-out');
   }
+
   public function checkout()
   {
     $information['selTickets'] = Session::get('selTickets');

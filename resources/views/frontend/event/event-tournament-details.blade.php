@@ -189,53 +189,37 @@
                             <div class="col-12 my-2">
                                 <ul class="bg-light nav mb-3 d-flex justify-content-center flex-wrap" id="pills-tab"
                                     role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link active nav-event-tournament" id="pills-home-tab" href="#"
-                                            data-toggle="pill" data-target="#pills-home" type="button" role="tab"
-                                            aria-controls="pills-home" aria-selected="false">Home</a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a href="#" class="nav-link nav-event-tournament" id="pills-profile-tab"
-                                            data-toggle="pill" data-target="#pills-profile" type="button" role="tab"
-                                            aria-controls="pills-profile" aria-selected="false">Profile</a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a href="#" class="nav-link nav-event-tournament" id="pills-contact-tab"
-                                            data-toggle="pill" data-target="#pills-contact" type="button" role="tab"
-                                            aria-controls="pills-contact" aria-selected="false">Contact</a>
-                                    </li>
+                                    @foreach ($category_tickets as $key_ct => $ct_value)
+                                        <li class="nav-item" role="presentation">
+                                            <a href="#"
+                                                class="nav-link nav-event-tournament {{ $key_ct == 0 ? 'active' : '' }}"
+                                                id="pills-category-{{ $ct_value['id'] }}-tab" data-toggle="pill"
+                                                data-target="#pills-category-{{ $ct_value['id'] }}" type="button"
+                                                role="tab" aria-controls="pills-category-{{ $ct_value['id'] }}"
+                                                aria-selected="false">
+                                                {{ $ct_value['category_name'] }}
+                                            </a>
+                                        </li>
+                                    @endforeach
                                 </ul>
                                 <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
-                                        aria-labelledby="pills-home-tab">
-                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                <span class="badge badge-warning badge-warning-custom">
-                                                    U30 - {{ $i }} Meter
-                                                </span>
-                                            @endfor
+                                    @foreach ($category_tickets as $key_ct => $ct_value)
+                                        <div class="tab-pane fade {{ $key_ct == 0 ? 'show active' : '' }}"
+                                            id="pills-category-{{ $ct_value['id'] }}" role="tabpanel"
+                                            aria-labelledby="pills-category-{{ $ct_value['id'] }}-tab">
+                                            <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
+                                                @foreach ($ct_value['sub_category'] as $val_sub_category)
+                                                    <button
+                                                        class="btn btn-warning button-warning-custom info-detail-qouta-ticket"
+                                                        type="button"
+                                                        data-ticket-quota="{{ json_encode($val_sub_category['tickets']) }}">
+                                                        {{ $val_sub_category['sub_category_name'] }} -
+                                                        {{ $val_sub_category['distance'] }} M
+                                                    </button>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="pills-profile" role="tabpanel"
-                                        aria-labelledby="pills-profile-tab">
-                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                <span class="badge badge-warning badge-warning-custom">
-                                                    Master - {{ $i }} Meter
-                                                </span>
-                                            @endfor
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="pills-contact" role="tabpanel"
-                                        aria-labelledby="pills-contact-tab">
-                                        <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                <span class="badge badge-warning badge-warning-custom">
-                                                    U23 - {{ $i }} Meter
-                                                </span>
-                                            @endfor
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                             <div class="col-12 my-2">
@@ -246,21 +230,7 @@
                                 </div>
                             </div>
                             <div class="col-12 mb-2 d-flex justify-content-center justify-content-md-start flex-row flex-wrap"
-                                style="gap:10px;">
-                                @for ($i = 0; $i <= 5; $i++)
-                                    <div class="card">
-                                        <div class="card-body p-2">
-                                            <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                                                Individu Putra
-                                            </h5>
-                                            <div class="text-center">
-                                                <span class="badge badge-pill badge-success" style="font-size:0.8rem">
-                                                    Tersedia: 27/30
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endfor
+                                style="gap:10px;" id="content-qouta-ticket">
                             </div>
                             {{-- end qouta --}}
                             <div class="col-12">
@@ -288,8 +258,7 @@
                                         <div class="our-location mb-50">
                                             <iframe
                                                 src="//maps.google.com/maps?width=100%25&amp;height=385&amp;hl=en&amp;q={{ $map_address }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-                                                height="385" class="map-h" allowfullscreen=""
-                                                loading="lazy"></iframe>
+                                                height="385" class="map-h" allowfullscreen="" loading="lazy"></iframe>
                                         </div>
                                     @endif
 
@@ -304,11 +273,13 @@
                     </div>
                     <div class="col-12 col-lg-5">
                         <div class="sidebar-sticky mt-5">
-                            <form action="{{ route('check-out2') }}" method="post"
+                            <form action="{{ route('check-out-tournament') }}" method="post"
                                 @if ($over == true) onsubmit="return false" @endif>
                                 @csrf
                                 <input type="hidden" name="event_id" value="{{ $content->id }}" id="">
-                                <input type="hidden" name="pricing_type" value="{{ $content->pricing_type }}"
+                                <input type="hidden" name="event_title" value="{{ $content->title }}" id="">
+                                <input type="hidden" name="pricing_type" value="{{ $content->pricing_type }}">
+                                <input type="hidden" name="event_type" value="{{ $content->event_type }}"
                                     id="">
                                 <div class="event-details-information event-details-information-tournament">
                                     <input type="hidden" name="date_type" value="{{ $content->date_type }}">
@@ -426,7 +397,8 @@
                                     {{-- Countdown end --}}
 
                                     {{-- Button Listing --}}
-                                    <div class="event-details-top">
+
+                                    {{-- <div class="event-details-top">
                                         <hr>
                                         <div class="row">
                                             <div class="col-12">
@@ -445,7 +417,8 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
+
                                     {{-- end button listing --}}
 
                                     {{-- location --}}
@@ -457,13 +430,14 @@
                                     {{-- end location --}}
 
                                     {{-- Add to calendar --}}
-                                    @php
+
+                                    {{-- @php
                                         $start_date = str_replace('-', '', $content->start_date);
                                         $start_time = str_replace(':', '', $content->start_time);
                                         $end_date = str_replace('-', '', $content->end_date);
                                         $end_time = str_replace(':', '', $content->end_time);
-                                    @endphp
-                                    <div class="dropdown show pt-4 pb-4">
+                                    @endphp --}}
+                                    {{-- <div class="dropdown show pt-4 pb-4">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-calendar-alt"></i> {{ __('Add to Calendar') }}
@@ -475,7 +449,9 @@
                                             <a target="_blank" class="dropdown-item"
                                                 href="//calendar.yahoo.com/?v=60&view=d&type=20&TITLE={{ $content->title }}&ST={{ $start_date }}T{{ $start_time }}&ET={{ $end_date }}T{{ $end_time }}&DUR=9959&DESC=For%20details%2C%20click%20here%3A%20{{ route('event.details', [$content->eventSlug, $content->id]) }}&in_loc={{ $content->event_type == 'online' ? 'Online' : $content->address }}">{{ __('Yahoo') }}</a>
                                         </div>
-                                    </div>
+                                    </div> --}}
+
+                                    {{-- end add to calendar --}}
 
 
                                     {{-- @if ($content->event_type == 'online' && $content->pricing_type == 'normal')
@@ -656,7 +632,6 @@
                                                     } else {
                                                         $purchase = ['status' => 'false', 'p_qty' => 0];
                                                     }
-
                                                 @endphp
                                                 <p class="mb-0"><strong>{{ @$ticket_content->title }}</strong></p>
                                                 <div class="click-show">
@@ -673,10 +648,10 @@
                                                 <div class="price-count">
                                                     <div class="d-flex flex-column">
                                                         <h6 dir="ltr">
-                                                            Individual Category
+                                                            {{ $ticket->title }}
                                                         </h6>
                                                         <small>
-                                                            ini deskripsinya
+                                                            {{ $ticket->title }}
                                                         </small>
                                                     </div>
                                                     <div class="quantity-input">
@@ -684,9 +659,10 @@
                                                             -
                                                         </button>
                                                         <input class="quantity" readonly type="number" value="0"
-                                                            data-price="10000" data-max_buy_ticket="10" name="quantity[]"
-                                                            data-ticket_id="1" data-stock="100" data-purchase="false"
-                                                            data-p_qty="0">
+                                                            data-price="10000" data-max_buy_ticket="10"
+                                                            name="quantity[{{ $ticket->id }}]"
+                                                            data-ticket_id="{{ $ticket->id }}" data-stock="100"
+                                                            data-purchase="false" data-p_qty="0">
                                                         <button class="quantity-up" type="button" id="quantityUP">
                                                             +
                                                         </button>
@@ -1274,4 +1250,34 @@
 @endsection
 @section('modals')
     @includeIf('frontend.partials.modals')
+@endsection
+@section('custom-script')
+    <script>
+        $(".info-detail-qouta-ticket").on("click", function() {
+            $("#content-qouta-ticket").empty();
+
+            const dataTickets = JSON.parse(this.getAttribute("data-ticket-quota"));
+            let content = ''
+            dataTickets.map((val) => {
+                const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
+                const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
+                content += `
+                  <div class="card">
+                      <div class="card-body p-2">
+                          <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                              ${val.ticket_title}
+                          </h5>
+                          <div class="text-center">
+                              <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                  ${status}: ${val.available_qouta}/${val.max_qouta}
+                              </span>
+                          </div>
+                      </div>
+                  </div>
+                `
+            })
+
+            $("#content-qouta-ticket").append(content);
+        });
+    </script>
 @endsection
