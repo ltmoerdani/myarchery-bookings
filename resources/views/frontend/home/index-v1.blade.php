@@ -180,6 +180,9 @@
                                 , {{ $event->country }}
                               @endif
                             </span>
+                          @elseif ($event->event_type == 'tournament')
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ __('Tournament') }}</span>
                           @else
                             <i class="fas fa-map-marker-alt"></i>
                             <span>{{ __('Online') }}</span>

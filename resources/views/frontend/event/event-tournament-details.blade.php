@@ -164,10 +164,12 @@
                                                 <li><i class="far fa-clock"></i>
                                                     {{ $content->date_type == 'multiple' ? @$event_date->duration : $content->duration }}
                                                 </li>
-                                                @if ($content->event_type == 'venue' || $content->event_type == 'turnamen' || $content->event_type == 'tournament')
+                                                @if ($content->event_type == 'venue' || $content->event_type == 'tournament')
                                                     <li><i class="fas fa-map-marker-alt"></i>
                                                         @if ($content->city != null)
                                                             {{ $content->city }}
+                                                        @else
+                                                            {{ __('Tournament') }}
                                                         @endif
                                                         @if ($content->state)
                                                             , {{ $content->state }}
@@ -426,7 +428,7 @@
                                     {{-- Countdown end --}}
 
                                     {{-- Button Listing --}}
-                                    <div class="event-details-top">
+                                    <!-- <div class="event-details-top">
                                         <hr>
                                         <div class="row">
                                             <div class="col-12">
@@ -445,14 +447,14 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     {{-- end button listing --}}
 
                                     {{-- location --}}
                                     @if ($content->address != null)
-                                        <hr>
+                                        <!-- <hr>
                                         <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                        <hr>
+                                        <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -463,7 +465,7 @@
                                         $end_date = str_replace('-', '', $content->end_date);
                                         $end_time = str_replace(':', '', $content->end_time);
                                     @endphp
-                                    <div class="dropdown show pt-4 pb-4">
+                                    <!-- <div class="dropdown show pt-4 pb-4">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-calendar-alt"></i> {{ __('Add to Calendar') }}
@@ -475,7 +477,7 @@
                                             <a target="_blank" class="dropdown-item"
                                                 href="//calendar.yahoo.com/?v=60&view=d&type=20&TITLE={{ $content->title }}&ST={{ $start_date }}T{{ $start_time }}&ET={{ $end_date }}T{{ $end_time }}&DUR=9959&DESC=For%20details%2C%20click%20here%3A%20{{ route('event.details', [$content->eventSlug, $content->id]) }}&in_loc={{ $content->event_type == 'online' ? 'Online' : $content->address }}">{{ __('Yahoo') }}</a>
                                         </div>
-                                    </div>
+                                    </div> -->
 
 
                                     {{-- @if ($content->event_type == 'online' && $content->pricing_type == 'normal')
@@ -1083,7 +1085,7 @@
 
                                             <div class="price-remain">
                                                 <div class="location">
-                                                    @if ($event->event_type == 'venue')
+                                                    @if ($event->event_type == 'venue' || $event->event_type == 'tournament')
                                                         <i class="fas fa-map-marker-alt"></i>
                                                         <span>
                                                             @if ($event->city != null)

@@ -319,7 +319,7 @@
 
                                                 <div class="price-remain">
                                                     <div class="location">
-                                                        @if ($event->event_type == 'venue' || $event->event_type == 'tournament' || $event->event_type == 'turnament')
+                                                        @if ($event->event_type == 'venue' || $event->event_type == 'tournament')
                                                             <i class="fas fa-map-marker-alt"></i>
                                                             <span>
                                                                 @if ($event->city != null)
