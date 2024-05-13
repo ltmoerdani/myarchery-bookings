@@ -3990,6 +3990,25 @@ html[dir*="rtl"] .modal .close {
   font-size: 1rem !important;
 }
 
+/* background */
+.bg-primary-1 {
+  background: var(--primary-color) !important;
+}
+
+/* text color */
+.text-primary-1 {
+  color: var(--primary-color);
+}
+
+.gap-10px {
+  gap: 10px !important;
+}
+
 .gap-1 {
   gap: 1rem !important;
+}
+
+/* cursor */
+.cursor-pointer {
+  cursor: pointer !important;
 }
