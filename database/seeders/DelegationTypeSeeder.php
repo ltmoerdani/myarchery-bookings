@@ -36,6 +36,10 @@ class DelegationTypeSeeder extends Seeder
                 'name' => 'City/District',
                 'description' => 'Khusus Negara, Provinsi dan Kota Tertentu',
             ],
+            [
+                'name' => 'Organization',
+                'description' => 'Khusus Organization Tertentu',
+            ],
         ];
 
         foreach ($data as $valueData) {
