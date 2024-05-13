@@ -15,6 +15,7 @@ use App\Models\Event;
 use App\Models\Event\TicketContent;
 use App\Models\Language;
 use App\Models\Organizer;
+use App\Models\DelegationType;
 use Carbon\Carbon;
 
 class CheckOutController extends Controller
@@ -70,7 +71,7 @@ class CheckOutController extends Controller
 
     $event =  EventContent::join('events', 'events.id', 'event_contents.event_id')
       ->where('events.id', $request->event_id)
-      ->select('events.*', 'event_contents.title', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
+      ->select('events.*', 'event_contents.*')
       ->first();
 
 
@@ -88,9 +89,99 @@ class CheckOutController extends Controller
 
     if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
       $information['customer'] = Auth::guard('customer')->user();
-      $information['organizer'] = Organizer::find($event->organizer_id);
+      $information['event'] = $event;
+      $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
+        ->where('organizers.id', '=', $event->organizer_id)
+        ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
+        ->first();
       $information['from_step_one'] = $request->all();
-
+      $information['delegation_event'] = [
+        'event_id' => $event->id,
+        'contingent_type' => 'open',
+        'select_type' => 'open',
+        'country_id' => null,
+        'country' => null,
+        'province_id' => null,
+        'province' => null,
+        'state_id' => null,
+        'state' => null,
+        'city_id' => null,
+        'city' => null,
+      ];
+      $information['category_tickets'] = [
+        [
+          "id" => 1,
+          'name' => 'individu',
+          "quantity" => 6
+        ],
+        [
+          "id" => 2,
+          'name' => 'team',
+          "quantity" => 1
+        ],
+        [
+          "id" => 3,
+          'name' => 'mix team',
+          "quantity" => 1
+        ],
+        [
+          "id" => 4,
+          'name' => 'official',
+          "quantity" => 1
+        ],
+      ];
+      $information['sub_category_tickets'] = [
+        [
+          "id" => 1,
+          "title" => "Barebow Individu Umum 20M",
+          "category_id" => 1,
+          "category_name" => "individu",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+        [
+          "id" => 2,
+          "title" => "Barebow Individu Umum 50M",
+          "category_id" => 1,
+          "category_name" => "individu",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+        [
+          "id" => 3,
+          "title" => "Barebow Individu Umum 30M",
+          "category_id" => 1,
+          "category_name" => "individu",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+        [
+          "id" => 10,
+          "title" => "Barebow Beregu Putra Umum 100M",
+          "category_id" => 2,
+          "category_name" => "team",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+        [
+          "id" => 11,
+          "title" => "Barebow Beregu Putri Umum 100M",
+          "category_id" => 2,
+          "category_name" => "team",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+        [
+          "id" => 15,
+          "title" => "Barebow Beregu Putri Umum 100M",
+          "category_id" => 2,
+          "category_name" => "Mix Team",
+          "price" => 10000,
+          "available_qouta" => 10
+        ],
+      ];
+      $information['delegation_type'] = DelegationType::get()->toArray();
+      // dd($information);
       return view('frontend.event.event-form-order-detail', $information);
     }
     return redirect()->route('check-out');

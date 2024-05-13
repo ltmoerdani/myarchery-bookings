@@ -11,32 +11,43 @@ use App\Models\IndonesianProvince;
 use App\Models\IndonesianSubdistrict;
 use App\Http\Helpers\HelperResponse;
 
-class RegionController extends Controller{
+class RegionController extends Controller
+{
 
-    public function getCountry(Request $request){
-        $data = InternationalCountries::get();
-        return HelperResponse::Success($data, "Get Data Success");
-    }
-    
-    public function getState(Request $request){
-        $id = $request->id;
-        if($id == "102"){ //Indonesia
-            $data = IndonesianProvince::select('id','name')->get();
-        }else{
-            $data = InternationalStates::select('id','name')->where('country_id', $id)->get();
-        }
-        return HelperResponse::Success($data, "Get Data Success");
-    }
+  public function getCountry(Request $request)
+  {
+    $data = InternationalCountries::get();
+    return HelperResponse::Success($data, "Get Data Success");
+  }
 
-    public function getCity(Request $request){
-        $id_country = $request->id_country;
-        $id_state = $request->id_state;
-        if($id_country == "102"){ //Indonesia
-            $data = IndonesianSubdistrict::select('id','name')->where('province_id', $id_state)->get();
-        }else{
-            $data = InternationalCities::select('id','name')->where('state_id', $id_state)->get();
-        }
-        return HelperResponse::Success($data, "Get Data Success");
+  public function getState(Request $request)
+  {
+    $id = $request->id;
+    if ($id == "102") { //Indonesia
+      $data = IndonesianProvince::select('id', 'name')->get();
+    } else {
+      $data = InternationalStates::select('id', 'name')->where('country_id', $id)->get();
     }
+    return HelperResponse::Success($data, "Get Data Success");
+  }
 
+  public function getCity(Request $request)
+  {
+    $id_country = $request->id_country;
+    $id_state = $request->id_state;
+    if ($id_country == "102") { //Indonesia
+      // $data = IndonesianSubdistrict::select('id','name')->where('province_id', $id_state)->get();
+      $data = IndonesianSubdistrict::select('id', 'name');
+      if (!empty($id_state)) {
+        $data = $data->where('province_id', $id_state);
+      }
+    } else {
+      // $data = InternationalCities::select('id','name')->where('state_id', $id_state)->get();
+      $data = InternationalCities::select('id', 'name')->where('country_id', $id_country);
+      if (!empty($id_state)) {
+        $data =   $data->where('state_id', $id_state);
+      }
+    }
+    return HelperResponse::Success($data->get(), "Get Data Success");
+  }
 }
