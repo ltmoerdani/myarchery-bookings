@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontEnd;
 
 use App\Http\Controllers\Controller;
 use App\Models\BasicSettings\Basic;
+use App\Models\Country;
 use App\Models\PaymentGateway\OfflineGateway;
 use App\Models\PaymentGateway\OnlineGateway;
 use Illuminate\Support\Facades\Session;
@@ -15,6 +16,7 @@ use App\Models\Event;
 use App\Models\Event\TicketContent;
 use App\Models\Language;
 use App\Models\Organizer;
+use App\Models\InternationalCountries;
 use App\Models\DelegationType;
 use Carbon\Carbon;
 
@@ -73,7 +75,6 @@ class CheckOutController extends Controller
       ->where('events.id', $request->event_id)
       ->select('events.*', 'event_contents.*')
       ->first();
-
 
     Session::put('event', $event);
     $online_gateways = OnlineGateway::where('status', 1)->get();
@@ -181,6 +182,7 @@ class CheckOutController extends Controller
         ],
       ];
       $information['delegation_type'] = DelegationType::get()->toArray();
+      $information['countries'] = InternationalCountries::get()->toArray();
       // dd($information);
       return view('frontend.event.event-form-order-detail', $information);
     }

@@ -167,6 +167,44 @@
                                                                                 placeholder="{{ __('Select Date') }}"
                                                                                 required>
                                                                         </div>
+                                                                        <div
+                                                                            class="col-12 col-lg-6 form-group content-profile-country-individu-{{ $i }}">
+                                                                            <label
+                                                                                for="profile_country_individu{{ $i }}">
+                                                                                {{ __('Country') }}*
+                                                                            </label>
+                                                                            <select
+                                                                                class="form-select js-example-basic-single"
+                                                                                id="profile_country_individu{{ $i }}"
+                                                                                name="profile_country_individu[]"
+                                                                                onchange="handlerProfileCountry({{ $i }})"
+                                                                                required>
+                                                                                <option value="" selected disabled>
+                                                                                    {{ __('Select Country') }}
+                                                                                </option>
+                                                                                @foreach ($countries as $val_countries)
+                                                                                    <option
+                                                                                        value="{{ $val_countries['id'] }}">
+                                                                                        {{ $val_countries['name'] }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 col-lg-6 form-group content-profile-city-individu-{{ $i }}">
+                                                                            <label
+                                                                                for="profile_city_individu{{ $i }}">
+                                                                                {{ __('City/District') }}*
+                                                                            </label>
+                                                                            <select
+                                                                                class="form-select js-example-basic-single"
+                                                                                id="profile_city_individu{{ $i }}"
+                                                                                name="profile_city_individu[]" required>
+                                                                                <option value="" selected disabled>
+                                                                                    {{ __('Select City/District') }}
+                                                                                </option>
+                                                                            </select>
+                                                                        </div>
                                                                         @if (strtolower($delegation_event['contingent_type']) == 'open')
                                                                             <div
                                                                                 class="col-12 form-group content-delegation-individu-{{ $i }}">
