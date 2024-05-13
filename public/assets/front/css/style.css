@@ -292,16 +292,38 @@ a.theme-btn-outline-warning {
   border: 1px solid var(--warning);
 }
 
-.nav-link.active.nav-event-tournament {
-  color: var(--primary-color) !important;
-  font-weight: 700 !important;
-  border-bottom: 2px solid #ffad46 !important;
-}
-
 .theme-btn-outline-warning:hover,
 a.theme-btn-outline-warning:hover {
   background: var(--warning);
   color: #fff;
+}
+
+.theme-btn-outline-primary-1,
+a.theme-btn-outline-primary-1 {
+  z-index: 1;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.5s;
+  font-weight: 700;
+  text-align: center;
+  padding: 15px 33px;
+  border-radius: 5px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid var(--primary-color);
+}
+
+.theme-btn-outline-primary-1:hover,
+a.theme-btn-outline-primary-1:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.nav-link.active.nav-event-tournament {
+  color: var(--primary-color) !important;
+  font-weight: 700 !important;
+  border-bottom: 2px solid #ffad46 !important;
 }
 
 .button-warning-custom {

@@ -38,12 +38,11 @@ const handlerDelegationIndividu = (i) => {
       handlerSetContentDelegationClubIndividu(i);
       break;
   }
-  console.log("getTypeDelegationInput:", getTypeDelegationInput);
 };
 
 const handlerSetContentDelegationCountryIndividu = async (
   i,
-  default_value = null
+  default_value = ""
 ) => {
   const dataCountry = await getCountry();
   let countryOptions = "";
@@ -79,7 +78,7 @@ const handlerSetContentDelegationCountryIndividu = async (
 
 const handlerSetContentDelegationProvinceIndividu = async (
   i,
-  default_value = null
+  default_value = ""
 ) => {
   const getTypeDelegationInput = document.getElementById(
     `delegation_individu${i}`
@@ -120,7 +119,10 @@ const handlerSetContentDelegationProvinceIndividu = async (
   }
 };
 
-const handlerSetContentDelegationCityIndividu = async (i) => {
+const handlerSetContentDelegationCityIndividu = async (
+  i,
+  default_value = ""
+) => {
   const getTypeDelegationInput = document.getElementById(
     `delegation_individu${i}`
   ).value;
@@ -131,9 +133,35 @@ const handlerSetContentDelegationCityIndividu = async (i) => {
   ) {
     const valueCountry = $(`#country_delegation_individu${i}`).val();
     const valueProvince = $(`#province_delegation_individu${i}`).val();
-    const getDataCity = await getCity(120, 1);
-    console.log("getDataCity:", getDataCity);
+    const getDataCity = await getCity(valueCountry, valueProvince);
+    let cityOptions = "";
+    getDataCity?.data?.map((val) => {
+      cityOptions += `
+        <option
+            value="${val.id}">
+            ${val.name}
+        </option>
+      `;
+    });
     $(`.content-delegation-city-individu-${i}`).removeClass("d-none");
+    $(`.content-delegation-city-individu-${i}`).empty();
+    $(`.content-delegation-province-individu-${i}`).append(`
+      <label
+          for="city_delegation_individu${i}">
+          City*
+      </label>
+      <select class="form-select js-select2-city-individu-delegation"
+          id="city_delegation_individu${i}"
+          name="city_delegation_individu[]"
+          value="${!default_value ? "" : default_value}"
+          required>
+          <option value="" selected disabled>Choose City</option>
+          ${cityOptions}
+      </select>
+    `);
+    $(".js-select2-city-individu-delegation").select2({
+      selectionCssClass: "form-select",
+    });
   }
 };
 

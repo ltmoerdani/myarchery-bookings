@@ -379,9 +379,9 @@
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
                             <div class="row">
                                 <div class="col-12 d-flex flex-row flex-wrap gap-10px">
-                                    <img class="lazy img-fluid img-thumbnail" style="border-radius:5rem;"
+                                    <img class="lazy img-fluid img-thumbnail" style="border-radius:1rem;"
                                         data-src="{{ asset('assets/admin/img/event/thumbnail/' . $event['thumbnail']) }}"
-                                        alt="Event" width="80" height="71.88">
+                                        alt="Event" width="100" height="71.88">
                                     <div class="d-flex flex-column">
                                         <h5 class="font-weight-normal mb-0 text-primary-1">
                                             {{ $event->title }}
@@ -412,6 +412,66 @@
                                             </span>
                                         </small>
                                     </div>
+                                </div>
+                                <div class="col-12 mt-3 mb-2">
+                                    <h4 class="font-weight-bold">{{ __('Ticket Summary') }}</h4>
+                                </div>
+                                <div class="col-12">
+                                    <p class="font-weight-bold">Tickets Info</p>
+                                </div>
+                                @php
+                                    $total_tickets_quantity = 0;
+                                @endphp
+                                @foreach ($category_tickets as $val_category_tickets)
+                                    @if ($val_category_tickets['quantity'] > 0)
+                                        @php
+                                            $total_tickets_quantity + $val_category_tickets['quantity'];
+                                        @endphp
+                                        <div class="col-12 d-flex justify-content-between">
+                                            <p class="font-weight-medium mb-0">
+                                                {{ ucfirst($val_category_tickets['name']) }}
+                                            </p>
+                                            <p class="font-weight-medium mb-0">
+                                                {{ $val_category_tickets['quantity'] }}
+                                            </p>
+                                        </div>
+                                        <div class="col-12 mt-0">
+                                            <hr style="width:100%;text-align:left;margin-left:0">
+                                        </div>
+                                    @endif
+                                @endforeach
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p class="font-weight-medium mb-0">
+                                        Total Tickets
+                                    </p>
+                                    <p class="font-weight-medium mb-0">
+                                        {{ $total_tickets_quantity }}
+                                    </p>
+                                </div>
+                                <div class="col-12 mt-3 mb-2">
+                                    <h4 class="font-weight-bold">{{ __('Code Access') }}</h4>
+                                </div>
+                                <div class="col-12">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="type your code"
+                                            aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                        <div class="input-group-prepend">
+                                            <button class="theme-btn w-100" type="button" id="button-addon1">
+                                                {{ __('Apply') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="theme-btn w-100" type="submit">
+                                        {{ __('Continue') }}
+                                    </button>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <a href="{{ route('event.details', [$event['slug'], $from_step_one['event_id']]) }}"
+                                        class="theme-btn-outline-primary-1 w-100" type="button">
+                                        {{ __('Back') }}
+                                    </a>
                                 </div>
                             </div>
                         </div>

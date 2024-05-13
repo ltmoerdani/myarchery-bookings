@@ -117,17 +117,17 @@ class CheckOutController extends Controller
         [
           "id" => 2,
           'name' => 'team',
-          "quantity" => 1
+          "quantity" => 0
         ],
         [
           "id" => 3,
           'name' => 'mix team',
-          "quantity" => 1
+          "quantity" => 0
         ],
         [
           "id" => 4,
           'name' => 'official',
-          "quantity" => 1
+          "quantity" => 0
         ],
       ];
       $information['sub_category_tickets'] = [
