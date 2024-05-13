@@ -304,6 +304,20 @@ a.theme-btn-outline-warning:hover {
   color: #fff;
 }
 
+.button-warning-custom {
+  color: var(--warning) !important;
+  background-color: #fdf1cc !important;
+  border: 1px solid var(--warning) !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+}
+
+.button-warning-custom:hover {
+  color: #fff !important;
+  background: var(--warning) !important;
+}
+
 /* Learn More Btn */
 .read-more {
   color: #333333;

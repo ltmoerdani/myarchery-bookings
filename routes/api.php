@@ -30,4 +30,4 @@ Route::get('get-delegation', 'BackEnd\DelegationController@getDelegationType')->
 Route::get('generate-code', 'BackEnd\Event\EventController@codeGenerate')->name('generate.code.event');
 
 // delete soon
-Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
+// Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');

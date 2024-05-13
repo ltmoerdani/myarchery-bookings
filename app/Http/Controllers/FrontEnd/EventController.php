@@ -13,6 +13,7 @@ use App\Models\Event\EventImage;
 use App\Models\Event\Ticket;
 use App\Models\Event\Wishlist;
 use App\Models\Organizer;
+use App\Models\Competitions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -139,6 +140,8 @@ class EventController extends Controller
     $information['max'] = $max;
     $information['min'] = $min;
     $information['events'] = $events;
+
+    
     return view('frontend.event.event', compact('information'));
   }
 
@@ -217,8 +220,16 @@ class EventController extends Controller
 
 
       $information['related_events'] = $related_events;
-      if ($information['content']->event_type == 'tournament' || $information['content']->event_type == 'turnament') {
+      if ($information['content']->event_type == 'tournament') {
         $tickets = Ticket::where('event_id', '=', $event_id)->get();
+        $competition_categories = Competitions::join('competition_categories', 'competition_categories.id', 'competitions.competition_category_id')
+          ->select('competitions.event_id','competition_categories.id','competition_categories.name as competition_categories_name')
+          ->where('competitions.event_id', $event_id)
+          ->orderBy('competitions.competition_category_id', 'ASC')
+          ->groupBy('competition_categories.id')
+          ->get();
+        
+        $information['competition_categories'] = $competition_categories;
         $information['tickets'] = $tickets;
         return view('frontend.event.event-tournament-details', $information); //code...
       } else {
