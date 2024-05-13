@@ -28,6 +28,7 @@ Route::get('get-city/{id_country}', 'BackEnd\Region\RegionController@getCity')->
 Route::get('get-clubs', 'BackEnd\ClubController@getClubs')->name('get.clubs');
 Route::get('get-comp-type', 'BackEnd\Event\EventController@getCompetitionType')->name('get.competition.type');
 Route::get('get-delegation', 'BackEnd\DelegationController@getDelegationType')->name('get.delegation.type');
+Route::get('get-org', 'BackEnd\OrganizationController@getListOrganization')->name('get.list.organization');
 Route::get('generate-code', 'BackEnd\Event\EventController@codeGenerate')->name('generate.code.event');
 
 // delete soon
