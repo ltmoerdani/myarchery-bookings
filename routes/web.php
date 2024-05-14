@@ -186,6 +186,10 @@ Route::middleware('change.lang')->group(function () {
   Route::get('remove/wishlist/{id}', 'FrontEnd\CustomerController@remove_wishlist')->name('remove.wishlist');
 
   Route::post(
+    '/detail-check-out-tournament',
+    'FrontEnd\CheckOutController@detailCheckout2Tournament'
+  )->name('detail-check-out-tournament');
+  Route::post(
     '/check-out-tournament',
     'FrontEnd\CheckOutController@checkout2Tournament'
   )->name('check-out-tournament');

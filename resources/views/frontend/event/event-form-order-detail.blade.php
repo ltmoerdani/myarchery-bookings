@@ -54,7 +54,7 @@
 @endsection
 
 @section('content')
-    <form id="eventForm" action="" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
@@ -463,7 +463,7 @@
                                 @foreach ($category_tickets as $val_category_tickets)
                                     @if ($val_category_tickets['quantity'] > 0)
                                         @php
-                                            $total_tickets_quantity + $val_category_tickets['quantity'];
+                                            $total_tickets_quantity = $total_tickets_quantity + $val_category_tickets['quantity'];
                                         @endphp
                                         <div class="col-12 d-flex justify-content-between">
                                             <p class="font-weight-medium mb-0">
@@ -491,8 +491,9 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="type your code"
-                                            aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                        <input type="text" name="code_access" id="code_access" class="form-control"
+                                            placeholder="type your code" aria-label="Example text with button addon"
+                                            aria-describedby="button-addon1">
                                         <div class="input-group-prepend">
                                             <button class="theme-btn w-100" type="button" id="button-addon1">
                                                 {{ __('Apply') }}

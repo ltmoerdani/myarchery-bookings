@@ -23,6 +23,126 @@ use Carbon\Carbon;
 class CheckOutController extends Controller
 {
   //checkout
+  public function detailCheckout2Tournament(Request $request)
+  {
+    try {
+      $basic = Basic::select('event_guest_checkout_status')->first();
+      $event_guest_checkout_status = $basic->event_guest_checkout_status;
+
+      if ($event_guest_checkout_status != 1) {
+        if (!Auth::guard('customer')->user()) {
+          return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+        }
+      }
+      $select = false;
+      $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
+
+      $information = [];
+      $information['selTickets'] = '';
+      $event = Event::where('id', $request->event_id)->select('event_type')->first();
+
+      $event =  EventContent::join('events', 'events.id', 'event_contents.event_id')
+        ->where('events.id', $request->event_id)
+        ->select('events.*', 'event_contents.*')
+        ->first();
+
+      Session::put('event', $event);
+      $online_gateways = OnlineGateway::where('status', 1)->get();
+      $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+      Session::put('online_gateways', $online_gateways);
+      Session::put('offline_gateways', $offline_gateways);
+      Session::put('event_date', $request->event_date);
+
+      //check customer logged in or not ?
+      if (Auth::guard('customer')->check() == false) {
+        return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+      }
+
+      $information['customer'] = Auth::guard('customer')->user();
+      $information['event'] = $event;
+      $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
+        ->where('organizers.id', '=', $event->organizer_id)
+        ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
+        ->first();
+      $information['from_step_one'] = $request->all();
+      $information['ticket_infos'] = [
+        [
+          'title' => 'Barebow Individu Putra 200 Meter',
+          'quantity' => 1,
+          'price' => 100000,
+        ],
+        [
+          'title' => 'Barebow Individu Putri 200 Meter',
+          'quantity' => 1,
+          'price' => 90000,
+        ],
+      ];
+      $information['orders'] = [
+        [
+          "id" => 1,
+          "category" => "individu",
+          "ticket_detail_order" => [
+            [
+              "id" => 1,
+              "user_full_name" => "Oding Selamat Sentosa",
+              "user_gender" => "male",
+              "delegation_type" => "club",
+              "country_id" => null,
+              "country_name" => null,
+              "province_id" => null,
+              "province_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              "club_id" => 1,
+              "club_name" => "my kuy kuy yuhuu",
+              "school_name" => null,
+              "organization_name" => null,
+              "sub_category_ticket_id" => 15,
+              "sub_category_ticket" => 'Barebow Umum 200 Meter'
+            ],
+            [
+              "id" => 2,
+              "user_full_name" => "Makior Ladano",
+              "user_gender" => "female",
+              "delegation_type" => "country",
+              "country_id" => 121,
+              "country_name" => 'South Africa',
+              "province_id" => null,
+              "province_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              "club_id" => 1,
+              "club_name" => null,
+              "school_name" => null,
+              "organization_name" => null,
+              "sub_category_ticket_id" => 10,
+              "sub_category_ticket" => 'Barebow Umum 200 Meter'
+            ],
+          ],
+        ],
+        [
+          "id" => 2,
+          "category" => "team",
+          "ticket_detail_order" => [],
+        ],
+        [
+          "id" => 3,
+          "category" => "mix team",
+          "ticket_detail_order" => [],
+        ],
+        [
+          "id" => 4,
+          "category" => "official",
+          "ticket_detail_order" => [],
+        ]
+      ];
+      // dd($information);
+      return view('frontend.event.event-tournament-checkout-detail', $information);
+    } catch (\Exception $e) {
+      dd($e);
+    }
+  }
+
   public function checkout2Tournament(Request $request)
   {
     $basic = Basic::select('event_guest_checkout_status')->first();
@@ -113,7 +233,7 @@ class CheckOutController extends Controller
         [
           "id" => 1,
           'name' => 'individu',
-          "quantity" => 6
+          "quantity" => 1
         ],
         [
           "id" => 2,
