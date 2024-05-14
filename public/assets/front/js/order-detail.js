@@ -57,9 +57,8 @@ const handlerSetContentDelegationCountryIndividu = async (
 
   $(`.content-delegation-country-individu-${i}`).removeClass("d-none");
   $(`.content-delegation-country-individu-${i}`).append(`
-    <label
-        for="country_delegation_individu${i}">
-        Country*
+    <label for="country_delegation_individu${i}">
+        Delegation Country*
     </label>
     <select class="form-select js-select2-country-individu-delegation"
         id="country_delegation_individu${i}"
@@ -99,9 +98,8 @@ const handlerSetContentDelegationProvinceIndividu = async (
     $(`.content-delegation-province-individu-${i}`).removeClass("d-none");
     $(`.content-delegation-province-individu-${i}`).empty();
     $(`.content-delegation-province-individu-${i}`).append(`
-      <label
-          for="province_delegation_individu${i}">
-          Province*
+      <label for="province_delegation_individu${i}">
+          Delegation Province*
       </label>
       <select class="form-select js-select2-province-individu-delegation"
           id="province_delegation_individu${i}"
@@ -146,9 +144,8 @@ const handlerSetContentDelegationCityIndividu = async (
     $(`.content-delegation-city-individu-${i}`).removeClass("d-none");
     $(`.content-delegation-city-individu-${i}`).empty();
     $(`.content-delegation-province-individu-${i}`).append(`
-      <label
-          for="city_delegation_individu${i}">
-          City*
+      <label for="city_delegation_individu${i}">
+          Delegation City*
       </label>
       <select class="form-select js-select2-city-individu-delegation"
           id="city_delegation_individu${i}"
@@ -170,7 +167,7 @@ const handlerSetContentDelegationSchoolIndividu = (i) => {
   $(`.content-delegation-school-individu-${i}`).empty();
   $(`.content-delegation-school-individu-${i}`).append(`
     <label for="school_delegation_individu${i}">
-        School/Universities*
+        Delegation School/Universities*
     </label>
     <input type="text" class="form-control" id="school_delegation_individu${i}" name="school_delegation_individu[]" placeholder="type school/universities">
   `);
@@ -181,7 +178,7 @@ const handlerSetContentDelegationOrganizationIndividu = (i) => {
   $(`.content-delegation-organization-individu-${i}`).empty();
   $(`.content-delegation-organization-individu-${i}`).append(`
     <label for="organization_delegation_individu${i}">
-        Organization/Association*
+        Delegation Organization/Association*
     </label>
     <input type="text" class="form-control" id="organization_delegation_individu${i}" name="organization_delegation_individu[]" placeholder="type organization or association">
   `);
@@ -191,7 +188,7 @@ const handlerAddNewClubDelegationIndividu = (i) => {
   $(`.content-delegation-club-individu-${i}`).empty();
   $(`.content-delegation-club-individu-${i}`).append(`
     <label for="club_delegation_individu${i}">
-        Club*
+        Delegation Club*
     </label>
     <p>
       <a href="javascript:void()" class="text-primary" onclick="handlerSetContentDelegationClubIndividu(${i})">
@@ -220,7 +217,7 @@ const handlerSetContentDelegationClubIndividu = async (
   $(`.content-delegation-club-individu-${i}`).empty();
   $(`.content-delegation-club-individu-${i}`).append(`
     <label for="club_delegation_individu${i}">
-        Club*
+        Delegation Club*
     </label>
     <p>
       <a href="javascript:void()" class="text-primary" onclick="handlerAddNewClubDelegationIndividu(${i})">Add New Club+</a>
@@ -238,6 +235,25 @@ const handlerSetContentDelegationClubIndividu = async (
   $(".js-select2-club-individu-delegation").select2({
     selectionCssClass: "form-select",
   });
+};
+
+const handlerProfileCountry = async (i) => {
+  $(`#profile_city_individu${i}`).empty();
+  const getValueCountry = $(`#profile_country_individu${i}`).val();
+  let cityOptions = `
+    <option value="" selected disabled>
+        Select Country
+    </option>
+  `;
+  const getDataCity = await getCity(getValueCountry);
+  getDataCity?.data?.map((val) => {
+    cityOptions += `
+        <option value="${val.id}">
+            ${val.name}
+        </option>
+    `;
+  });
+  $(`#profile_city_individu${i}`).append(cityOptions);
 };
 
 const getClubs = async () => {
@@ -300,7 +316,7 @@ const getProvince = async (countryId) => {
   });
 };
 
-const getCity = async (countryId, provinceID) => {
+const getCity = async (countryId = "", provinceID = "") => {
   return await $.ajax({
     url: `${base_url}/api/get-city/${countryId}${
       !provinceID ? "" : "/" + provinceID
