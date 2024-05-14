@@ -192,7 +192,7 @@
                             <div class="col-12 my-2">
                                 <ul class="bg-light nav mb-3 d-flex justify-content-center flex-wrap" id="pills-tab"
                                     role="tablist">
-                                    @foreach ($competition_categories as $key_ct => $ct_value)
+                                    @foreach ($category_tickets as $key_ct => $ct_value)
                                         <li class="nav-item" role="presentation">
                                             <a href="#"
                                                 class="nav-link nav-event-tournament {{ $key_ct == 0 ? 'active' : '' }}"
@@ -200,29 +200,24 @@
                                                 data-target="#pills-category-{{ $ct_value['id'] }}" type="button"
                                                 role="tab" aria-controls="pills-category-{{ $ct_value['id'] }}"
                                                 aria-selected="false">
-                                                {{ $ct_value['competition_categories_name'] }}
+                                                {{ $ct_value['category_name'] }}
                                             </a>
                                         </li>
                                     @endforeach
                                 </ul>
                                 <div class="tab-content" id="pills-tabContent">
-                                    @foreach ($competition_categories as $key_ct => $ct_value)
+                                    @foreach ($category_tickets as $key_ct => $ct_value)
                                         <div class="tab-pane fade {{ $key_ct == 0 ? 'show active' : '' }}"
                                             id="pills-category-{{ $ct_value['id'] }}" role="tabpanel"
                                             aria-labelledby="pills-category-{{ $ct_value['id'] }}-tab">
                                             <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
-                                                @php
-                                                $event_id = $ct_value['event_id'];
-                                                $competition_category_id = $ct_value['id'];
-                                                $sub_category = DB::select("SELECT id, class_name, distance FROM `competitions` WHERE event_id=".$event_id." AND competition_category_id=".$competition_category_id."");
-                                                @endphp
-                                                @foreach ($sub_category as $val_sub_category)
+                                                @foreach ($ct_value['sub_category'] as $val_sub_category)
                                                     <button
                                                         class="btn btn-warning button-warning-custom info-detail-qouta-ticket"
                                                         type="button"
-                                                        data-ticket-quota="{{ $val_sub_category->id }}">
-                                                        {{ $val_sub_category->class_name }} -
-                                                        {{ $val_sub_category->distance }} M
+                                                        data-ticket-quota="{{ json_encode($val_sub_category['tickets']) }}">
+                                                        {{ $val_sub_category['sub_category_name'] }} -
+                                                        {{ $val_sub_category['distance'] }} M
                                                     </button>
                                                 @endforeach
                                             </div>
@@ -622,7 +617,9 @@
                                             ->groupBy('title')
                                             ->get();
 
-                                        $competitons = DB::select("SELECT GROUP_CONCAT(name) as name FROM `competitions` WHERE event_id=".$content->id." GROUP BY event_id");
+                                        $competitons = DB::select("SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name FROM `competitions`, competition_categories 
+                                            WHERE competitions.event_id=".$content->id." AND competition_categories.id=competitions.competition_category_id 
+                                            GROUP BY competitions.event_id ORDER BY competitions.competition_category_id ASC");
                                     @endphp
                                     @if (count($tickets) > 0)
                                         <b>{{ __('Select Tickets') }}</b>

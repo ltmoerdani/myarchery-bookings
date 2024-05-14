@@ -222,14 +222,48 @@ class EventController extends Controller
       $information['related_events'] = $related_events;
       if ($information['content']->event_type == 'tournament') {
         $tickets = Ticket::where('event_id', '=', $event_id)->get();
-        $competition_categories = Competitions::join('competition_categories', 'competition_categories.id', 'competitions.competition_category_id')
-          ->select('competitions.event_id','competition_categories.id','competition_categories.name as competition_categories_name')
-          ->where('competitions.event_id', $event_id)
-          ->orderBy('competitions.competition_category_id', 'ASC')
-          ->groupBy('competition_categories.id')
-          ->get();
         
-        $information['competition_categories'] = $competition_categories;
+        $competition_categories = Competitions::join('competition_categories', 'competition_categories.id', 'competitions.competition_category_id')
+          ->select('competitions.event_id','competition_categories.id','competition_categories.name as category_name')
+          ->where('competitions.event_id', $event_id)
+          ->orderBy('competitions.competition_category_id', 'ASC')->groupBy('competition_categories.id')->get();
+
+        $competition = $competition_categories->map(function ($c) {
+          $competition_categories = [
+            'id' => $c->id,
+            'event_id' => $c->event_id,
+            'category_name' => $c->category_name,
+          ];
+
+          $subcategory = Competitions::where('event_id', $c->event_id)->where('competition_category_id', $c->id)->get();
+          $sub_category = $subcategory->map(function ($s) {
+            $sub_category = [
+              'id' => $s->id,
+              'sub_category_name' => $s->class_name,
+              'distance' => $s->distance,
+            ];
+
+            $language = $this->getLanguage();
+            $ticket = Ticket::join('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')->where('ticket_contents.language_id',$language->id)
+              ->select(DB::raw('tickets.id, ticket_contents.title, tickets.ticket_available, tickets.max_ticket_buy_type, "'.$s->name.'" as name'))
+              ->where('event_id', $s->event_id)->where('competition_id', $s->id)->get();
+            $tickets = $ticket->map(function ($t) {
+              return [
+                'id' => $t->id,
+                'title' => $t->title,
+                'available_qouta' => $t->ticket_available,
+                'max_qouta' => $t->max_ticket_buy_type,
+                'ticket_title' => substr($t->title,strlen($t->name))
+              ];
+            });
+            
+            return array_merge($sub_category, ['tickets' => $tickets->toArray()]);
+          });
+
+          return array_merge($competition_categories, ['sub_category' => $sub_category]);
+        });
+        
+        $information['category_tickets'] = $competition;
         $information['tickets'] = $tickets;
         return view('frontend.event.event-tournament-details', $information); //code...
       } else {
