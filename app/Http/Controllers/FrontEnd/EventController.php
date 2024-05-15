@@ -141,7 +141,7 @@ class EventController extends Controller
     $information['min'] = $min;
     $information['events'] = $events;
 
-    
+
     return view('frontend.event.event', compact('information'));
   }
 
@@ -222,9 +222,9 @@ class EventController extends Controller
       $information['related_events'] = $related_events;
       if ($information['content']->event_type == 'tournament') {
         $tickets = Ticket::where('event_id', '=', $event_id)->get();
-        
+
         $competition_categories = Competitions::join('competition_categories', 'competition_categories.id', 'competitions.competition_category_id')
-          ->select('competitions.event_id','competition_categories.id','competition_categories.name as category_name')
+          ->select('competitions.event_id', 'competition_categories.id', 'competition_categories.name as category_name')
           ->where('competitions.event_id', $event_id)
           ->orderBy('competitions.competition_category_id', 'ASC')->groupBy('competition_categories.id')->get();
 
@@ -244,8 +244,8 @@ class EventController extends Controller
             ];
 
             $language = $this->getLanguage();
-            $ticket = Ticket::join('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')->where('ticket_contents.language_id',$language->id)
-              ->select(DB::raw('tickets.id, ticket_contents.title, tickets.ticket_available, tickets.max_ticket_buy_type, "'.$s->name.'" as name'))
+            $ticket = Ticket::join('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')->where('ticket_contents.language_id', $language->id)
+              ->select(DB::raw('tickets.id, ticket_contents.title, tickets.ticket_available, tickets.max_ticket_buy_type, "' . $s->name . '" as name'))
               ->where('event_id', $s->event_id)->where('competition_id', $s->id)->get();
             $tickets = $ticket->map(function ($t) {
               return [
@@ -253,16 +253,16 @@ class EventController extends Controller
                 'title' => $t->title,
                 'available_qouta' => $t->ticket_available,
                 'max_qouta' => $t->max_ticket_buy_type,
-                'ticket_title' => substr($t->title,strlen($t->name))
+                'ticket_title' => substr($t->title, strlen($t->name))
               ];
             });
-            
+
             return array_merge($sub_category, ['tickets' => $tickets->toArray()]);
           });
 
           return array_merge($competition_categories, ['sub_category' => $sub_category]);
         });
-        
+
         $information['category_tickets'] = $competition;
         $information['tickets'] = $tickets;
         return view('frontend.event.event-tournament-details', $information); //code...
