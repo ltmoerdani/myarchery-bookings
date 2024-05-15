@@ -450,8 +450,8 @@
                                                         </label>
                                                         <select class="custom-select" id="team" name="team"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
@@ -460,8 +460,8 @@
                                                         </label>
                                                         <select class="custom-select" id="mixed_team" name="mixed_team"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
@@ -470,8 +470,8 @@
                                                         </label>
                                                         <select class="custom-select" id="official" name="official"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>

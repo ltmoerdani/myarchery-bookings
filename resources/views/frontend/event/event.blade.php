@@ -319,11 +319,23 @@
 
                                                 <div class="price-remain">
                                                     <div class="location">
-                                                        @if ($event->event_type == 'venue' || $event->event_type == 'tournament')
+                                                        @if ($event->event_type == 'venue')
                                                             <i class="fas fa-map-marker-alt"></i>
                                                             <span>
                                                                 @if ($event->city != null)
                                                                     {{ $event->city }}
+                                                                @endif
+                                                                @if ($event->country)
+                                                                    , {{ $event->country }}
+                                                                @endif
+                                                            </span>
+                                                        @elseif ($event->event_type == 'tournament')
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                            <span>
+                                                                @if ($event->city != null)
+                                                                    {{ $event->city }}
+                                                                @else
+                                                                    {{ __('Tournament') }}
                                                                 @endif
                                                                 @if ($event->country)
                                                                     , {{ $event->country }}

@@ -277,6 +277,7 @@ class EventController extends Controller
           $request->file('thumbnail')->move($directory, $filename);
           $in['thumbnail'] = $filename;
         }
+
         $in['f_price'] = $request->price;
         $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
         $in['is_featured'] = $request->is_featured;
@@ -335,7 +336,7 @@ class EventController extends Controller
         }
 
         // contingent type
-        if ($request->contingent_type) {
+        if ($request->delegation_type) {
           $input['event_id'] = $event->id;
           $input['contingent_type'] = $request->delegation_type;
           $input['select_type'] = $request->delegation_type;
@@ -356,7 +357,7 @@ class EventController extends Controller
           $competition_categories = CompetitionCategories::where('id',$request->competition_categories[$key])->first();
           $name_competition = $competition_categories->name . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key].' Meter';
           
-          Competitions::create([
+          $competitions = Competitions::create([
             'event_id' => $event->id,
             'name' => $name_competition,
             'competition_type_id' => 0,
@@ -368,11 +369,13 @@ class EventController extends Controller
             'class_name' => $request->competition_class_name[$key],
             'description' => null,
           ]);
+          $competition_id = $competitions->id;
 
           // Individual
           $gender = ['Putra', 'Putri'];
           foreach ($gender as $g) {
             $ticket['event_id'] = $event->id;
+            $ticket['competition_id'] = $competition_id;
             $ticket['event_type'] = 'tournament';
             $ticket['title'] = 'Individu';
             $ticket['ticket_available_type'] = 'limited';

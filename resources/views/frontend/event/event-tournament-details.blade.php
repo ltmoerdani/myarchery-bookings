@@ -617,9 +617,12 @@
                                             ->groupBy('title')
                                             ->get();
 
-                                        $competitons = DB::select("SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name FROM `competitions`, competition_categories 
+                                        $competitons = DB::select("SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
+                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id) AS competition_type
+                                            FROM `competitions`, competition_categories 
                                             WHERE competitions.event_id=".$content->id." AND competition_categories.id=competitions.competition_category_id 
-                                            GROUP BY competitions.event_id ORDER BY competitions.competition_category_id ASC");
+                                            GROUP BY competitions.competition_type_id ORDER BY competitions.competition_category_id ASC");
+
                                     @endphp
                                     @if (count($tickets) > 0)
                                         <b>{{ __('Select Tickets') }}</b>
@@ -662,6 +665,7 @@
                                                         </h6>
                                                     </div>
                                                     <div class="quantity-input">
+                                                        <input type="hidden" name="category_ticket[{{ $ticket->id }}]" value="{{ $ticket->title }}">
                                                         <button class="quantity-down" type="button" id="quantityDown">
                                                             -
                                                         </button>

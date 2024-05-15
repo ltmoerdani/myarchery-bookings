@@ -12,6 +12,7 @@ class Ticket extends Model
 
   protected $fillable = [
     'event_id',
+    'competition_id',
     'event_type',
     'title',
     'ticket_available_type',

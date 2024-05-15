@@ -13,11 +13,14 @@ use App\Models\Event\EventContent;
 use App\Models\Event\Ticket;
 use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\EventPublisher;
 use App\Models\Event\TicketContent;
 use App\Models\Language;
+use App\Models\Admin;
 use App\Models\Organizer;
 use App\Models\InternationalCountries;
 use App\Models\DelegationType;
+use App\Models\ContingentType;
 use Carbon\Carbon;
 
 class CheckOutController extends Controller
@@ -88,27 +91,24 @@ class CheckOutController extends Controller
       return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
     }
 
-    if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
+    if ($request->event_type == 'tournament') {
       $information['customer'] = Auth::guard('customer')->user();
       $information['event'] = $event;
       $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
         ->where('organizers.id', '=', $event->organizer_id)
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
         ->first();
+      
+      // Jika diinput bukan oleh organizer
+      if(!$information['organizer']){
+        $information['organizer'] = Admin::select('id','first_name as name','email','phone')->first();
+      }
+      
       $information['from_step_one'] = $request->all();
-      $information['delegation_event'] = [
-        'event_id' => $event->id,
-        'contingent_type' => 'open',
-        'select_type' => 'open',
-        'country_id' => null,
-        'country' => null,
-        'province_id' => null,
-        'province' => null,
-        'state_id' => null,
-        'state' => null,
-        'city_id' => null,
-        'city' => null,
-      ];
+
+      $contingent_type = ContingentType::where('event_id', $request->event_id)->first();
+      $information['delegation_event'] = $contingent_type->toArray();
+
       $information['category_tickets'] = [
         [
           "id" => 1,
@@ -131,6 +131,7 @@ class CheckOutController extends Controller
           "quantity" => 0
         ],
       ];
+
       $information['sub_category_tickets'] = [
         [
           "id" => 1,
@@ -152,7 +153,7 @@ class CheckOutController extends Controller
           "id" => 3,
           "title" => "Barebow Individu Umum 30M",
           "category_id" => 1,
-          "category_name" => "individu",
+          "category_name" => "individu", 
           "price" => 10000,
           "available_qouta" => 10
         ],
@@ -183,7 +184,6 @@ class CheckOutController extends Controller
       ];
       $information['delegation_type'] = DelegationType::get()->toArray();
       $information['countries'] = InternationalCountries::get()->toArray();
-      // dd($information);
       return view('frontend.event.event-form-order-detail', $information);
     }
     return redirect()->route('check-out');
