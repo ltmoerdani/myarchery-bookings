@@ -17,8 +17,8 @@ class CompetitionClassTypeSeeder extends Seeder
   {
     $data = [
       [
-        'name' => 'Umum',
-        'description' => 'For class type Umum',
+        'name' => 'Age',
+        'description' => 'For class type Age',
       ],
       [
         'name' => 'Open',

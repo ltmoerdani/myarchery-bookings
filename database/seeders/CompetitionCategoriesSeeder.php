@@ -29,6 +29,10 @@ class CompetitionCategoriesSeeder extends Seeder
         'description' => 'Recurve Categories',
       ],
       [
+        'name' => 'Recurve/Standar',
+        'description' => 'Recurve Categories',
+      ],
+      [
         'name' => 'Standard/Nasional',
         'description' => 'Standard/Nasional Categories',
       ],
