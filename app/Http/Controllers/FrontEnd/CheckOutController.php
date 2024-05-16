@@ -146,8 +146,7 @@ class CheckOutController extends Controller
     }
   }
 
-  public function checkout2Tournament(Request $request)
-  {
+  public function checkout2Tournament(Request $request){
     $basic = Basic::select('event_guest_checkout_status')->first();
     $event_guest_checkout_status = $basic->event_guest_checkout_status;
     if ($event_guest_checkout_status != 1) {
@@ -229,79 +228,37 @@ class CheckOutController extends Controller
       $contingent_type = ContingentType::where('event_id', $request->event_id)->first();
       $information['delegation_event'] = $contingent_type->toArray();
 
-      $information['category_tickets'] = [
-        [
-          "id" => 1,
-          'name' => 'individu',
-          "quantity" => 1
-        ],
-        [
-          "id" => 2,
-          'name' => 'team',
-          "quantity" => 0
-        ],
-        [
-          "id" => 3,
-          'name' => 'mix team',
-          "quantity" => 0
-        ],
-        [
-          "id" => 4,
-          'name' => 'official',
-          "quantity" => 0
-        ],
-      ];
+      $tickets = $request->category_ticket;
+      $quantity = $request->quantity;
+      foreach($tickets as $key => $value){
+        $ticket[$key] = $value;
+      }
+      foreach($quantity as $k => $v){
+        $category_ticket[] = [
+          "id" => $k,
+          'name' => $ticket[$k],
+          "quantity" => $v
+        ];
+      }
+      $information['category_tickets'] = $category_ticket;
 
-      $information['sub_category_tickets'] = [
-        [
-          "id" => 1,
-          "title" => "Barebow Individu Umum 20M",
+      $tickets_list = Ticket::leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')
+          ->select('tickets.*','ticket_contents.title as contents_title')
+          ->where('ticket_contents.language_id', 8)
+          ->where('tickets.event_id', $request->event_id)->where('tickets.title','Individu')->get();
+
+      foreach($tickets_list as $list){
+        $sub_category_tickets[] = [
+          "id" => $list->id,
+          "title" => $list->contents_title,
           "category_id" => 1,
-          "category_name" => "individu",
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-        [
-          "id" => 2,
-          "title" => "Barebow Individu Umum 50M",
-          "category_id" => 1,
-          "category_name" => "individu",
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-        [
-          "id" => 3,
-          "title" => "Barebow Individu Umum 30M",
-          "category_id" => 1,
-          "category_name" => "individu", 
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-        [
-          "id" => 10,
-          "title" => "Barebow Beregu Putra Umum 100M",
-          "category_id" => 2,
-          "category_name" => "team",
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-        [
-          "id" => 11,
-          "title" => "Barebow Beregu Putri Umum 100M",
-          "category_id" => 2,
-          "category_name" => "team",
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-        [
-          "id" => 15,
-          "title" => "Barebow Beregu Putri Umum 100M",
-          "category_id" => 2,
-          "category_name" => "Mix Team",
-          "price" => 10000,
-          "available_qouta" => 10
-        ],
-      ];
+          "category_name" => $list->title,
+          "price" => $list->price,
+          "available_qouta" => $list->ticket_available
+        ];
+      }
+      $information['sub_category_tickets'] = $sub_category_tickets;
+    
       $information['delegation_type'] = DelegationType::get()->toArray();
       $information['countries'] = InternationalCountries::get()->toArray();
       return view('frontend.event.event-form-order-detail', $information);

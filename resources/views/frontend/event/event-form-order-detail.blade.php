@@ -262,15 +262,13 @@
                                                                                 id="category_individu{{ $i }}"
                                                                                 name="category_individu[]">
                                                                                 <option value="" selected>
-                                                                                    {{ __('Select Category') }}</option>
-                                                                                @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                                    @if ($val_sub_cat_ticket['category_id'] == $val_category_tickets['id'])
+                                                                                    {{ __('Select Category') }}</option> 
+                                                                                    @foreach ($sub_category_tickets as $val_sub_cat_ticket)
                                                                                         <option
                                                                                             value="{{ $val_sub_cat_ticket['id'] }}">
                                                                                             {{ $val_sub_cat_ticket['title'] }}
                                                                                         </option>
-                                                                                    @endif
-                                                                                @endforeach
+                                                                                    @endforeach
                                                                             </select>
                                                                         </div>
                                                                     </div>
