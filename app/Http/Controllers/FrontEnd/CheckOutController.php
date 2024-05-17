@@ -18,9 +18,14 @@ use App\Models\Event\TicketContent;
 use App\Models\Language;
 use App\Models\Admin;
 use App\Models\Organizer;
+use App\Models\Participant;
+use App\Models\ParticipantCompetitions;
 use App\Models\InternationalCountries;
+use App\Models\IndonesianSubdistrict;
+use App\Models\InternationalCities;
 use App\Models\DelegationType;
 use App\Models\ContingentType;
+use App\Models\Clubs;
 use Carbon\Carbon;
 
 class CheckOutController extends Controller
@@ -63,83 +68,126 @@ class CheckOutController extends Controller
 
       $information['customer'] = Auth::guard('customer')->user();
       $information['event'] = $event;
+
       $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
         ->where('organizers.id', '=', $event->organizer_id)
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
         ->first();
+      // Jika diinput bukan oleh organizer
+      if(!$information['organizer']){
+        $information['organizer'] = Admin::select('id','first_name as name','email','phone')->first();
+      }
+
       $information['from_step_one'] = $request->all();
-      $information['ticket_infos'] = [
-        [
-          'title' => 'Barebow Individu Putra 200 Meter',
-          'quantity' => 1,
-          'price' => 100000,
-        ],
-        [
-          'title' => 'Barebow Individu Putri 200 Meter',
-          'quantity' => 1,
-          'price' => 90000,
-        ],
+
+      $name_individu = $request->name_individu;
+      foreach($name_individu as $key => $value){
+        $name[$key] = $value;
+      }
+
+      $gender_individu = $request->gender_individu;
+      foreach($gender_individu as $key => $value){
+        $gender[$key] = $value;
+      }
+
+      $birth_date_individu = $request->birth_date_individu;
+      foreach($birth_date_individu as $key => $value){
+        $birthdate[$key] = $value;
+      }
+
+      $profile_country_individu = $request->profile_country_individu;
+      foreach($profile_country_individu as $key => $value){
+        $country[$key] = $value;
+      }
+
+      $profile_city_individu = $request->profile_city_individu;
+      foreach($profile_city_individu as $key => $value){
+        $city[$key] = $value;
+      }
+
+      $delegation_individu = $request->delegation_individu;
+      foreach($delegation_individu as $key => $value){
+        $delegation[$key] = $value;
+      }
+
+      $club_delegation_individu = $request->club_delegation_individu;
+      foreach($club_delegation_individu as $key => $value){
+        $club[$key] = $value;
+      }
+
+      $category_individu = $request->category_individu;
+      $code_access = $request->code_access;
+
+      foreach($category_individu as $k => $v){
+        //Get country
+        $country_name = InternationalCountries::where('id', $country[$k])->first();
+
+        //Get city
+        if ($country[$k] == "102") { //Indonesia
+          $city_name = IndonesianSubdistrict::select('id', 'name')->where('province_id', $city[$k])->first();
+        } else {
+          $city_name = InternationalCities::select('id', 'name')->where('country_id', $country[$k])->where('state_id', $city[$k])->first();
+        }
+
+        // Save to table participant
+        $input['fname'] = $name[$k];
+        $input['lname'] = null;
+        $input['gender'] = ($gender[$k] == 'male') ? 'M' : 'F';
+        $input['birthdate'] = $birthdate[$k];
+        $input['county_id'] = $country[$k];
+        $input['country'] = $country_name->name;
+        $input['city_id'] = $city[$k];
+        $input['city'] = $city_name->name;
+        $input['category'] = $delegation[$k];
+        $input['club_id'] = empty($club[$k]) ? null : $club[$k];
+        $input['customer_id'] = Auth::guard('customer')->user()->id;
+        $peserta = Participant::create($input);
+
+        $ticket = Ticket::where('id', $v)->first();
+        $tickets = TicketContent::where('ticket_id', $v)->where('language_id', 8)->first();
+        $p['competition_name'] = $tickets->title;
+        $p['participant_id'] = $peserta->id;
+        $p['ticket_id'] = $k;
+        $p['description'] = null;
+        ParticipantCompetitions::create($p);
+
+        // array_count_values($array)
+        $category_ticket[] = [
+          "title" => $tickets->title,
+          "quantity" => 1,
+          "price" => $ticket->price
+        ];
+
+        $club_name = Clubs::where('id', $club[$k])->first();
+        $ticket_detail_order[] = [
+            "id" => $v,
+            "user_full_name" => $name[$k],
+            "user_gender" => $gender[$k],
+            "delegation_type" => $delegation[$k],
+            "country_id" => null,
+            "country_name" => null,
+            "province_id" => null,
+            "province_name" => null,
+            "city_id" => null,
+            "city_name" => null,
+            "club_id" => empty($club[$k]) ? null : $club[$k],
+            "club_name" => empty($club_name->name) ? null : $club_name->name,
+            "school_name" => null,
+            "organization_name" => null,
+            "sub_category_ticket_id" => $v,
+            "sub_category_ticket" => $tickets->title
+        ];
+      }
+
+      $orders[] = [
+        "title" => $v,
+        "category" => 'individu',
+        "ticket_detail_order" => $ticket_detail_order
       ];
-      $information['orders'] = [
-        [
-          "id" => 1,
-          "category" => "individu",
-          "ticket_detail_order" => [
-            [
-              "id" => 1,
-              "user_full_name" => "Oding Selamat Sentosa",
-              "user_gender" => "male",
-              "delegation_type" => "club",
-              "country_id" => null,
-              "country_name" => null,
-              "province_id" => null,
-              "province_name" => null,
-              "city_id" => null,
-              "city_name" => null,
-              "club_id" => 1,
-              "club_name" => "my kuy kuy yuhuu",
-              "school_name" => null,
-              "organization_name" => null,
-              "sub_category_ticket_id" => 15,
-              "sub_category_ticket" => 'Barebow Umum 200 Meter'
-            ],
-            [
-              "id" => 2,
-              "user_full_name" => "Makior Ladano",
-              "user_gender" => "female",
-              "delegation_type" => "country",
-              "country_id" => 121,
-              "country_name" => 'South Africa',
-              "province_id" => null,
-              "province_name" => null,
-              "city_id" => null,
-              "city_name" => null,
-              "club_id" => 1,
-              "club_name" => null,
-              "school_name" => null,
-              "organization_name" => null,
-              "sub_category_ticket_id" => 10,
-              "sub_category_ticket" => 'Barebow Umum 200 Meter'
-            ],
-          ],
-        ],
-        [
-          "id" => 2,
-          "category" => "team",
-          "ticket_detail_order" => [],
-        ],
-        [
-          "id" => 3,
-          "category" => "mix team",
-          "ticket_detail_order" => [],
-        ],
-        [
-          "id" => 4,
-          "category" => "official",
-          "ticket_detail_order" => [],
-        ]
-      ];
-      // dd($information);
+
+      $information['ticket_infos'] = $category_ticket;
+      $information['orders'] = $orders;
+      
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
       dd($e);

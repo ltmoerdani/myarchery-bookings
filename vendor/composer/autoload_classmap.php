@@ -288,6 +288,7 @@ return array(
     'App\\Models\\Organization' => $baseDir . '/app/Models/Organization.php',
     'App\\Models\\Organizer' => $baseDir . '/app/Models/Organizer.php',
     'App\\Models\\OrganizerInfo' => $baseDir . '/app/Models/OrganizerInfo.php',
+    'App\\Models\\Participant' => $baseDir . '/app/Models/Participant.php',
     'App\\Models\\PaymentGateway\\OfflineGateway' => $baseDir . '/app/Models/PaymentGateway/OfflineGateway.php',
     'App\\Models\\PaymentGateway\\OnlineGateway' => $baseDir . '/app/Models/PaymentGateway/OnlineGateway.php',
     'App\\Models\\Popup' => $baseDir . '/app/Models/Popup.php',
