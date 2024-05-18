@@ -81,6 +81,8 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
     Route::get('add-event/', 'BackEnd\Event\EventController@add_event')->name('add.event.event');
     Route::get('choose-event-type/', 'BackEnd\Event\EventController@choose_event_type')->name('admin.choose-event-type');
     Route::post('event-imagesstore', 'BackEnd\Event\EventController@gallerystore')->name('admin.event.imagesstore');
+    Route::post('event-imagermv-tournament', 'BackEnd\Event\EventController@imagermvtournament')->name('admin.event.imagermvtournament');
+    Route::post('event-imagesstore-tournament', 'BackEnd\Event\EventController@gallerystoretournament')->name('admin.event.imagesstoretournament');
     Route::post('event-imagermv', 'BackEnd\Event\EventController@imagermv')->name('admin.event.imagermv');
     Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
     // Tournament add event
