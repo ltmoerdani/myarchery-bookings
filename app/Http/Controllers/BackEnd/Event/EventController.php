@@ -136,7 +136,53 @@ class EventController extends Controller
     $pi->save();
     return response()->json(['status' => 'success', 'file_id' => $pi->id]);
   }
+
   public function imagermv(Request $request)
+  {
+    $pi = EventImage::where('id', $request->fileid)->first();
+    @unlink(public_path('assets/admin/img/event-gallery/') . $pi->image);
+    $pi->delete();
+    return $pi->id;
+  }
+
+  public function gallerystoretournament(Request $request)
+  {
+    $img = $request->file('file');
+    $allowedExts = array('jpg', 'png', 'jpeg');
+    $rules = [
+      'file' => [
+        // 'dimensions:width=1170,height=570',
+        function ($attribute, $value, $fail) use ($img, $allowedExts) {
+          $ext = $img->getClientOriginalExtension();
+          if (!in_array($ext, $allowedExts)) {
+            return $fail("Only png, jpg, jpeg images are allowed");
+          }
+        }
+      ]
+    ];
+
+    $messages = [
+      'file.dimensions' => 'The file has invalid image dimensions ' . $img->getClientOriginalName()
+    ];
+
+    $validator = Validator::make($request->all(), $rules, $messages);
+    if ($validator->fails()) {
+      $validator->getMessageBag()->add('error', 'true');
+      return response()->json($validator->errors());
+    }
+    $filename = uniqid() . '.jpg';
+    @mkdir(public_path('assets/admin/img/event-gallery/'), 0775, true);
+    $img->move(public_path('assets/admin/img/event-gallery/'), $filename);
+    $pi = new EventImage;
+    if (!empty($request->event_id)) {
+      $pi->event_id = $request->event_id;
+    }
+    $pi->image = $filename;
+    $pi->save();
+    return response()->json(['status' => 'success', 'file_id' => $pi->id]);
+  }
+
+  public function imagermvtournament(Request $request)
   {
     $pi = EventImage::where('id', $request->fileid)->first();
     @unlink(public_path('assets/admin/img/event-gallery/') . $pi->image);
@@ -354,9 +400,9 @@ class EventController extends Controller
         // Add Competition Category
         $i = 1;
         foreach ($request->competition_categories as $key => $c) {
-          $competition_categories = CompetitionCategories::where('id',$request->competition_categories[$key])->first();
-          $name_competition = $competition_categories->name . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key].' Meter';
-          
+          $competition_categories = CompetitionCategories::where('id', $request->competition_categories[$key])->first();
+          $name_competition = $competition_categories->name . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key] . ' Meter';
+
           $competitions = Competitions::create([
             'event_id' => $event->id,
             'name' => $name_competition,
@@ -391,34 +437,34 @@ class EventController extends Controller
 
             $languages = Language::all();
             foreach ($languages as $language) {
-              if($language->id == 8){
-                if($g == 'Putra'){
+              if ($language->id == 8) {
+                if ($g == 'Putra') {
                   $g = 'Men';
-                }elseif($g == 'Putri'){
+                } elseif ($g == 'Putri') {
                   $g = 'Women';
                 }
               }
 
-              if($language->id == 23){
-                if($g == 'Men'){
+              if ($language->id == 23) {
+                if ($g == 'Men') {
                   $g = 'Putra';
-                }elseif($g == 'Women'){
+                } elseif ($g == 'Women') {
                   $g = 'Putri';
                 }
               }
-              
+
               $data['language_id'] = $language->id;
               $data['ticket_id'] = $t->id;
-              $data['title'] = $name_competition.' Individu '.$g;
+              $data['title'] = $name_competition . ' Individu ' . $g;
               $data['description'] = null;
               TicketContent::create($data);
             }
           }
 
           // Team
-          if($request->team == "active"){
-            $gender = ['Putra','Putri'];
-            foreach($gender as $g){
+          if ($request->team == "active") {
+            $gender = ['Putra', 'Putri'];
+            foreach ($gender as $g) {
               $ticket['event_id'] = $event->id;
               $ticket['event_type'] = 'tournament';
               $ticket['title'] = 'Team';
@@ -435,25 +481,25 @@ class EventController extends Controller
 
               $languages = Language::all();
               foreach ($languages as $language) {
-                if($language->id == 8){
-                  if($g == 'Putra'){
+                if ($language->id == 8) {
+                  if ($g == 'Putra') {
                     $g = 'Men';
-                  }elseif($g == 'Putri'){
+                  } elseif ($g == 'Putri') {
                     $g = 'Women';
                   }
                 }
 
-                if($language->id == 23){
-                  if($g == 'Men'){
+                if ($language->id == 23) {
+                  if ($g == 'Men') {
                     $g = 'Putra';
-                  }elseif($g == 'Women'){
+                  } elseif ($g == 'Women') {
                     $g = 'Putri';
                   }
                 }
-                
+
                 $data['language_id'] = $language->id;
                 $data['ticket_id'] = $t->id;
-                $data['title'] = $name_competition.' Team '.$g;
+                $data['title'] = $name_competition . ' Team ' . $g;
                 $data['description'] = null;
                 TicketContent::create($data);
               }
@@ -461,7 +507,7 @@ class EventController extends Controller
           }
 
           // Mix Team
-          if($request->mixed_team == "active"){
+          if ($request->mixed_team == "active") {
             $ticket['event_id'] = $event->id;
             $ticket['event_type'] = 'tournament';
             $ticket['title'] = 'Mix Team';
@@ -480,14 +526,14 @@ class EventController extends Controller
             foreach ($languages as $language) {
               $data['language_id'] = $language->id;
               $data['ticket_id'] = $t->id;
-              $data['title'] = $name_competition.' Mix Team';
+              $data['title'] = $name_competition . ' Mix Team';
               $data['description'] = null;
               TicketContent::create($data);
             }
           }
 
           // Official
-          if($request->official == "active"){
+          if ($request->official == "active") {
             $ticket['event_id'] = $event->id;
             $ticket['event_type'] = 'tournament';
             $ticket['title'] = 'Official';
@@ -506,7 +552,7 @@ class EventController extends Controller
             foreach ($languages as $language) {
               $data['language_id'] = $language->id;
               $data['ticket_id'] = $t->id;
-              $data['title'] = $name_competition.' Official';
+              $data['title'] = $name_competition . ' Official';
               $data['description'] = null;
               TicketContent::create($data);
             }
@@ -848,11 +894,13 @@ class EventController extends Controller
     return response()->json(['status' => 'success'], 200);
   }
 
-  public function codeGenerate(){
+  public function codeGenerate()
+  {
     return HelperEvent::AutoGenerateCode();
   }
 
-  public function getCompetitionType(){
+  public function getCompetitionType()
+  {
     $data = CompetitionType::get();
     return HelperResponse::Success($data, "Get Data Success");
   }

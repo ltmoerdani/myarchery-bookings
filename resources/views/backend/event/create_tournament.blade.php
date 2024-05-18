@@ -26,7 +26,7 @@
                 <i class="flaticon-right-arrow"></i>
             </li>
             <li class="nav-item">
-                <a href="#">{{ __('Add Event Tournament') }}</a> 
+                <a href="#">{{ __('Add Event Tournament') }}</a>
             </li>
         </ul>
     </div>
@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <label for="" class="mb-2"><strong>{{ __('Gallery Images') }} **</strong></label>
-                                <form action="{{ route('admin.event.imagesstore') }}" id="my-dropzone"
+                                <form action="{{ route('admin.event.imagermvtournament') }}" id="my-dropzone"
                                     enctype="multipart/formdata" class="dropzone create">
                                     @csrf
                                     <div class="fallback">
@@ -120,41 +120,41 @@
                                         </div>
                                     </div>
                                     <!-- <div class="col-12">
-                                        <div class="card border border-1">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-12 mt-2">
-                                                        <div class="form-group">
-                                                            <label>
-                                                                {{ __('Currency Type') . '*' }}
-                                                            </label>
-                                                            <div class="selectgroup w-100">
-                                                                <label class="selectgroup-item">
-                                                                    <input type="radio" name="currency_type"
-                                                                        value="idr"
-                                                                        class="selectgroup-input eventDateType" checked>
-                                                                    <span
-                                                                        class="selectgroup-button">{{ __('Single Currency') }}</span>
+                                            <div class="card border border-1">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-12 mt-2">
+                                                            <div class="form-group">
+                                                                <label>
+                                                                    {{ __('Currency Type') . '*' }}
                                                                 </label>
+                                                                <div class="selectgroup w-100">
+                                                                    <label class="selectgroup-item">
+                                                                        <input type="radio" name="currency_type"
+                                                                            value="idr"
+                                                                            class="selectgroup-input eventDateType" checked>
+                                                                        <span
+                                                                            class="selectgroup-button">{{ __('Single Currency') }}</span>
+                                                                    </label>
 
-                                                                <label class="selectgroup-item">
-                                                                    <input type="radio" name="currency_type"
-                                                                        value="idr,usd"
-                                                                        class="selectgroup-input eventDateType">
-                                                                    <span
-                                                                        class="selectgroup-button">{{ __('Dual Currency') }}</span>
-                                                                </label>
+                                                                    <label class="selectgroup-item">
+                                                                        <input type="radio" name="currency_type"
+                                                                            value="idr,usd"
+                                                                            class="selectgroup-input eventDateType">
+                                                                        <span
+                                                                            class="selectgroup-button">{{ __('Dual Currency') }}</span>
+                                                                    </label>
+                                                                </div>
+                                                                <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
+                                                                    in
+                                                                    both IDR
+                                                                    (primary) and USD.</p>
                                                             </div>
-                                                            <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
-                                                                in
-                                                                both IDR
-                                                                (primary) and USD.</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div> -->
+                                        </div> -->
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -730,8 +730,8 @@
 @section('variables')
     <script>
         "use strict";
-        var storeUrl = "{{ route('admin.event.imagesstore') }}";
-        var removeUrl = "{{ route('admin.event.imagermv') }}";
+        var storeUrl = "{{ route('admin.event.imagesstoretournament') }}";
+        var removeUrl = "{{ route('admin.event.imagermvtournament') }}";
         var loadImgs = 0;
 
         // let i = 0;
