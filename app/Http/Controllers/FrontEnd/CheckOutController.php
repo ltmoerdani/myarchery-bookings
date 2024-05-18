@@ -111,13 +111,31 @@ class CheckOutController extends Controller
       }
 
       $club_delegation_individu = $request->club_delegation_individu;
-      foreach($club_delegation_individu as $key => $value){
-        $club[$key] = $value;
+      if($club_delegation_individu){
+        foreach($club_delegation_individu as $key => $value){
+          $club[$key] = $value;
+        }
+      }
+
+      $school_delegation_individu = $request->school_delegation_individu;
+      if($school_delegation_individu){
+        foreach($school_delegation_individu as $key => $value){
+          $school[$key] = $value;
+        }
+      }
+
+      $organization_delegation_individu = $request->organization_delegation_individu;
+      if($organization_delegation_individu){
+        foreach($organization_delegation_individu as $key => $value){
+          $organization[$key] = $value;
+        }
       }
 
       $category_individu = $request->category_individu;
       $code_access = $request->code_access;
-
+      
+      $category_ticket = array();
+      $categorytickets = array('title' => null, 'quantity' => null, 'price' => null);
       foreach($category_individu as $k => $v){
         //Get country
         $country_name = InternationalCountries::where('id', $country[$k])->first();
@@ -129,51 +147,33 @@ class CheckOutController extends Controller
           $city_name = InternationalCities::select('id', 'name')->where('country_id', $country[$k])->where('state_id', $city[$k])->first();
         }
 
-        // Save to table participant
-        $input['fname'] = $name[$k];
-        $input['lname'] = null;
-        $input['gender'] = ($gender[$k] == 'male') ? 'M' : 'F';
-        $input['birthdate'] = $birthdate[$k];
-        $input['county_id'] = $country[$k];
-        $input['country'] = $country_name->name;
-        $input['city_id'] = $city[$k];
-        $input['city'] = $city_name->name;
-        $input['category'] = $delegation[$k];
-        $input['club_id'] = empty($club[$k]) ? null : $club[$k];
-        $input['customer_id'] = Auth::guard('customer')->user()->id;
-        $peserta = Participant::create($input);
-
         $ticket = Ticket::where('id', $v)->first();
         $tickets = TicketContent::where('ticket_id', $v)->where('language_id', 8)->first();
-        $p['competition_name'] = $tickets->title;
-        $p['participant_id'] = $peserta->id;
-        $p['ticket_id'] = $k;
-        $p['description'] = null;
-        ParticipantCompetitions::create($p);
 
-        // array_count_values($array)
-        $category_ticket[] = [
-          "title" => $tickets->title,
-          "quantity" => 1,
-          "price" => $ticket->price
-        ];
-
+        if($categorytickets['title'] != $tickets->title) {
+          unset($categorytickets);
+          $categorytickets = array('title' => $tickets->title, 'quantity' => 0, 'price' => 0);
+          $category_ticket[] =& $categorytickets;
+        }
+        $categorytickets['price'] = $categorytickets['price'] + $ticket->price;
+        $categorytickets['quantity']++;
+        
         $club_name = Clubs::where('id', $club[$k])->first();
         $ticket_detail_order[] = [
             "id" => $v,
             "user_full_name" => $name[$k],
             "user_gender" => $gender[$k],
             "delegation_type" => $delegation[$k],
-            "country_id" => null,
-            "country_name" => null,
-            "province_id" => null,
-            "province_name" => null,
-            "city_id" => null,
-            "city_name" => null,
+            "country_id" => empty($country[$k]) ? null : $country[$k],
+            "country_name" => empty($country_name->name) ? null : $country_name->name,
+            "province_id" => empty($state[$k]) ? null : $state[$k],
+            "province_name" => empty($state_name->name) ? null : $state_name->name,
+            "city_id" => empty($city[$k]) ? null : $city[$k],
+            "city_name" => empty($city_name->name) ? null : $city_name->name,
             "club_id" => empty($club[$k]) ? null : $club[$k],
             "club_name" => empty($club_name->name) ? null : $club_name->name,
-            "school_name" => null,
-            "organization_name" => null,
+            "school_name" => empty($school[$k]) ? null : $school[$k],
+            "organization_name" => empty($organization[$k]) ? null : $organization[$k],
             "sub_category_ticket_id" => $v,
             "sub_category_ticket" => $tickets->title
         ];
@@ -311,6 +311,294 @@ class CheckOutController extends Controller
       $information['countries'] = InternationalCountries::get()->toArray();
       return view('frontend.event.event-form-order-detail', $information);
     }
+    return redirect()->route('check-out');
+  }
+
+  public function checkout3Tournament(Request $request)
+  {
+    $basic = Basic::select('event_guest_checkout_status')->first();
+    $event_guest_checkout_status = $basic->event_guest_checkout_status;
+    if ($event_guest_checkout_status != 1) {
+      if (!Auth::guard('customer')->user()) {
+        return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+      }
+    }
+    $select = false;
+    $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
+    if ($event_type->event_type == 'venue') {
+      foreach ($request->quantity as $qty) {
+        if ($qty > 0) {
+          $select = true;
+          break;
+        }
+        continue;
+      }
+    } else {
+      if ($request->pricing_type == 'free') {
+        $select = true;
+      } elseif ($request->pricing_type == 'normal') {
+        if ($request->quantity == 0) {
+          $select = false;
+        } else {
+          $select = true;
+        }
+      } else {
+        foreach ($request->quantity as $qty) {
+          if ($qty > 0) {
+            $select = true;
+            break;
+          }
+          continue;
+        }
+      }
+    }
+
+
+    if ($select == false) {
+      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+    }
+
+    $information = [];
+    $information['selTickets'] = '';
+    $event = Event::where('id', $request->event_id)->select('event_type')->first();
+
+    $check = false;
+
+    if ($event->event_type == 'online') {
+      //**************** stock check start *************** */
+      $stock = StockCheck($request->event_id, $request->quantity);
+      if ($stock == 'error') {
+        $check = true;
+      }
+
+      //*************** stock check end **************** */
+
+      if ($request->pricing_type == 'normal') {
+
+        $price = Ticket::where('event_id', $request->event_id)->select('price', 'early_bird_discount', 'early_bird_discount_amount', 'early_bird_discount_type', 'early_bird_discount_date', 'early_bird_discount_time', 'ticket_available', 'ticket_available_type', 'max_ticket_buy_type', 'max_buy_ticket')->first();
+        $information['quantity'] = $request->quantity;
+        $total = $request->quantity * $price->price;
+
+        //check guest checkout status enable or not
+        if ($event_guest_checkout_status != 1) {
+          //check max buy by customer
+          $max_buy = isTicketPurchaseOnline($request->event_id, $price->max_buy_ticket);
+          if ($max_buy['status'] == 'true') {
+            $check = true;
+          } else {
+            $check = false;
+          }
+        } else {
+          $check = false;
+        }
+
+
+
+        if ($price->early_bird_discount == 'enable') {
+
+          $start = Carbon::parse($price->early_bird_discount_date . $price->early_bird_discount_time);
+          $end = Carbon::parse($price->early_bird_discount_date . $price->early_bird_discount_time);
+          $today = Carbon::now();
+          if ($today <= ($end)) {
+            if ($price->early_bird_discount_type == 'fixed') {
+              $early_bird_dicount = $price->early_bird_discount_amount;
+            } else {
+              $early_bird_dicount = ($price->early_bird_discount_amount * $total) / 100;
+            }
+          } else {
+            $early_bird_dicount = 0;
+          }
+        } else {
+          $early_bird_dicount = 0;
+        }
+
+        Session::put('total_early_bird_dicount', $early_bird_dicount * $request->quantity);
+        $information['total'] = $total;
+        Session::put('total', $total);
+        Session::put('sub_total', $total);
+        Session::put('quantity', $request->quantity);
+      } elseif ($request->pricing_type == 'free') {
+        $price = Ticket::where('event_id', $request->event_id)->select('max_buy_ticket')->first();
+        //check guest checkout status enable or not
+        if ($event_guest_checkout_status != 1) {
+          //check max buy by customer
+          $max_buy = isTicketPurchaseOnline($request->event_id, $price->max_buy_ticket);
+          if ($max_buy['status'] == 'true') {
+            $check = true;
+          }
+        }
+
+        $information['quantity'] = $request->quantity;
+        $information['total'] = 0;
+        Session::put('total', 0);
+        Session::put('sub_total', 0);
+        Session::put('quantity', $request->quantity);
+      }
+    } else {
+      $tickets = Ticket::where('event_id', $request->event_id)->select('id', 'title', 'pricing_type', 'price', 'variations', 'early_bird_discount', 'early_bird_discount_amount', 'early_bird_discount_type', 'early_bird_discount_date', 'early_bird_discount_time')->get();
+      $ticketArr = [];
+
+      foreach ($tickets as $key => $ticket) {
+
+        if ($ticket->pricing_type == 'variation') {
+          $varArr1 = json_decode($ticket->variations, true);
+          foreach ($varArr1 as $key => $var1) {
+
+            $stock[] = [
+              'name' => $var1['name'],
+              'price' => $var1['price'],
+              'ticket_available' => $var1['ticket_available'] - $request->quantity[$key],
+            ];
+
+            //check early_bird discount
+            if ($ticket->early_bird_discount == 'enable') {
+
+              $start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+              $end = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+              $today = Carbon::now();
+              if ($today <= ($end)) {
+                if ($ticket->early_bird_discount_type == 'fixed') {
+                  $early_bird_dicount = $ticket->early_bird_discount_amount;
+                } else {
+                  $early_bird_dicount = ($var1['price'] * $ticket->early_bird_discount_amount) / 100;
+                }
+              } else {
+                $early_bird_dicount = 0;
+              }
+            } else {
+              $early_bird_dicount = 0;
+            }
+
+            $var1['type'] = $ticket->pricing_type;
+            $var1['early_bird_dicount'] = $early_bird_dicount;
+            $var1['ticket_id'] = $ticket->id;
+
+            $ticketArr[] = $var1;
+          }
+          Session::put('stock', $stock);
+        } elseif ($ticket->pricing_type == 'normal') {
+
+          //check early_bird discount
+          if ($ticket->early_bird_discount == 'enable') {
+
+            $start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+            $end = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+            $today = Carbon::now();
+            if ($today <= ($end)) {
+              if ($ticket->early_bird_discount_type == 'fixed') {
+                $early_bird_dicount = $ticket->early_bird_discount_amount;
+              } else {
+                $early_bird_dicount = ($ticket->price * $ticket->early_bird_discount_amount) / 100;
+              }
+            } else {
+              $early_bird_dicount = 0;
+            }
+          } else {
+            $early_bird_dicount = 0;
+          }
+
+          $language = Language::where('is_default', 1)->first();
+
+          $ticketContent = TicketContent::where([['ticket_id', $ticket->id], ['language_id', $language->id]])->first();
+          if (empty($ticketContent)) {
+            $ticketContent = TicketContent::where('ticket_id', $ticket->id)->first();
+          }
+
+          $ticketArr[] = [
+            'ticket_id' => $ticket->id,
+            'early_bird_dicount' => $early_bird_dicount,
+            'name' => $ticketContent->title,
+            'price' => $ticket->price,
+            'type' => $ticket->pricing_type
+          ];
+        } elseif ($ticket->pricing_type == 'free') {
+          $language = Language::where('is_default', 1)->first();
+          $ticketContent = TicketContent::where([['ticket_id', $ticket->id], ['language_id', $language->id]])->first();
+          if (empty($ticketContent)) {
+            $ticketContent = TicketContent::where('ticket_id', $ticket->id)->first();
+          }
+
+          $ticketArr[] = [
+            'ticket_id' => $ticket->id,
+            'early_bird_dicount' => 0,
+            'name' => $ticketContent->title,
+            'price' => 0,
+            'type' => $ticket->pricing_type
+          ];
+        }
+      }
+
+      $selTickets = [];
+      foreach ($request->quantity as $key => $qty) {
+        if ($qty > 0) {
+          $selTickets[] = [
+            'ticket_id' => $ticketArr[$key]['ticket_id'],
+            'early_bird_dicount' => $qty * $ticketArr[$key]['early_bird_dicount'],
+            'name' => $ticketArr[$key]['name'],
+            'qty' => $qty,
+            'price' => $ticketArr[$key]['price'],
+          ];
+        }
+      }
+
+      $sub_total = 0;
+      $total_ticket = 0;
+      $total_early_bird_dicount = 0;
+      foreach ($selTickets as $key => $var) {
+        $sub_total += $var['price'] * $var['qty'];
+        $total_ticket += $var['qty'];
+        $total_early_bird_dicount += $var['early_bird_dicount'];
+      }
+
+      $total = $sub_total - $total_early_bird_dicount;
+
+      Session::put('total', round($total, 2));
+      Session::put('sub_total', round($sub_total, 2));
+      Session::put('quantity', $total_ticket);
+      Session::put('selTickets', $selTickets);
+      Session::put('discount', NULL);
+      Session::put('total_early_bird_dicount', NULL);
+      Session::put('total_early_bird_dicount', round($total_early_bird_dicount, 2));
+
+      //stock check
+      foreach ($selTickets as $selTicket) {
+        $stock = TicketStockCheck($selTicket['ticket_id'], $selTicket['qty'], $selTicket['name']);
+
+        if ($stock == 'error') {
+          $check = true;
+          break;
+        }
+        //check guest checkout status enable or not
+        if ($event_guest_checkout_status != 1) {
+          $check_v = isTicketPurchaseVenueBackend($request->event_id, $selTicket['ticket_id'], $selTicket['name']);
+          if ($check_v['status'] == 'true') {
+            $check = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if ($check == true) {
+      $notification = array('message' => 'Something went wrong..!', 'alert-type' => 'error');
+      return back()->with($notification);
+    }
+
+    $event =  EventContent::join('events', 'events.id', 'event_contents.event_id')
+      ->where('events.id', $request->event_id)
+      ->select('events.*', 'event_contents.title', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
+      ->first();
+    Session::put('event', $event);
+    $online_gateways = OnlineGateway::where('status', 1)->get();
+    $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+    Session::put('online_gateways', $online_gateways);
+    Session::put('offline_gateways', $offline_gateways);
+    Session::put('event_date', $request->event_date);
+    //check customer logged in or not ?
+    if (Auth::guard('customer')->check() == false) {
+      return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+    }
+
     return redirect()->route('check-out');
   }
 
