@@ -185,6 +185,7 @@ Route::middleware('change.lang')->group(function () {
   Route::get('addto/wishlist/{id}', 'FrontEnd\EventController@add_to_wishlist')->name('addto.wishlist');
   Route::get('remove/wishlist/{id}', 'FrontEnd\CustomerController@remove_wishlist')->name('remove.wishlist');
 
+  // Checkout Tournament
   Route::post(
     '/detail-check-out-tournament',
     'FrontEnd\CheckOutController@detailCheckout2Tournament'
@@ -193,6 +194,8 @@ Route::middleware('change.lang')->group(function () {
     '/check-out-tournament',
     'FrontEnd\CheckOutController@checkout2Tournament'
   )->name('check-out-tournament');
+  Route::post('/check-out3', 'FrontEnd\CheckOutController@checkout3Tournament')->name('check-out3-tournament');
+
   Route::post('/check-out2', 'FrontEnd\CheckOutController@checkout2')->name('check-out2');
   Route::get('/checkout', 'FrontEnd\CheckOutController@checkout')->name('check-out');
 

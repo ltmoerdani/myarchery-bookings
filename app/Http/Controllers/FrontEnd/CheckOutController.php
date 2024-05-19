@@ -115,6 +115,7 @@ class CheckOutController extends Controller
         foreach($club_delegation_individu as $key => $value){
           $club[$key] = $value;
         }
+        $club_name = Clubs::where('id', $club[$k])->first();
       }
 
       $school_delegation_individu = $request->school_delegation_individu;
@@ -158,7 +159,6 @@ class CheckOutController extends Controller
         $categorytickets['price'] = $categorytickets['price'] + $ticket->price;
         $categorytickets['quantity']++;
         
-        $club_name = Clubs::where('id', $club[$k])->first();
         $ticket_detail_order[] = [
             "id" => $v,
             "user_full_name" => $name[$k],
@@ -316,6 +316,9 @@ class CheckOutController extends Controller
 
   public function checkout3Tournament(Request $request)
   {
+    $re = $request->all();
+    var_dump($re);die;
+    
     $basic = Basic::select('event_guest_checkout_status')->first();
     $event_guest_checkout_status = $basic->event_guest_checkout_status;
     if ($event_guest_checkout_status != 1) {
@@ -352,7 +355,6 @@ class CheckOutController extends Controller
         }
       }
     }
-
 
     if ($select == false) {
       return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
