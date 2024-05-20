@@ -191,6 +191,157 @@ class BookingController extends Controller
     }
   }
 
+  public function booking_tournament(Request $request, $id)
+  {
+    $basic = Basic::select('event_guest_checkout_status')->first();
+    if ($basic->event_guest_checkout_status == 0 && $request->type != 'guest') {
+      // check whether user is logged in or not
+      if (Auth::guard('customer')->check() == false) {
+        return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
+      }
+    }
+
+    // payment
+    if ($request->total != 0 || Session::get('sub_total') != 0) {
+      
+      if (!$request->exists('gateway')) {
+        Session::flash('error', 'Please select a payment method.');
+
+        return redirect()->back();
+      } else if ($request['gateway'] == 'paypal') {
+        $paypal = new PayPalController();
+
+        return $paypal->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'razorpay') {
+        $razorpay = new RazorpayController();
+
+        return $razorpay->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'instamojo') {
+        $instamojo = new InstamojoController();
+
+        return $instamojo->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'paystack') {
+        $paystack = new PaystackController();
+
+        return $paystack->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'flutterwave') {
+        $flutterwave = new FlutterwaveController();
+
+        return $flutterwave->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'mercadopago') {
+        $mercadopago = new MercadoPagoController();
+
+        return $mercadopago->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'mollie') {
+        $mollie = new MollieController();
+
+        return $mollie->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'stripe') {
+        $stripe = new StripeController();
+
+        return $stripe->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'paytm') {
+        $paytm = new PaytmController();
+
+        return $paytm->bookingProcess($request, $id);
+      } else if ($request['gateway'] == 'midtrans') {
+        Session::put('midtrans_payment_type', 'event');
+        $paytm = new MidtransController();
+
+        return $paytm->makePayment($request, $id);
+      } else if ($request['gateway'] == 'iyzico') {
+        $paytm = new IyzipayController();
+
+        return $paytm->makePayment($request, $id);
+      } else if ($request['gateway'] == 'paytabs') {
+        $paytabs = new PaytabsController();
+
+        return $paytabs->makePayment($request, $id);
+      } else if ($request['gateway'] == 'toyyibpay') {
+        $toyyibpay = new ToyyibpayController();
+
+        return $toyyibpay->makePayment($request, $id);
+      } else if ($request['gateway'] == 'phonepe') {
+        $phonepe = new PhonepeController();
+
+        return $phonepe->makePayment($request, $id);
+      } else if ($request['gateway'] == 'yoco') {
+        $yoco = new YocoController();
+
+        return $yoco->makePayment($request, $id);
+      } else if ($request['gateway'] == 'xendit') {
+        $xindit = new XenditController();
+        
+        return $xindit->makePayment($request, $id);
+      } else if ($request['gateway'] == 'myfatoorah') {
+        $xindit = new MyFatoorahController();
+
+        return $xindit->makePayment($request, $id);
+      } else if ($request['gateway'] == 'perfect_money') {
+        $perfect_money = new PerfectMoneyController();
+
+        return $perfect_money->makePayment($request, $id);
+      } else {
+        $offline = new OfflineController();
+        return $offline->bookingProcess($request, $id);
+      }
+    } else {
+      try {
+        $event = json_decode($request->event, true);
+        $arrData = array(
+          'event_id' => $event['id'],
+          'price' => 0,
+          'tax' => 0,
+          'commission' => 0,
+          'quantity' => $request->quantity,
+          'discount' => 0,
+          'total_early_bird_dicount' => 0,
+          'currencyText' => null,
+          'currencyTextPosition' => null,
+          'currencySymbol' => null,
+          'currencySymbolPosition' => null,
+          'fname' => $request->fname,
+          'lname' => $request->lname,
+          'email' => $request->email,
+          'phone' => $request->phone,
+          'country' => $request->country,
+          'state' => $request->state,
+          'city' => $request->city,
+          'zip_code' => $request->city,
+          'address' => $request->address,
+          'paymentMethod' => null,
+          'gatewayType' => null,
+          'paymentStatus' => 'free',
+          'event_date' => Session::get('event_date')
+        );
+
+        $bookingInfo = $this->storeData($arrData);
+
+        // generate an invoice in pdf format
+        $invoice = $this->generateInvoice($bookingInfo, $event['id']);
+        //unlink qr code
+        @mkdir(public_path('assets/admin/qrcodes/'), 0775, true);
+        @unlink(public_path('assets/admin/qrcodes/') . $bookingInfo->booking_id . '.svg');
+        //end unlink qr code
+
+        // then, update the invoice field info in database
+        $bookingInfo->update(['invoice' => $invoice]);
+
+        // send a mail to the customer with the invoice
+        $this->sendMail($bookingInfo);
+
+        $request->session()->forget('event_id');
+        $request->session()->forget('selTickets');
+        $request->session()->forget('arrData');
+        $request->session()->forget('discount');
+
+        return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
+      } catch (\Throwable $th) {
+        return view('errors.404');
+      }
+    }
+  }
+
   public function storeData($info)
   {
     try {

@@ -54,7 +54,7 @@
 @endsection
 
 @section('content')
-    <form id="eventForm" action="{{ route('detail-check-out-tournament') }}" method="POST">
+    <form id="eventForm" action="{{ route('ticket.booking.tournament', [$event->id, 'type' => 'guest', 'form_type' => 'tournament']) }}" method="POST">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
@@ -323,6 +323,7 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
+                            <input type="hidden" name="event" value="{{ $event }}">
                             <div class="row">
                                 <div class="col-12 d-flex flex-row flex-wrap gap-10px">
                                     <img class="lazy img-fluid img-thumbnail" style="border-radius:1rem;"
@@ -430,10 +431,14 @@
                                     <h4 class="font-weight-bold">{{ __('Payment Methods') }}</h4>
                                 </div>
                                 <div class="col-12 mt-1">
-                                    <select class="form-select">
+                                    <select class="form-select" name="gateway" id="payment">
                                         <option value="xendit" selected>Xendit Payment Gateway</option>
                                     </select>
                                 </div>
+
+                                <input type="hidden" name="total" value="{{ $fee_sub_total }}">
+                                <input type="hidden" name="quantity" value="{{ $total_tickets_quantity }}">
+
                                 <div class="col-12 mt-3">
                                     <button class="theme-btn w-100" type="submit">
                                         {{ __('Proceed To Pay') }}

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class XenditController extends Controller
 {
@@ -25,62 +26,106 @@ class XenditController extends Controller
             return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
         }
 
-        $rules = [
-            'fname' => 'required',
-            'lname' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
-            'country' => 'required',
-            'address' => 'required',
-            'gateway' => 'required',
-        ];
+        if($request->form_type == "tournament"){
+            $cust = Auth::guard('customer')->user();
+            
+            $total = $request->total;
+            $quantity = $request->quantity;
+            $discount = 0;
 
-        $message = [];
+            //tax and commission end
+            $basicSetting = Basic::select('commission')->first();
 
-        $message['fname.required'] = 'The first name feild is required';
-        $message['lname.required'] = 'The last name feild is required';
-        $message['gateway.required'] = 'The payment gateway feild is required';
-        $request->validate($rules, $message);
+            $tax_amount = Session::get('tax');
+            $commission_amount = ($total * $basicSetting->commission) / 100;
 
-        $total = Session::get('grand_total');
-        $quantity = Session::get('quantity');
-        $discount = Session::get('discount');
-
-        //tax and commission end
-        $basicSetting = Basic::select('commission')->first();
-
-        $tax_amount = Session::get('tax');
-        $commission_amount = ($total * $basicSetting->commission) / 100;
-
-        $total_early_bird_dicount = Session::get('total_early_bird_dicount');
-        // changing the currency before redirect to PayPal
+            $total_early_bird_dicount = Session::get('total_early_bird_dicount');
+            // changing the currency before redirect to PayPal
 
 
-        $arrData = array(
-            'event_id' => $event_id,
-            'price' => $total,
-            'tax' => $tax_amount,
-            'commission' => $commission_amount,
-            'quantity' => $quantity,
-            'discount' => $discount,
-            'total_early_bird_dicount' => $total_early_bird_dicount,
-            'currencyText' => $currencyInfo->base_currency_text,
-            'currencyTextPosition' => $currencyInfo->base_currency_text_position,
-            'currencySymbol' => $currencyInfo->base_currency_symbol,
-            'currencySymbolPosition' => $currencyInfo->base_currency_symbol_position,
-            'fname' => $request->fname,
-            'lname' => $request->lname,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'country' => $request->country,
-            'state' => $request->state,
-            'city' => $request->city,
-            'zip_code' => $request->zip_code,
-            'address' => $request->address,
-            'paymentMethod' => 'Xendit',
-            'gatewayType' => 'online',
-            'paymentStatus' => 'completed',
-        );
+            $arrData = array(
+                'event_id' => $event_id,
+                'price' => $total,
+                'tax' => $tax_amount,
+                'commission' => $commission_amount,
+                'quantity' => $quantity,
+                'discount' => $discount,
+                'total_early_bird_dicount' => $total_early_bird_dicount,
+                'currencyText' => $currencyInfo->base_currency_text,
+                'currencyTextPosition' => $currencyInfo->base_currency_text_position,
+                'currencySymbol' => $currencyInfo->base_currency_symbol,
+                'currencySymbolPosition' => $currencyInfo->base_currency_symbol_position,
+                'fname' => $cust->fname,
+                'lname' => empty($cust->lname) ? $cust->fname : $cust->lname,
+                'email' => $cust->email,
+                'phone' => $cust->phone,
+                'country' => $cust->country,
+                'state' => $cust->state,
+                'city' => empty($cust->city) ? $cust->state : $cust->city,
+                'zip_code' => empty($cust->city) ? $cust->state : $cust->city,
+                'address' => empty($cust->city) ? $cust->state : $cust->city,
+                'paymentMethod' => 'Xendit',
+                'gatewayType' => 'online',
+                'paymentStatus' => 'completed',
+            );
+        }else{
+            $rules = [
+                'fname' => 'required',
+                'lname' => 'required',
+                'email' => 'required',
+                'phone' => 'required',
+                'country' => 'required',
+                'address' => 'required',
+                'gateway' => 'required',
+            ];
+    
+            $message = [];
+    
+            $message['fname.required'] = 'The first name feild is required';
+            $message['lname.required'] = 'The last name feild is required';
+            $message['gateway.required'] = 'The payment gateway feild is required';
+            $request->validate($rules, $message);
+
+            $total = Session::get('grand_total');
+            $quantity = Session::get('quantity');
+            $discount = Session::get('discount');
+
+            //tax and commission end
+            $basicSetting = Basic::select('commission')->first();
+
+            $tax_amount = Session::get('tax');
+            $commission_amount = ($total * $basicSetting->commission) / 100;
+
+            $total_early_bird_dicount = Session::get('total_early_bird_dicount');
+            // changing the currency before redirect to PayPal
+
+
+            $arrData = array(
+                'event_id' => $event_id,
+                'price' => $total,
+                'tax' => $tax_amount,
+                'commission' => $commission_amount,
+                'quantity' => $quantity,
+                'discount' => $discount,
+                'total_early_bird_dicount' => $total_early_bird_dicount,
+                'currencyText' => $currencyInfo->base_currency_text,
+                'currencyTextPosition' => $currencyInfo->base_currency_text_position,
+                'currencySymbol' => $currencyInfo->base_currency_symbol,
+                'currencySymbolPosition' => $currencyInfo->base_currency_symbol_position,
+                'fname' => $request->fname,
+                'lname' => $request->lname,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'country' => $request->country,
+                'state' => $request->state,
+                'city' => $request->city,
+                'zip_code' => $request->zip_code,
+                'address' => $request->address,
+                'paymentMethod' => 'Xendit',
+                'gatewayType' => 'online',
+                'paymentStatus' => 'completed',
+            );
+        }
 
         $payable_amount = round($total + $tax_amount, 2);
         /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

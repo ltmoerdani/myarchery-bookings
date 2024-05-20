@@ -54,7 +54,7 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('check-out3-tournament') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
