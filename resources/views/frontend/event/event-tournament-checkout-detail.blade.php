@@ -54,7 +54,7 @@
 @endsection
 
 @section('content')
-    <form id="eventForm" action="{{ route('ticket.booking.tournament', [$event->id, 'type' => 'guest', 'form_type' => 'tournament']) }}" method="POST">
+    <form id="eventForm" action="{{ route('ticket.booking.tournament', [$re_event_id, 'type' => 'guest', 'form_type' => 'tournament']) }}" method="POST">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">

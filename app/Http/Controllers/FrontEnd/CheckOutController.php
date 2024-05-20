@@ -36,7 +36,7 @@ class CheckOutController extends Controller
     try {
       $basic = Basic::select('event_guest_checkout_status')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
-
+      
       if ($event_guest_checkout_status != 1) {
         if (!Auth::guard('customer')->user()) {
           return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
@@ -68,7 +68,8 @@ class CheckOutController extends Controller
 
       $information['customer'] = Auth::guard('customer')->user();
       $information['event'] = $event;
-
+      $information['re_event_id'] = $request->event_id;
+      
       $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
         ->where('organizers.id', '=', $event->organizer_id)
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')

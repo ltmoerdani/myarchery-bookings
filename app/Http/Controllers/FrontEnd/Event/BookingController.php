@@ -346,7 +346,6 @@ class BookingController extends Controller
   {
     try {
       $event = Event::find($info['event_id']);
-
       if ($event) {
         if ($event->organizer_id) {
           $organizer_id = $event->organizer_id;
