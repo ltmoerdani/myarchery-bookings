@@ -74,69 +74,69 @@ class CheckOutController extends Controller
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
         ->first();
       // Jika diinput bukan oleh organizer
-      if(!$information['organizer']){
-        $information['organizer'] = Admin::select('id','first_name as name','email','phone')->first();
+      if (!$information['organizer']) {
+        $information['organizer'] = Admin::select('id', 'first_name as name', 'email', 'phone')->first();
       }
 
       $information['from_step_one'] = $request->all();
 
       $name_individu = $request->name_individu;
-      foreach($name_individu as $key => $value){
+      foreach ($name_individu as $key => $value) {
         $name[$key] = $value;
       }
 
       $gender_individu = $request->gender_individu;
-      foreach($gender_individu as $key => $value){
+      foreach ($gender_individu as $key => $value) {
         $gender[$key] = $value;
       }
 
       $birth_date_individu = $request->birth_date_individu;
-      foreach($birth_date_individu as $key => $value){
+      foreach ($birth_date_individu as $key => $value) {
         $birthdate[$key] = $value;
       }
 
       $profile_country_individu = $request->profile_country_individu;
-      foreach($profile_country_individu as $key => $value){
+      foreach ($profile_country_individu as $key => $value) {
         $country[$key] = $value;
       }
 
       $profile_city_individu = $request->profile_city_individu;
-      foreach($profile_city_individu as $key => $value){
+      foreach ($profile_city_individu as $key => $value) {
         $city[$key] = $value;
       }
 
       $delegation_individu = $request->delegation_individu;
-      foreach($delegation_individu as $key => $value){
+      foreach ($delegation_individu as $key => $value) {
         $delegation[$key] = $value;
       }
 
       $club_delegation_individu = $request->club_delegation_individu;
-      if($club_delegation_individu){
-        foreach($club_delegation_individu as $key => $value){
+      if ($club_delegation_individu) {
+        foreach ($club_delegation_individu as $key => $value) {
           $club[$key] = $value;
         }
       }
 
       $school_delegation_individu = $request->school_delegation_individu;
-      if($school_delegation_individu){
-        foreach($school_delegation_individu as $key => $value){
+      if ($school_delegation_individu) {
+        foreach ($school_delegation_individu as $key => $value) {
           $school[$key] = $value;
         }
       }
 
       $organization_delegation_individu = $request->organization_delegation_individu;
-      if($organization_delegation_individu){
-        foreach($organization_delegation_individu as $key => $value){
+      if ($organization_delegation_individu) {
+        foreach ($organization_delegation_individu as $key => $value) {
           $organization[$key] = $value;
         }
       }
 
       $category_individu = $request->category_individu;
       $code_access = $request->code_access;
-      
+
       $category_ticket = array();
       $categorytickets = array('title' => null, 'quantity' => null, 'price' => null);
-      foreach($category_individu as $k => $v){
+      foreach ($category_individu as $k => $v) {
         //Get country
         $country_name = InternationalCountries::where('id', $country[$k])->first();
 
@@ -150,10 +150,10 @@ class CheckOutController extends Controller
         $ticket = Ticket::where('id', $v)->first();
         $tickets = TicketContent::where('ticket_id', $v)->where('language_id', 8)->first();
 
-        if($categorytickets['title'] != $tickets->title) {
+        if ($categorytickets['title'] != $tickets->title) {
           unset($categorytickets);
           $categorytickets = array('title' => $tickets->title, 'quantity' => 0, 'price' => 0);
-          $category_ticket[] =& $categorytickets;
+          $category_ticket[] = &$categorytickets;
         }
         $categorytickets['price'] = $categorytickets['price'] + $ticket->price;
         $categorytickets['quantity']++;
@@ -163,22 +163,22 @@ class CheckOutController extends Controller
         }
         
         $ticket_detail_order[] = [
-            "id" => $v,
-            "user_full_name" => $name[$k],
-            "user_gender" => $gender[$k],
-            "delegation_type" => $delegation[$k],
-            "country_id" => empty($country[$k]) ? null : $country[$k],
-            "country_name" => empty($country_name->name) ? null : $country_name->name,
-            "province_id" => empty($state[$k]) ? null : $state[$k],
-            "province_name" => empty($state_name->name) ? null : $state_name->name,
-            "city_id" => empty($city[$k]) ? null : $city[$k],
-            "city_name" => empty($city_name->name) ? null : $city_name->name,
-            "club_id" => empty($club[$k]) ? null : $club[$k],
-            "club_name" => empty($club_name->name) ? null : $club_name->name,
-            "school_name" => empty($school[$k]) ? null : $school[$k],
-            "organization_name" => empty($organization[$k]) ? null : $organization[$k],
-            "sub_category_ticket_id" => $v,
-            "sub_category_ticket" => $tickets->title
+          "id" => $v,
+          "user_full_name" => $name[$k],
+          "user_gender" => $gender[$k],
+          "delegation_type" => $delegation[$k],
+          "country_id" => empty($country[$k]) ? null : $country[$k],
+          "country_name" => empty($country_name->name) ? null : $country_name->name,
+          "province_id" => empty($state[$k]) ? null : $state[$k],
+          "province_name" => empty($state_name->name) ? null : $state_name->name,
+          "city_id" => empty($city[$k]) ? null : $city[$k],
+          "city_name" => empty($city_name->name) ? null : $city_name->name,
+          "club_id" => empty($club[$k]) ? null : $club[$k],
+          "club_name" => empty($club_name->name) ? null : $club_name->name,
+          "school_name" => empty($school[$k]) ? null : $school[$k],
+          "organization_name" => empty($organization[$k]) ? null : $organization[$k],
+          "sub_category_ticket_id" => $v,
+          "sub_category_ticket" => $tickets->title
         ];
       }
 
@@ -190,14 +190,15 @@ class CheckOutController extends Controller
 
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
-      
+
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
       dd($e);
     }
   }
 
-  public function checkout2Tournament(Request $request){
+  public function checkout2Tournament(Request $request)
+  {
     $basic = Basic::select('event_guest_checkout_status')->first();
     $event_guest_checkout_status = $basic->event_guest_checkout_status;
     if ($event_guest_checkout_status != 1) {
@@ -268,12 +269,12 @@ class CheckOutController extends Controller
         ->where('organizers.id', '=', $event->organizer_id)
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
         ->first();
-      
+
       // Jika diinput bukan oleh organizer
-      if(!$information['organizer']){
-        $information['organizer'] = Admin::select('id','first_name as name','email','phone')->first();
+      if (!$information['organizer']) {
+        $information['organizer'] = Admin::select('id', 'first_name as name', 'email', 'phone')->first();
       }
-      
+
       $information['from_step_one'] = $request->all();
 
       $contingent_type = ContingentType::where('event_id', $request->event_id)->first();
@@ -281,7 +282,7 @@ class CheckOutController extends Controller
 
       $tickets = $request->category_ticket;
       $quantity = $request->quantity;
-      foreach($tickets as $key => $value){
+      foreach ($tickets as $key => $value) {
         $ticket[$key] = $value;
       }
 
@@ -295,11 +296,11 @@ class CheckOutController extends Controller
       $information['category_tickets'] = $category_ticket;
 
       $tickets_list = Ticket::leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')
-          ->select('tickets.*','ticket_contents.title as contents_title')
-          ->where('ticket_contents.language_id', 8)
-          ->where('tickets.event_id', $request->event_id)->where('tickets.title','Individu')->get();
+        ->select('tickets.*', 'ticket_contents.title as contents_title')
+        ->where('ticket_contents.language_id', 8)
+        ->where('tickets.event_id', $request->event_id)->where('tickets.title', 'Individu')->get();
 
-      foreach($tickets_list as $list){
+      foreach ($tickets_list as $list) {
         $sub_category_tickets[] = [
           "id" => $list->id,
           "title" => $list->contents_title,
@@ -311,7 +312,7 @@ class CheckOutController extends Controller
       }
       
       $information['sub_category_tickets'] = $sub_category_tickets;
-    
+
       $information['delegation_type'] = DelegationType::get()->toArray();
       $information['countries'] = InternationalCountries::get()->toArray();
       return view('frontend.event.event-form-order-detail', $information);
