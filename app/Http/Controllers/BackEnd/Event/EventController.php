@@ -431,6 +431,7 @@ class EventController extends Controller
             $ticket['pricing_type'] = 'normal';
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
+            $ticket['international_price'] = 500000;
             $ticket['early_bird_discount'] = 0;
             $ticket['early_bird_discount_type'] = 'fixed';
             $t = Ticket::create($ticket);

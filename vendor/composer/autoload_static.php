@@ -1071,6 +1071,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'App\\Models\\Organizer' => __DIR__ . '/../..' . '/app/Models/Organizer.php',
         'App\\Models\\OrganizerInfo' => __DIR__ . '/../..' . '/app/Models/OrganizerInfo.php',
         'App\\Models\\Participant' => __DIR__ . '/../..' . '/app/Models/Participant.php',
+        'App\\Models\\ParticipantCompetitions' => __DIR__ . '/../..' . '/app/Models/ParticipantCompetitions.php',
         'App\\Models\\PaymentGateway\\OfflineGateway' => __DIR__ . '/../..' . '/app/Models/PaymentGateway/OfflineGateway.php',
         'App\\Models\\PaymentGateway\\OnlineGateway' => __DIR__ . '/../..' . '/app/Models/PaymentGateway/OnlineGateway.php',
         'App\\Models\\Popup' => __DIR__ . '/../..' . '/app/Models/Popup.php',

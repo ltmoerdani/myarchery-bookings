@@ -153,12 +153,20 @@ class CheckOutController extends Controller
         $ticket = Ticket::where('id', $v)->first();
         $tickets = TicketContent::where('ticket_id', $v)->where('language_id', 8)->first();
 
-        if ($categorytickets['title'] != $tickets->title) {
+        if ($country[$k] == "102") { //Indonesia
+          $ticketprice = $ticket->price;
+          $tickettitle = $ticket->title;
+        }else{
+          $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
+          $tickettitle = $ticket->title.' (Internasional)';
+        }
+
+        if ($categorytickets['title'] != $tickettitle) {
           unset($categorytickets);
-          $categorytickets = array('ticket_id' => $v, 'title' => $tickets->title, 'quantity' => 0, 'price' => 0);
+          $categorytickets = array('ticket_id' => $v, 'title' => $tickettitle, 'quantity' => 0, 'price' => 0);
           $category_ticket[] = &$categorytickets;
         }
-        $categorytickets['price'] = $categorytickets['price'] + $ticket->price;
+        $categorytickets['price'] = $categorytickets['price'] + $ticketprice;
         $categorytickets['quantity']++;
 
         if($club_delegation_individu){
@@ -182,7 +190,7 @@ class CheckOutController extends Controller
           "school_name" => empty($school[$k]) ? null : $school[$k],
           "organization_name" => empty($organization[$k]) ? null : $organization[$k],
           "sub_category_ticket_id" => $v,
-          "sub_category_ticket" => $tickets->title
+          "sub_category_ticket" => $tickettitle
         ];
       }
 

@@ -23,10 +23,10 @@ class Ticket extends Model
     'pricing_type',
     'price',
     'f_price',
+    'international_price',
     'early_bird_discount_type',
     'early_bird_discount',
     'early_bird_discount_amount',
-
     'early_bird_discount_date',
     'early_bird_discount_time',
     'variations',

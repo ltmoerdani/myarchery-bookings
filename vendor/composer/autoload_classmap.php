@@ -289,6 +289,7 @@ return array(
     'App\\Models\\Organizer' => $baseDir . '/app/Models/Organizer.php',
     'App\\Models\\OrganizerInfo' => $baseDir . '/app/Models/OrganizerInfo.php',
     'App\\Models\\Participant' => $baseDir . '/app/Models/Participant.php',
+    'App\\Models\\ParticipantCompetitions' => $baseDir . '/app/Models/ParticipantCompetitions.php',
     'App\\Models\\PaymentGateway\\OfflineGateway' => $baseDir . '/app/Models/PaymentGateway/OfflineGateway.php',
     'App\\Models\\PaymentGateway\\OnlineGateway' => $baseDir . '/app/Models/PaymentGateway/OnlineGateway.php',
     'App\\Models\\Popup' => $baseDir . '/app/Models/Popup.php',
