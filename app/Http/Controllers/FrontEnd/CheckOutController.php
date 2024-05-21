@@ -30,6 +30,8 @@ use Carbon\Carbon;
 
 class CheckOutController extends Controller
 {
+  protected $ppn_value = 11;
+
   //checkout
   public function detailCheckout2Tournament(Request $request)
   {
@@ -136,7 +138,7 @@ class CheckOutController extends Controller
       $code_access = $request->code_access;
 
       $category_ticket = array();
-      $categorytickets = array('title' => null, 'quantity' => null, 'price' => null);
+      $categorytickets = array('ticket_id' => null, 'title' => null, 'quantity' => null, 'price' => null);
       foreach ($category_individu as $k => $v) {
         //Get country
         $country_name = InternationalCountries::where('id', $country[$k])->first();
@@ -153,7 +155,7 @@ class CheckOutController extends Controller
 
         if ($categorytickets['title'] != $tickets->title) {
           unset($categorytickets);
-          $categorytickets = array('title' => $tickets->title, 'quantity' => 0, 'price' => 0);
+          $categorytickets = array('ticket_id' => $v, 'title' => $tickets->title, 'quantity' => 0, 'price' => 0);
           $category_ticket[] = &$categorytickets;
         }
         $categorytickets['price'] = $categorytickets['price'] + $ticket->price;
@@ -167,6 +169,7 @@ class CheckOutController extends Controller
           "id" => $v,
           "user_full_name" => $name[$k],
           "user_gender" => $gender[$k],
+          "birthdate" => $birthdate[$k],
           "delegation_type" => $delegation[$k],
           "country_id" => empty($country[$k]) ? null : $country[$k],
           "country_name" => empty($country_name->name) ? null : $country_name->name,
@@ -188,10 +191,13 @@ class CheckOutController extends Controller
         "category" => 'individu',
         "ticket_detail_order" => $ticket_detail_order
       ];
-
+      
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
+      $information['ppn_value'] = $this->ppn_value;
 
+      $information['request_ticket_infos'] = json_encode($category_ticket);
+      $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
       dd($e);

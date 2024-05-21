@@ -38,6 +38,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use PHPMailer\PHPMailer\PHPMailer;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Participant;
+use App\Models\ParticipantCompetitions;
+use App\Models\IndonesianSubdistrict;
+use App\Models\InternationalCities;
 
 class BookingController extends Controller
 {
@@ -120,7 +124,7 @@ class BookingController extends Controller
         return $yoco->makePayment($request, $id);
       } else if ($request['gateway'] == 'xendit') {
         $xindit = new XenditController();
-
+        
         return $xindit->makePayment($request, $id);
       } else if ($request['gateway'] == 'myfatoorah') {
         $xindit = new MyFatoorahController();
@@ -353,16 +357,32 @@ class BookingController extends Controller
           $organizer_id = null;
         }
       }
-      $variations = Session::get('selTickets');
-
+      
+      if($info['form_type'] == "tournament"){
+        $variations = $info['ticketInfos'];
+      }else{
+        $variations = Session::get('selTickets');
+      }
+      
       if ($variations) {
         foreach ($variations as $variation) {
-
+          if($info['form_type'] == "tournament"){
+            $variation = (array) $variation;
+          }
+          
           $ticket = Ticket::where('id', $variation['ticket_id'])->first();
           if ($ticket->pricing_type == 'normal' && $ticket->ticket_available_type == 'limited') {
-            if ($ticket->ticket_available - $variation['qty'] >= 0) {
-              $ticket->ticket_available = $ticket->ticket_available - $variation['qty'];
-              $ticket->save();
+            
+            if($info['form_type'] == "tournament"){
+              if ($ticket->ticket_available - $variation['quantity'] >= 0) {
+                $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
+                $ticket->save();
+              }
+            }else{
+              if ($ticket->ticket_available - $variation['qty'] >= 0) {
+                $ticket->ticket_available = $ticket->ticket_available - $variation['qty'];
+                $ticket->save();
+              }
             }
           } elseif ($ticket->pricing_type == 'variation') {
             $ticket_variations =  json_decode($ticket->variations, true);
@@ -396,7 +416,6 @@ class BookingController extends Controller
               }
             }
             $ticket->variations = json_encode($update_variation, true);
-
             $ticket->save();
           } elseif ($ticket->pricing_type == 'free' && $ticket->ticket_available_type == 'limited') {
             if ($ticket->ticket_available - $variation['qty'] >= 0) {
@@ -404,8 +423,23 @@ class BookingController extends Controller
               $ticket->save();
             }
           }
+
+          if($info['form_type'] == "tournament"){
+            $variations_ticket[] = [
+              "ticket_id" => $variation['ticket_id'],
+              "early_bird_dicount" => 0,
+              "name" => $variation['title'],
+              "qty" => $variation['quantity'],
+              "price" => $variation['price'],
+            ];
+          }
         }
-        $variations = json_encode(Session::get('selTickets'), true);
+        
+        if($info['form_type'] == "tournament"){
+          $variations = json_encode($variations_ticket, true);
+        }else{
+          $variations = json_encode(Session::get('selTickets'), true);
+        }
       } else {
         $ticket = $event->ticket()->first();
         $ticket->ticket_available = $ticket->ticket_available - (int)$info['quantity'];
@@ -449,6 +483,47 @@ class BookingController extends Controller
         'event_date' => Session::get('event_date'),
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
+
+      if($info['form_type'] == "tournament"){
+        $dataOrders = $info['dataOrders'];
+        foreach($dataOrders as $d){
+          $ticket_id = $d->title;
+          $category = $d->category;
+          $ticket_detail_order = $d->ticket_detail_order;
+
+          foreach($ticket_detail_order as $t){
+            if ($t->country_id == "102") { //Indonesia
+              if($t->city_id){
+                $city_name = IndonesianSubdistrict::select('id', 'name')->where('province_id', $t->city_id)->first();
+              }
+            } else {
+              if($t->city_id){
+                $city_name = InternationalCities::select('id', 'name')->where('country_id', $t->country_id)->where('id', $t->city_id)->first();
+              }
+            }
+
+            // Save to table participant
+            $input['fname'] = $t->user_full_name;
+            $input['lname'] = null;
+            $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
+            $input['birthdate'] = $t->birthdate;
+            $input['county_id'] = $t->country_id;
+            $input['country'] = $t->country_name;
+            $input['city_id'] = $t->city_id;
+            $input['city'] = empty($city_name) ? null : $city_name;;
+            $input['category'] = $t->delegation_type;
+            $input['club_id'] = empty($t->club_id) ? null : $t->club_id;
+            $input['customer_id'] = Auth::guard('customer')->user()->id;
+            $peserta = Participant::create($input);
+
+            $p['competition_name'] = $t->sub_category_ticket;
+            $p['participant_id'] = $peserta->id;
+            $p['ticket_id'] = $t->id;
+            $p['description'] = null;
+            ParticipantCompetitions::create($p);
+          }
+        }
+      }
       return $booking;
     } catch (\Exception $th) {
     }

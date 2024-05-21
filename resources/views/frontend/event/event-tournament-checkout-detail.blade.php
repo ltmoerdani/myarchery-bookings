@@ -324,6 +324,8 @@
                         </div>
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
                             <input type="hidden" name="event" value="{{ $event }}">
+                            <input type="hidden" name="request_ticket_infos" value="{{ $request_ticket_infos }}">
+                            <input type="hidden" name="request_orders" value="{{ $request_orders }}">
                             <div class="row">
                                 <div class="col-12 d-flex flex-row flex-wrap gap-10px">
                                     <img class="lazy img-fluid img-thumbnail" style="border-radius:1rem;"
@@ -410,10 +412,10 @@
                                 </div>
                                 <div class="col-12 d-flex justify-content-between mt-2">
                                     <p class="font-weight-medium mb-0">
-                                        {{ __('Handling Fee') }}
+                                        {{ __('Handling Fee') }} ({{ $ppn_value }}%)
                                     </p>
                                     <p class="font-weight-medium mb-0">
-                                        Rp. 50000
+                                        Rp. {{ $ppn_total = $fee_sub_total*$ppn_value/100 }}
                                     </p>
                                 </div>
                                 <div class="col-12 mt-0 mb-0">
@@ -424,7 +426,7 @@
                                         {{ __('Total') }}
                                     </p>
                                     <p class="font-weight-medium mb-0">
-                                        Rp. {{ $fee_sub_total + 50000 }}
+                                        Rp. {{ $fee_sub_total + $ppn_total }}
                                     </p>
                                 </div>
                                 <div class="col-12 mt-3 mb-2">
@@ -436,7 +438,7 @@
                                     </select>
                                 </div>
 
-                                <input type="hidden" name="total" value="{{ $fee_sub_total }}">
+                                <input type="hidden" name="total" value="{{ $fee_sub_total+$ppn_total }}">
                                 <input type="hidden" name="quantity" value="{{ $total_tickets_quantity }}">
 
                                 <div class="col-12 mt-3">

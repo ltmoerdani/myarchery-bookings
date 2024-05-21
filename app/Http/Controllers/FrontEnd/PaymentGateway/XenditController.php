@@ -32,7 +32,7 @@ class XenditController extends Controller
             $total = $request->total;
             $quantity = $request->quantity;
             $discount = 0;
-
+            
             //tax and commission end
             $basicSetting = Basic::select('commission')->first();
 
@@ -41,7 +41,6 @@ class XenditController extends Controller
 
             $total_early_bird_dicount = Session::get('total_early_bird_dicount');
             // changing the currency before redirect to PayPal
-
 
             $arrData = array(
                 'event_id' => $event_id,
@@ -67,6 +66,9 @@ class XenditController extends Controller
                 'paymentMethod' => 'Xendit',
                 'gatewayType' => 'online',
                 'paymentStatus' => 'completed',
+                'ticketInfos' => json_decode($request->request_ticket_infos),
+                'dataOrders' => json_decode($request->request_orders),
+                'form_type' => 'tournament',
             );
         }else{
             $rules = [
@@ -148,13 +150,13 @@ class XenditController extends Controller
         ]);
         $response = $data_request->object();
         $response = json_decode(json_encode($response), true);
+
         if (!empty($response['success_redirect_url'])) {
             $request->session()->put('event_id', $event_id);
             $request->session()->put('arrData', $arrData);
             $request->session()->put('xendit_id', $response['id']);
             $request->session()->put('secret_key', config('xendit.key_auth'));
             $request->session()->put('xendit_payment_type', 'event');
-
             return redirect($response['invoice_url']);
         } else {
             return redirect()->route('check-out')->with(['alert-type' => 'error', 'message' => $response['message']]);
