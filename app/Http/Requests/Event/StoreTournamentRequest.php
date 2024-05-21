@@ -31,11 +31,11 @@ class StoreTournamentRequest extends FormRequest
       'slider_images' => 'required',
       'thumbnail' => [
         'required',
-        'dimensions:width=320,height=230',
+        // 'dimensions:width=320,height=230',
         new ImageMimeTypeRule()
       ],
-    //   'status' => 'required',
-    //   'is_featured' => 'required'
+      //   'status' => 'required',
+      //   'is_featured' => 'required'
     ];
 
     if ($this->date_type == 'single') {
