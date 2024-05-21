@@ -30,7 +30,11 @@ class TicketController extends Controller
     $information['event'] = $event;
 
     $information['tickets'] = $tickets;
-    return view('backend.event.ticket.index', compact('information', 'languages'));
+    if($request->event_type == 'tournament'){
+      return view('backend.event.ticket.tournament', compact('information', 'languages'));
+    }else{
+      return view('backend.event.ticket.index', compact('information', 'languages'));
+    }
   }
   //create
   public function create(Request $request)
@@ -48,7 +52,12 @@ class TicketController extends Controller
     $information['eventType'] = $eventType;
     $information['event'] = $event;
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
-    return view('backend.event.ticket.create', $information);
+
+    if($request->event_type == 'tournament'){
+      return view('backend.event.ticket.create_tournament', $information);
+    }else{
+      return view('backend.event.ticket.create', $information);
+    }
   }
   //store
   public function store(TicketRequest $request)
@@ -64,6 +73,11 @@ class TicketController extends Controller
       $in['pricing_type'] = 'normal';
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
+
+      if($request->event_type == "tournament"){
+        $in['international_price'] = $request->international_price;
+      }
+
       $ticket =  Ticket::create($in);
     } elseif ($request->pricing_type_2 == 'variation') {
       $in['pricing_type'] = 'variation';
@@ -138,7 +152,12 @@ class TicketController extends Controller
     $information['ticket'] = $ticket;
     $information['variations'] = json_decode($ticket->variations, true);
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
-    return view('backend.event.ticket.edit', $information);
+
+    if($request->event_type == 'tournament'){
+      return view('backend.event.ticket.edit_tournament', $information);
+    }else{
+      return view('backend.event.ticket.edit', $information);
+    }
   }
   //update
   public function update(TicketRequest $request)
@@ -159,6 +178,11 @@ class TicketController extends Controller
       $in['pricing_type'] = 'normal';
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
+
+      if($request->event_type == "tournament"){
+        $in['international_price'] = $request->international_price;
+      }
+
       $ticket =  Ticket::where('id', $request->ticket_id)->first();
       $ticket->update($in);
     } elseif ($request->pricing_type_2 == 'variation') {

@@ -147,6 +147,7 @@
                                     <input type="text" name="variation_price[]" class="form-control">
                                   </div>
                                 </td>
+                                
                                 <td>
                                   <div class="from-group mt-1">
                                     <input type="checkbox" checked name="v_ticket_available_type[]" value="limited"
@@ -199,9 +200,15 @@
                     </div>
                     <div class="col-lg-6 d-none" id="normal_pricing">
                       <div class="form-group">
-                        <label for="">{{ __('Price') }} ({{ $getCurrencyInfo->base_currency_text }})
+                        <label for="">{{ __('Local Price') }} ({{ $getCurrencyInfo->base_currency_text }})
                           *</label>
                         <input type="number" name="price" class="form-control" placeholder="Enter Price">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="">{{ __('International Price') }} ({{ $getCurrencyInfo->base_currency_text }})
+                          *</label>
+                        <input type="number" name="international_price" class="form-control" placeholder="Enter Price">
                       </div>
                     </div>
 
