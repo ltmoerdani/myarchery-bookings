@@ -13,8 +13,8 @@ return new class extends Migration
    */
   public function up()
   {
-    Schema::table('tickets', function (Blueprint $table) {
-      $table->bigInteger('competition_id')->nullable()->after('event_id');
+    Schema::table('events', function (Blueprint $table) {
+      $table->string('thb_file', '255')->nullable()->after('thumbnail');
     });
   }
 
@@ -25,8 +25,8 @@ return new class extends Migration
    */
   public function down()
   {
-    Schema::table('tickets', function (Blueprint $table) {
-      $table->dropColumn('competition_id');
+    Schema::table('events', function (Blueprint $table) {
+      $table->dropColumn('thb_file');
     });
   }
 };

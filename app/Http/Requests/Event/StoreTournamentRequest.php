@@ -5,6 +5,7 @@ namespace App\Http\Requests\Event;
 use App\Models\Event\EventContent;
 use App\Models\Language;
 use App\Rules\ImageMimeTypeRule;
+use App\Rules\DocPdfMimeTypeRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTournamentRequest extends FormRequest
@@ -31,11 +32,11 @@ class StoreTournamentRequest extends FormRequest
       'slider_images' => 'required',
       'thumbnail' => [
         'required',
-        // 'dimensions:width=320,height=230',
         new ImageMimeTypeRule()
       ],
-      //   'status' => 'required',
-      //   'is_featured' => 'required'
+      'thb_file' => [
+        new DocPdfMimeTypeRule(),
+      ],
     ];
 
     if ($this->date_type == 'single') {
@@ -80,9 +81,20 @@ class StoreTournamentRequest extends FormRequest
       }
     }
 
-    if ($this->event_type == 'venue') {
-      $ruleArray['latitude'] = 'required_if:event_type,venue';
-      $ruleArray['longitude'] = 'required_if:event_type,venue';
+    if ($this->event_type == 'venue' || $this->event_type == 'tournament' || $this->event_type == 'turnamen') {
+      $ruleArray['latitude'] = 'required_if:event_type,venue,tournament,turnamen';
+      $ruleArray['longitude'] = 'required_if:event_type,venue,tournament,turnamen';
+    }
+
+    if ($this->event_type == 'tournament' || $this->event_type == 'turnamen') {
+      $ruleArray['competition_categories.**'] = 'required_if:event_type,tournament,turnamen';
+      $ruleArray['competition_class_type.**'] = 'required_if:event_type,tournament,turnamen';
+      $ruleArray['competition_class_name.**'] = 'required_if:event_type,tournament,turnamen';
+      $ruleArray['competition_distance.**'] = 'required_if:event_type,tournament,turnamen';
+
+      if ($this->event_publisher == 'private') {
+        $ruleArray['code'] = 'required_if:event_publisher,private';
+      }
     }
 
     $languages = Language::all();
@@ -103,9 +115,9 @@ class StoreTournamentRequest extends FormRequest
       $ruleArray[$language->code . '_title'] = 'required';
       $ruleArray[$language->code . '_category_id'] = 'required';
       $ruleArray[$language->code . '_description'] = 'min:30';
-      $ruleArray[$language->code . '_address'] = 'required_if:event_type,venue';
-      $ruleArray[$language->code . '_country'] = 'required_if:event_type,venue';
-      $ruleArray[$language->code . '_city'] = 'required_if:event_type,venue';
+      $ruleArray[$language->code . '_address'] = 'required_if:event_type,venue,tournament,turnamen';
+      $ruleArray[$language->code . '_country'] = 'required_if:event_type,venue,tournament,turnamen';
+      $ruleArray[$language->code . '_city'] = 'required_if:event_type,venue,tournament,turnamen';
     }
     return $ruleArray;
   }
@@ -138,6 +150,10 @@ class StoreTournamentRequest extends FormRequest
     $messageArray['m_end_date.required'] = 'The end date feild is required.!';
     $messageArray['m_end_time.required'] = 'The end time feild is required.!';
 
+    $messageArray['competition_categories.required'] = 'The Categories is required!';
+    $messageArray['competition_class_type.required'] = 'The Categories is required!';
+    $messageArray['competition_class_name.required'] = 'The Categories is required!';
+    $messageArray['competition_distance.required'] = 'The Categories is required!';
     return $messageArray;
   }
 }

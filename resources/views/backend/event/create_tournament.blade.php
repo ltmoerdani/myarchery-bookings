@@ -119,42 +119,81 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="col-12">
-                                                <div class="card border border-1">
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="col-12 mt-2">
-                                                                <div class="form-group">
-                                                                    <label>
-                                                                        {{ __('Currency Type') . '*' }}
-                                                                    </label>
-                                                                    <div class="selectgroup w-100">
-                                                                        <label class="selectgroup-item">
-                                                                            <input type="radio" name="currency_type"
-                                                                                value="idr"
-                                                                                class="selectgroup-input eventDateType" checked>
-                                                                            <span
-                                                                                class="selectgroup-button">{{ __('Single Currency') }}</span>
-                                                                        </label>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
+                                                        <div class="form-group">
+                                                            <label>
+                                                                {{ __('Pricing Scheme') . '*' }}
+                                                            </label>
+                                                            <div class="selectgroup w-100">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="pricing_scheme"
+                                                                        value="single_price"
+                                                                        class="selectgroup-input countDownStatusType"
+                                                                        checked>
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Single Price') }}</span>
+                                                                </label>
 
-                                                                        <label class="selectgroup-item">
-                                                                            <input type="radio" name="currency_type"
-                                                                                value="idr,usd"
-                                                                                class="selectgroup-input eventDateType">
-                                                                            <span
-                                                                                class="selectgroup-button">{{ __('Dual Currency') }}</span>
-                                                                        </label>
-                                                                    </div>
-                                                                    <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
-                                                                        in
-                                                                        both IDR
-                                                                        (primary) and USD.</p>
-                                                                </div>
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio" name="pricing_scheme"
+                                                                        value="dual_price"
+                                                                        class="selectgroup-input countDownStatusType">
+                                                                    <span
+                                                                        class="selectgroup-button">{{ __('Dual Price') }}</span>
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="col-12 px-4">
+                                                        <p class="font-weight-bold mt-0">
+                                                            *Choose 'Dual Price' to set different pricing for local and
+                                                            international customers.
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-12">
+                                                                                                                                                            <div class="card border border-1">
+                                                                                                                                                                <div class="card-body">
+                                                                                                                                                                    <div class="row">
+                                                                                                                                                                        <div class="col-12 mt-2">
+                                                                                                                                                                            <div class="form-group">
+                                                                                                                                                                                <label>
+                                                                                                                                                                                    {{ __('Currency Type') . '*' }}
+                                                                                                                                                                                </label>
+                                                                                                                                                                                <div class="selectgroup w-100">
+                                                                                                                                                                                    <label class="selectgroup-item">
+                                                                                                                                                                                        <input type="radio" name="currency_type"
+                                                                                                                                                                                            value="idr"
+                                                                                                                                                                                            class="selectgroup-input eventDateType" checked>
+                                                                                                                                                                                        <span
+                                                                                                                                                                                            class="selectgroup-button">{{ __('Single Currency') }}</span>
+                                                                                                                                                                                    </label>
+
+                                                                                                                                                                                    <label class="selectgroup-item">
+                                                                                                                                                                                        <input type="radio" name="currency_type"
+                                                                                                                                                                                            value="idr,usd"
+                                                                                                                                                                                            class="selectgroup-input eventDateType">
+                                                                                                                                                                                        <span
+                                                                                                                                                                                            class="selectgroup-button">{{ __('Dual Currency') }}</span>
+                                                                                                                                                                                    </label>
+                                                                                                                                                                                </div>
+                                                                                                                                                                                <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
+                                                                                                                                                                                    in
+                                                                                                                                                                                    both IDR
+                                                                                                                                                                                    (primary) and USD.</p>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </div>
+                                                                                                                                                                </div>
+                                                                                                                                                            </div>
+                                                                                                                                                        </div> -->
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -484,14 +523,14 @@
                                                 <div class="row">
                                                     <div class="col-12 col-md-6">
                                                         <label class="mb-1">
-                                                            {{ __('Upload File') }}
+                                                            {{ __('Upload File THB') }}
                                                         </label>
                                                         <div class="custom-file">
                                                             <input type="file" class="custom-file-input"
-                                                                id="upload_file" name="upload_file"
-                                                                aria-describedby="upload_file" accept=".doc,.docx,.pdf"
+                                                                id="thb_file" name="thb_file"
+                                                                aria-describedby="thb_file" accept=".doc,.docx,.pdf"
                                                                 style="background:#fff">
-                                                            <label class="custom-file-label" for="upload_file"
+                                                            <label class="custom-file-label" for="thb_file"
                                                                 style="background:#fff">Choose
                                                                 file</label>
                                                         </div>
@@ -508,6 +547,35 @@
                                                             <option selected value="1">Active</option>
                                                             <option value="0">Disable</option>
                                                         </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="">{{ __('Latitude') }}*</label>
+                                                            <input type="text" name="latitude" placeholder="Latitude"
+                                                                class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="">{{ __('Longitude') }}*</label>
+                                                            <input type="text" placeholder="Longitude"
+                                                                name="longitude" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mt-0 px-4">
+                                                        <p class="font-weight-bold">
+                                                            *Enter a Latitude and Longitude from Google Maps
+                                                            Platform(website or application mobile) for to display
+                                                            the location on Google Maps on the event page.
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -570,10 +638,9 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    @if (request()->input('type') == 'venue')
+                                                    @if (request()->input('type') == 'venue' || request()->input('type') == 'tournament')
                                                         <div class="row">
-                                                            <div class="col-lg-8">
+                                                            <div class="col-lg-12">
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="">{{ __('Address') . '*' }}</label>
@@ -581,9 +648,13 @@
                                                                         name="{{ $language->code }}_address"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
                                                                         placeholder="{{ __('Enter Address') }}">
+                                                                    <p class="font-weight-bold">
+                                                                        *Enter a full address or location name to display
+                                                                        the location on Google Maps on the event page.
+                                                                    </p>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('County') . '*' }}</label>
                                                                     <input type="text"
@@ -592,7 +663,7 @@
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('State') }}</label>
                                                                     <input type="text"
@@ -601,7 +672,7 @@
                                                                         placeholder="{{ __('Enter State') }}">
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('City') . '*' }}</label>
                                                                     <input type="text"
@@ -610,7 +681,7 @@
                                                                         placeholder="Enter City">
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="">{{ __('Zip/Post Code') }}</label>

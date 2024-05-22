@@ -193,7 +193,6 @@ class EventController extends Controller
   public function store(StoreRequest $request)
   {
     DB::transaction(function () use ($request) {
-
       //calculate duration
       if ($request->date_type == 'single') {
         $start = Carbon::parse($request->start_date . $request->start_time);
@@ -299,8 +298,8 @@ class EventController extends Controller
 
   public function store_tournament(StoreTournamentRequest $request)
   {
-    return $request->all();
     try {
+      return $request->all();
       DB::transaction(function () use ($request) {
         $request->is_featured = "yes";
         $request->date_type = "single";
@@ -325,11 +324,20 @@ class EventController extends Controller
           $in['thumbnail'] = $filename;
         }
 
+        $thb_file = $request->file('thb_file');
+        if ($request->hasFile('thb_file')) {
+          $filename = 'thb-file-' . time()  . $thb_file->getClientOriginalExtension();
+          $directory = public_path('assets/admin/img/event/tournament_uploaded/');
+          @mkdir($directory, 0775, true);
+          $request->file('thb_file')->move($directory, $filename);
+          $in['thb_file'] = $filename;
+        }
+
         $in['f_price'] = $request->price;
         $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
         $in['is_featured'] = $request->is_featured;
         $event = Event::create($in);
-
+        return $event;
         $in['event_id'] = $event->id;
         if ($request->event_type == 'online') {
           if (!$request->pricing_type) {

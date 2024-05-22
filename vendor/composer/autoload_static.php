@@ -1106,6 +1106,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Rules\\DocPdfMimeTypeRule' => __DIR__ . '/../..' . '/app/Rules/DocPdfMimeTypeRule.php',
         'App\\Rules\\ImageMimeTypeRule' => __DIR__ . '/../..' . '/app/Rules/ImageMimeTypeRule.php',
         'App\\Rules\\MatchEmailRule' => __DIR__ . '/../..' . '/app/Rules/MatchEmailRule.php',
         'App\\Rules\\MatchOldPasswordRule' => __DIR__ . '/../..' . '/app/Rules/MatchOldPasswordRule.php',

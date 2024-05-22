@@ -51,12 +51,11 @@ $(document).ready(function () {
       contentType: false,
       processData: false,
       success: function (data) {
-        console.log("data:", data);
         $(".request-loader").removeClass("show");
 
-        // if (data.status == "success") {
-        //   location.reload();
-        // }
+        if (data.status == "success") {
+          location.reload();
+        }
       },
       error: function (error) {
         let errors = ``;
