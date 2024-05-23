@@ -91,6 +91,32 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-12 mt-2">
+                                                        <label class="mb-1 px-2">
+                                                            {{ __('Organizer') }}
+                                                        </label>
+                                                        <div class="form-group">
+                                                            <select class="custom-select select2" id="organizer_id"
+                                                                name="organizer_id" required>
+                                                                <option selected disabled value="">
+                                                                    Choose Organizer
+                                                                </option>
+                                                                @foreach ($organizers as $val_organizer)
+                                                                    <option value="{{ $val_organizer->id }}">
+                                                                        {{ $val_organizer->email }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 mt-2">
                                                         <div class="form-group">
                                                             <label>
                                                                 {{ __('Countdown Status') . '*' }}
@@ -158,42 +184,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="col-12">
-                                                                                                                                                            <div class="card border border-1">
-                                                                                                                                                                <div class="card-body">
-                                                                                                                                                                    <div class="row">
-                                                                                                                                                                        <div class="col-12 mt-2">
-                                                                                                                                                                            <div class="form-group">
-                                                                                                                                                                                <label>
-                                                                                                                                                                                    {{ __('Currency Type') . '*' }}
-                                                                                                                                                                                </label>
-                                                                                                                                                                                <div class="selectgroup w-100">
-                                                                                                                                                                                    <label class="selectgroup-item">
-                                                                                                                                                                                        <input type="radio" name="currency_type"
-                                                                                                                                                                                            value="idr"
-                                                                                                                                                                                            class="selectgroup-input eventDateType" checked>
-                                                                                                                                                                                        <span
-                                                                                                                                                                                            class="selectgroup-button">{{ __('Single Currency') }}</span>
-                                                                                                                                                                                    </label>
-
-                                                                                                                                                                                    <label class="selectgroup-item">
-                                                                                                                                                                                        <input type="radio" name="currency_type"
-                                                                                                                                                                                            value="idr,usd"
-                                                                                                                                                                                            class="selectgroup-input eventDateType">
-                                                                                                                                                                                        <span
-                                                                                                                                                                                            class="selectgroup-button">{{ __('Dual Currency') }}</span>
-                                                                                                                                                                                    </label>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
-                                                                                                                                                                                    in
-                                                                                                                                                                                    both IDR
-                                                                                                                                                                                    (primary) and USD.</p>
-                                                                                                                                                                            </div>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    </div>
-                                                                                                                                                                </div>
-                                                                                                                                                            </div>
-                                                                                                                                                        </div> -->
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -438,9 +428,15 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select Type') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_type"
-                                                                name="select_type" required>
-                                                                <option selected value="province">Province</option>
+                                                            <select class="custom-select selectTypeDelegation"
+                                                                id="select_type" name="select_type" required>
+                                                                <option value="" selected disabled>Choose Delegation
+                                                                    Type</option>
+                                                                @foreach ($delegation_type as $val_delegation_type)
+                                                                    <option value="{{ $val_delegation_type->name }}">
+                                                                        {{ $val_delegation_type->name }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
@@ -449,9 +445,15 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select Country') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_country"
-                                                                name="select_country" required>
-                                                                <option selected value="country">Country</option>
+                                                            <select class="custom-select select2 fieldCountry"
+                                                                id="select_country" name="select_country">
+                                                                <option selected value="">Choose Country</option>
+                                                                @foreach ($international_countries as $value_international_country)
+                                                                    <option
+                                                                        value="{{ $value_international_country->id }}">
+                                                                        {{ $value_international_country->name }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
@@ -460,9 +462,9 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select State') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_state"
-                                                                name="select_state" required>
-                                                                <option selected value="state">state</option>
+                                                            <select class="custom-select select2 fieldState"
+                                                                id="select_state" name="select_state">
+                                                                <option selected value="">Choose State</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -657,28 +659,57 @@
                                                             <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('County') . '*' }}</label>
-                                                                    <input type="text"
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_country"
                                                                         placeholder="{{ __('Enter Country') }}"
-                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"> --}}
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_country"
+                                                                        onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_country">
+                                                                        <option selected disable value="">
+                                                                            Choose Country
+                                                                        </option>
+                                                                        @foreach ($international_countries as $value_international_country)
+                                                                            <option
+                                                                                value="{{ $value_international_country->id }}">
+                                                                                {{ $value_international_country->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('State') }}</label>
-                                                                    <input type="text"
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_state"
+                                                                        onchange="handleChooseEventContentLanguageState('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_state">
+                                                                        <option selected disable value="">
+                                                                            Choose State
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_state"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="{{ __('Enter State') }}">
+                                                                        placeholder="{{ __('Enter State') }}"> --}}
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('City') . '*' }}</label>
-                                                                    <input type="text"
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_city"
+                                                                        id="{{ $language->code }}_city">
+                                                                        <option selected disable value="">
+                                                                            Choose City
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_city"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="Enter City">
+                                                                        placeholder="Enter City"> --}}
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-6">

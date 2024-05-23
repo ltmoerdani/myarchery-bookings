@@ -996,14 +996,14 @@ $("#EventSubmit").on("click", function (e) {
     contentType: false,
     processData: false,
     success: function (data) {
-      // $(e.target).attr("disabled", false);
-      // $(".request-loader").removeClass("show");
-      // $(".em").each(function () {
-      //   $(this).html("");
-      // });
-      // if (data.status == "success") {
-      //   location.reload();
-      // }
+      $(e.target).attr("disabled", false);
+      $(".request-loader").removeClass("show");
+      $(".em").each(function () {
+        $(this).html("");
+      });
+      if (data.status == "success") {
+        location.reload();
+      }
     },
     error: function (error) {
       let errors = ``;

@@ -35,6 +35,7 @@ class StoreTournamentRequest extends FormRequest
         new ImageMimeTypeRule()
       ],
       'thb_file' => [
+        'max:2000',
         new DocPdfMimeTypeRule(),
       ],
     ];
@@ -94,6 +95,19 @@ class StoreTournamentRequest extends FormRequest
 
       if ($this->event_publisher == 'private') {
         $ruleArray['code'] = 'required_if:event_publisher,private';
+      }
+
+      if ($this->delegation_type == 'selected') {
+        $ruleArray['select_type'] = 'required_if:delegation_type,selected';
+
+        if (strtolower($this->select_type) == 'province') {
+          $ruleArray['select_country'] = 'required_if:select_type,Province';
+        }
+
+        if (strtolower($this->select_type) == 'city/district') {
+          $ruleArray['select_country'] = 'required_if:select_type,City/District';
+          $ruleArray['select_state'] = 'required_if:select_type,City/District';
+        }
       }
     }
 
