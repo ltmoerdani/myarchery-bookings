@@ -418,7 +418,7 @@ class EventController extends Controller
         if ($request->delegation_type) {
           $input['event_id'] = $event->id;
           $input['contingent_type'] = $request->delegation_type;
-          $input['select_type'] = $request->delegation_type;
+          $input['select_type'] = $request->select_type;
           $input['country_id'] = $request->select_country;
           $input['country'] = $request->contingent_country;
           $input['province_id'] = $request->select_state;
