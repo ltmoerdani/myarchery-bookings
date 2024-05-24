@@ -48,10 +48,27 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-lg-7">
+                        <div class="col-lg-4">
                             <div class="card-title d-inline-block">
                                 {{ __('Tickets') }}
                             </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <form action="" method="get" id="LangFrom">
+                                <input type="hidden" name="event_id" value="{{ request()->input('event_id') }}">
+                                <input type="hidden" name="event_type" value="{{ request()->input('event_type') }}">
+                                <select name="language" class="form-control"
+                                    onchange="document.getElementById('LangFrom').submit()">
+                                    <option selected disabled>{{ __('Select a Language') }}</option>
+                                    @foreach ($languages as $lang)
+                                        <option value="{{ $lang->code }}"
+                                            {{ $lang->code == request()->input('language') ? 'selected' : '' }}>
+                                            {{ $lang->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </form>
                         </div>
 
                         <div class="col-lg-4 offset-lg-1 mt-2 mt-lg-0">
@@ -64,6 +81,10 @@
                             <a href="{{ route('admin.event_management.event', ['language' => $defaultLang->code, 'event_type' => request()->input('event_type')]) }}"
                                 class="btn btn-info  btn-sm float-right"><i class="fas fa-backward"></i>
                                 {{ __('Back') }}</a>
+
+                            <a href="{{ route('admin.event.add.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}"
+                                class="btn btn-secondary mr-2 btn-sm float-right"><i class="fas fa-plus-circle"></i>
+                                {{ __('Add Ticket') }}</a>
 
                             <a class="mr-2 btn btn-success btn-sm float-right d-inline-block"
                                 href="{{ route('event.details', ['slug' => eventSlug($defaultLang->id, request()->input('event_id')), 'id' => request()->input('event_id')]) }}"
@@ -113,6 +134,13 @@
                                                     </td>
                                                     <td width="30%">
                                                         {{ $ticket->title }}
+                                                        {{-- @php
+                                                            $ticket_content = App\Models\Event\TicketContent::where([['language_id', $information['language']['id']], ['ticket_id', $ticket->id]])->first();
+                                                            if (empty($ticket_content)) {
+                                                                $ticket_content = App\Models\Event\TicketContent::where('ticket_id', $ticket->id)->first();
+                                                            }
+                                                        @endphp
+                                                        {{ @$ticket_content->title }} --}}
                                                     </td>
                                                     <td width="20%">
                                                         @if ($ticket->pricing_type == 'variation')
