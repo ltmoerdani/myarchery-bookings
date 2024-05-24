@@ -39,13 +39,16 @@ class TicketController extends Controller
         $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
         $price_list = [];
         $ticket_available = [];
+        $international_price = [];
 
         foreach ($detailTicket as $valDetailTicket) {
           array_push($price_list,  intval($valDetailTicket->price));
           array_push($ticket_available, intval($valDetailTicket->ticket_available));
+          array_push($international_price, intval($valDetailTicket->international_price));
         }
         $tickets[$key]->price = array_sum($price_list);
         $tickets[$key]->ticket_available = array_sum($ticket_available);
+        $tickets[$key]->international_price = array_sum($international_price);
       };
       $information['tickets'] = $tickets;
       return view('backend.event.ticket.tournament', compact('information', 'languages'));

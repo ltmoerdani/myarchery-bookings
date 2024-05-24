@@ -9,6 +9,7 @@ use App\Models\InternationalStates;
 use App\Models\InternationalCities;
 use App\Models\IndonesianProvince;
 use App\Models\IndonesianSubdistrict;
+use App\Models\IndonesianCities;
 use App\Http\Helpers\HelperResponse;
 
 class RegionController extends Controller
@@ -37,7 +38,8 @@ class RegionController extends Controller
     $id_state = $request->id_state;
     if ($id_country == "102") { //Indonesia
       // $data = IndonesianSubdistrict::select('id','name')->where('province_id', $id_state)->get();
-      $data = IndonesianSubdistrict::select('id', 'name');
+      // $data = IndonesianSubdistrict::select('id', 'name');
+      $data = IndonesianCities::select('id', 'name');
       if (!empty($id_state)) {
         $data = $data->where('province_id', $id_state);
       }
