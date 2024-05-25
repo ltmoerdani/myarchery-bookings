@@ -299,7 +299,6 @@ class EventController extends Controller
 
   public function store_tournament(StoreTournamentRequest $request)
   {
-    return $request->all();
     try {
       DB::transaction(function () use ($request) {
         $request->is_featured = "yes";

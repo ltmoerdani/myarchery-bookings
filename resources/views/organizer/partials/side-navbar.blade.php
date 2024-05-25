@@ -77,7 +77,9 @@
 
               @if (request()->routeIs('choose-event-type')) active
               @elseif (request()->routeIs('organizer.add.event.event') && request()->input('type') == 'online') active 
-              @elseif (request()->routeIs('organizer.add.event.event') && request()->input('type') == 'venue') active @endif
+              @elseif (request()->routeIs('organizer.add.event.event') && request()->input('type') == 'venue') active 
+              @elseif (request()->routeIs('organizer.add.event.event') && request()->input('type') == 'tournament') active 
+              @endif
               ">
                 <a href="{{ route('choose-event-type', ['language' => $defaultLang->code]) }}">
                   <span class="sub-item">{{ __('Add Event') }}</span>
@@ -114,6 +116,18 @@
                 <a
                   href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'online']) }}">
                   <span class="sub-item">{{ __('Online Events') }}</span>
+                </a>
+              </li>
+
+              <li
+                class="
+              @if (request()->routeIs('organizer.event_management.event') && request()->input('event_type') == 'tournament') active 
+              @elseif (request()->routeIs('organizer.event.ticket') && request()->input('event_type') == 'tournament') active 
+              @elseif (request()->routeIs('organizer.event.add.ticket') && request()->input('event_type') == 'tournament') active
+              @elseif (request()->routeIs('organizer.event.edit.ticket') && request()->input('event_type') == 'tournament') active @endif">
+                <a
+                  href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'tournament']) }}">
+                  <span class="sub-item">{{ __('Tournament Events') }}</span>
                 </a>
               </li>
             </ul>

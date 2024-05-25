@@ -41,6 +41,15 @@
                     <a href="#">{{ __('Online Events') }}</a>
                 </li>
             @endif
+            @if (request()->filled('event_type') && request()->input('event_type') == 'tournament')
+                <li class="separator">
+                    <i class="flaticon-right-arrow"></i>
+                </li>
+                <li class="nav-item">
+                    <a
+                        href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'tournament']) }}">{{ __('Tournament Events') }}</a>
+                </li>
+            @endif
         </ul>
     </div>
 
@@ -88,6 +97,11 @@
                                     <a href="{{ route('organizer.add.event.event', ['type' => 'venue']) }}"
                                         class="dropdown-item">
                                         {{ __('Venue Event') }}
+                                    </a>
+
+                                    <a href="{{ route('organizer.add.event.event', ['type' => 'tournament']) }}"
+                                        class="dropdown-item">
+                                        {{ __('Tournament Event') }}
                                     </a>
                                 </div>
                             </div>

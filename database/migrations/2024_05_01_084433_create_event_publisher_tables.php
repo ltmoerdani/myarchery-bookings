@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('event_publisher_tables', function (Blueprint $table) {
+        Schema::create('event_publisher', function (Blueprint $table) {
             $table->id();
             $table->string('event_type');
             $table->integer('event_id');
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_publisher_tables');
+        Schema::dropIfExists('event_publisher');
     }
 };
