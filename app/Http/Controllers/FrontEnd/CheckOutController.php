@@ -214,6 +214,16 @@ class CheckOutController extends Controller
 
   public function checkout2Tournament(Request $request)
   {
+    $quantityTournament = array_filter($request->quantity, function ($param) {
+      if ($param > 0) {
+        return $param;
+      }
+    });
+
+    if (empty($quantityTournament)) {
+      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+    }
+
     $basic = Basic::select('event_guest_checkout_status')->first();
     $event_guest_checkout_status = $basic->event_guest_checkout_status;
     if ($event_guest_checkout_status != 1) {
