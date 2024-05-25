@@ -20,6 +20,7 @@ class Ticket extends Model
     'max_ticket_buy_type',
     'max_buy_ticket',
     'description',
+    'pricing_scheme',
     'pricing_type',
     'price',
     'f_price',
@@ -27,8 +28,15 @@ class Ticket extends Model
     'early_bird_discount_type',
     'early_bird_discount',
     'early_bird_discount_amount',
+    'early_bird_discount_amount_international',
     'early_bird_discount_date',
     'early_bird_discount_time',
+    'late_price_discount',
+    'late_price_discount_amount',
+    'late_price_discount_amount_international',
+    'late_price_discount_date',
+    'late_price_discount_time',
+    'late_price_discount_type',
     'variations',
     'trans_vars'
   ];

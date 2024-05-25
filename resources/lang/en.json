@@ -194,7 +194,7 @@
   "Category": "Category",
   "Online Events": "Online Events",
   "Venue Events": "Venue Events",
-  "Tournament Events": "Tournament Event",
+  "Tournament Events": "Tournament Events",
   "Select Country": "Select Country",
   "Filter by Date": "Filter by Date",
   "Price Filter": "Price Filter",
@@ -383,5 +383,11 @@
   "Product Ordered": "Product Ordered",
   "Enter Reply": "Enter Reply",
   "Replies": "Replies",
-  "Return Home": "Return Home"
+  "Return Home": "Return Home",
+  "Quota Match": "Quota Match",
+  "Title": "Title",
+  "Tickets Available": "Tickets Available",
+  "Local Price": "Local Price",
+  "International Price": "International Price",
+  "Actions": "Actions"
 }

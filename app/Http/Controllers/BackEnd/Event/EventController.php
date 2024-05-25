@@ -17,6 +17,11 @@ use App\Models\Event\EventDates;
 use App\Models\Event\Ticket;
 use App\Models\Organizer;
 use App\Models\State;
+use App\Models\InternationalCountries;
+use App\Models\IndonesianProvince;
+use App\Models\IndonesianCities;
+use App\Models\InternationalStates;
+use App\Models\InternationalCities;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -32,6 +37,7 @@ use App\Models\CompetitionCategories;
 use App\Models\CompetitionClassType;
 use App\Models\CompetitionClassName;
 use App\Models\CompetitionDistance;
+use App\Models\DelegationType;
 use App\Models\Event\TicketContent;
 use App\Http\Helpers\HelperEvent;
 use App\Http\Helpers\HelperResponse;
@@ -94,6 +100,8 @@ class EventController extends Controller
       $information['competition_class_type'] = CompetitionClassType::all();
       $information['competition_class_name'] = CompetitionClassName::all();
       $information['competition_distance'] = CompetitionDistance::all();
+      $information['delegation_type'] = DelegationType::all();
+      $information['international_countries'] = InternationalCountries::all();
       return view('backend.event.create_tournament', $information);
     } else {
       return view('backend.event.create', $information);
@@ -193,7 +201,6 @@ class EventController extends Controller
   public function store(StoreRequest $request)
   {
     DB::transaction(function () use ($request) {
-
       //calculate duration
       if ($request->date_type == 'single') {
         $start = Carbon::parse($request->start_date . $request->start_time);
@@ -303,6 +310,7 @@ class EventController extends Controller
       DB::transaction(function () use ($request) {
         $request->is_featured = "yes";
         $request->date_type = "single";
+
         //calculate duration
         if ($request->date_type == 'single') {
           $start = Carbon::parse($request->start_date . $request->start_time);
@@ -313,7 +321,6 @@ class EventController extends Controller
 
         $in = $request->all();
         $in['duration'] = $request->date_type == 'single' ? $diffent : '';
-        $in['organizer_id'] = $request->organizer_id;
 
         $img = $request->file('thumbnail');
         if ($request->hasFile('thumbnail')) {
@@ -324,10 +331,20 @@ class EventController extends Controller
           $in['thumbnail'] = $filename;
         }
 
+        $thb_file = $request->file('thb_file');
+        if ($request->hasFile('thb_file')) {
+          $filename = 'thb-file-' . time()  . $thb_file->getClientOriginalExtension();
+          $directory = public_path('assets/admin/img/event/tournament_uploaded/');
+          @mkdir($directory, 0775, true);
+          $request->file('thb_file')->move($directory, $filename);
+          $in['thb_file'] = $filename;
+        }
+
         $in['f_price'] = $request->price;
         $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
         $in['is_featured'] = $request->is_featured;
         $event = Event::create($in);
+
 
         $in['event_id'] = $event->id;
         if ($request->event_type == 'online') {
@@ -355,6 +372,7 @@ class EventController extends Controller
           $event_content->event_category_id = $request[$language->code . '_category_id'];
           $event_content->event_id = $event->id;
           $event_content->title = $request[$language->code . '_title'];
+
           if ($request->event_type == 'venue') {
             $event_content->address = $request[$language->code . '_address'];
             $event_content->country = $request[$language->code . '_country'];
@@ -362,6 +380,21 @@ class EventController extends Controller
             $event_content->city = $request[$language->code . '_city'];
             $event_content->zip_code = $request[$language->code . '_zip_code'];
           }
+
+          if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
+            $event_content->country = InternationalCountries::find($request[$language->code . '_country'])->name;
+            $event_content->address = $request[$language->code . '_address'];
+            $event_content->zip_code = $request[$language->code . '_zip_code'];
+
+            if ($request[$language->code . '_country'] == 102 || $request[$language->code . '_country'] == '102') {
+              $event_content->state = IndonesianProvince::find($request[$language->code . '_state'])->name;
+              $event_content->city = IndonesianCities::find($request[$language->code . '_city'])->name;
+            } else {
+              $event_content->state = InternationalStates::find($request[$language->code . '_state'])->name;
+              $event_content->city = InternationalCities::find($request[$language->code . '_city'])->name;
+            }
+          }
+
           $event_content->slug = createSlug($request[$language->code . '_title']);
           $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
           $event_content->refund_policy = $request[$language->code . '_refund_policy'];
@@ -376,7 +409,7 @@ class EventController extends Controller
           $input['event_type'] = $request->event_publisher;
           $input['shared_type'] = 'event type ' . $request->event_publisher;
           $input['link_event'] = $request->link_event_publisher;
-          $input['code'] = $request->code_publisher;
+          $input['code'] = $request->code;
           $input['description'] = $request->description_event_publisher;
           EventPublisher::create($input);
         }
@@ -385,12 +418,12 @@ class EventController extends Controller
         if ($request->delegation_type) {
           $input['event_id'] = $event->id;
           $input['contingent_type'] = $request->delegation_type;
-          $input['select_type'] = $request->delegation_type;
-          $input['country_id'] = $request->contingent_country_id;
+          $input['select_type'] = $request->select_type;
+          $input['country_id'] = $request->select_country;
           $input['country'] = $request->contingent_country;
-          $input['province_id'] = $request->contingent_province_id;
+          $input['province_id'] = $request->select_state;
           $input['province'] = $request->contingent_province;
-          $input['state_id'] = $request->contingent_state_id;
+          $input['state_id'] = $request->select_state;
           $input['state'] = $request->contingent_state;
           $input['city_id'] = $request->contingent_city_id;
           $input['city'] = $request->contingent_city;
@@ -429,11 +462,14 @@ class EventController extends Controller
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
-            $ticket['international_price'] = 500000;
-            $ticket['early_bird_discount'] = 0;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
             $t = Ticket::create($ticket);
 
             $languages = Language::all();
@@ -474,10 +510,14 @@ class EventController extends Controller
               $ticket['max_ticket_buy_type'] = 'limited';
               $ticket['max_buy_ticket'] = 10;
               $ticket['pricing_type'] = 'normal';
+              $ticket['pricing_scheme'] = $request['pricing_scheme'];
               $ticket['price'] = 300000;
               $ticket['f_price'] = 300000;
-              $ticket['early_bird_discount'] = 0;
+              $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+              $ticket['early_bird_discount'] = 'disable';
               $ticket['early_bird_discount_type'] = 'fixed';
+              $ticket['late_price_discount'] = 'disable';
+              $ticket['late_price_discount_type'] = 'fixed';
               $t = Ticket::create($ticket);
 
               $languages = Language::all();
@@ -517,10 +557,14 @@ class EventController extends Controller
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
-            $ticket['early_bird_discount'] = 0;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
             $t = Ticket::create($ticket);
 
             $languages = Language::all();
@@ -543,10 +587,14 @@ class EventController extends Controller
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
-            $ticket['early_bird_discount'] = 0;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
             $t = Ticket::create($ticket);
 
             $languages = Language::all();

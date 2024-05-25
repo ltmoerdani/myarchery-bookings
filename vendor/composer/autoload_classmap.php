@@ -324,6 +324,7 @@ return array(
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',
     'App\\Providers\\EventServiceProvider' => $baseDir . '/app/Providers/EventServiceProvider.php',
     'App\\Providers\\RouteServiceProvider' => $baseDir . '/app/Providers/RouteServiceProvider.php',
+    'App\\Rules\\DocPdfMimeTypeRule' => $baseDir . '/app/Rules/DocPdfMimeTypeRule.php',
     'App\\Rules\\ImageMimeTypeRule' => $baseDir . '/app/Rules/ImageMimeTypeRule.php',
     'App\\Rules\\MatchEmailRule' => $baseDir . '/app/Rules/MatchEmailRule.php',
     'App\\Rules\\MatchOldPasswordRule' => $baseDir . '/app/Rules/MatchOldPasswordRule.php',

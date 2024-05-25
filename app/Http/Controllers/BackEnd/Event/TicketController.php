@@ -26,13 +26,35 @@ class TicketController extends Controller
     if (empty($event)) {
       $event = EventContent::where('event_id', $request->event_id)->first();
     }
-    $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
+
+    if (empty($event)) {
+      return abort(404);
+    }
+
     $information['event'] = $event;
 
-    $information['tickets'] = $tickets;
-    if($request->event_type == 'tournament'){
+    if ($request->event_type == 'tournament') {
+      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
+      foreach ($tickets as $key => $ticket) {
+        $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        $price_list = [];
+        $ticket_available = [];
+        $international_price = [];
+
+        foreach ($detailTicket as $valDetailTicket) {
+          array_push($price_list,  intval($valDetailTicket->price));
+          array_push($ticket_available, intval($valDetailTicket->ticket_available));
+          array_push($international_price, intval($valDetailTicket->international_price));
+        }
+        $tickets[$key]->price = array_sum($price_list);
+        $tickets[$key]->ticket_available = array_sum($ticket_available);
+        $tickets[$key]->international_price = array_sum($international_price);
+      };
+      $information['tickets'] = $tickets;
       return view('backend.event.ticket.tournament', compact('information', 'languages'));
-    }else{
+    } else {
+      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
+      $information['tickets'] = $tickets;
       return view('backend.event.ticket.index', compact('information', 'languages'));
     }
   }
@@ -53,9 +75,9 @@ class TicketController extends Controller
     $information['event'] = $event;
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
-    if($request->event_type == 'tournament'){
+    if ($request->event_type == 'tournament') {
       return view('backend.event.ticket.create_tournament', $information);
-    }else{
+    } else {
       return view('backend.event.ticket.create', $information);
     }
   }
@@ -74,7 +96,7 @@ class TicketController extends Controller
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
 
-      if($request->event_type == "tournament"){
+      if ($request->event_type == "tournament") {
         $in['international_price'] = $request->international_price;
       }
 
@@ -153,9 +175,9 @@ class TicketController extends Controller
     $information['variations'] = json_decode($ticket->variations, true);
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
-    if($request->event_type == 'tournament'){
+    if ($request->event_type == 'tournament') {
       return view('backend.event.ticket.edit_tournament', $information);
-    }else{
+    } else {
       return view('backend.event.ticket.edit', $information);
     }
   }
@@ -179,7 +201,7 @@ class TicketController extends Controller
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
 
-      if($request->event_type == "tournament"){
+      if ($request->event_type == "tournament") {
         $in['international_price'] = $request->international_price;
       }
 

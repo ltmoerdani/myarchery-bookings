@@ -38,7 +38,7 @@ class CheckOutController extends Controller
     try {
       $basic = Basic::select('event_guest_checkout_status')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
-      
+
       if ($event_guest_checkout_status != 1) {
         if (!Auth::guard('customer')->user()) {
           return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
@@ -71,7 +71,7 @@ class CheckOutController extends Controller
       $information['customer'] = Auth::guard('customer')->user();
       $information['event'] = $event;
       $information['re_event_id'] = $request->event_id;
-      
+
       $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
         ->where('organizers.id', '=', $event->organizer_id)
         ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
@@ -156,9 +156,9 @@ class CheckOutController extends Controller
         if ($country[$k] == "102") { //Indonesia
           $ticketprice = $ticket->price;
           $tickettitle = $ticket->title;
-        }else{
+        } else {
           $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
-          $tickettitle = $ticket->title.' (Internasional)';
+          $tickettitle = $ticket->title . ' (Internasional)';
         }
 
         if ($categorytickets['title'] != $tickettitle) {
@@ -169,10 +169,10 @@ class CheckOutController extends Controller
         $categorytickets['price'] = $categorytickets['price'] + $ticketprice;
         $categorytickets['quantity']++;
 
-        if($club_delegation_individu){
+        if ($club_delegation_individu) {
           $club_name = Clubs::where('id', $club[$k])->first();
         }
-        
+
         $ticket_detail_order[] = [
           "id" => $v,
           "user_full_name" => $name[$k],
@@ -199,7 +199,7 @@ class CheckOutController extends Controller
         "category" => 'individu',
         "ticket_detail_order" => $ticket_detail_order
       ];
-      
+
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $this->ppn_value;
@@ -208,12 +208,22 @@ class CheckOutController extends Controller
       $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
-      dd($e);
+      return abort(404);
     }
   }
 
   public function checkout2Tournament(Request $request)
   {
+    $quantityTournament = array_filter($request->quantity, function ($param) {
+      if ($param > 0) {
+        return $param;
+      }
+    });
+
+    if (empty($quantityTournament)) {
+      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+    }
+
     $basic = Basic::select('event_guest_checkout_status')->first();
     $event_guest_checkout_status = $basic->event_guest_checkout_status;
     if ($event_guest_checkout_status != 1) {
@@ -301,7 +311,7 @@ class CheckOutController extends Controller
         $ticket[$key] = $value;
       }
 
-      foreach($quantity as $k => $v){
+      foreach ($quantity as $k => $v) {
         $category_ticket[] = [
           "id" => $k,
           'name' => $ticket[$k],
@@ -325,7 +335,7 @@ class CheckOutController extends Controller
           "available_qouta" => $list->ticket_available
         ];
       }
-      
+
       $information['sub_category_tickets'] = $sub_category_tickets;
 
       $information['delegation_type'] = DelegationType::get()->toArray();

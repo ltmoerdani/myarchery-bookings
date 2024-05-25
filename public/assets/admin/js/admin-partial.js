@@ -51,12 +51,11 @@ $(document).ready(function () {
       contentType: false,
       processData: false,
       success: function (data) {
-        console.log("data:", data);
         $(".request-loader").removeClass("show");
 
-        // if (data.status == "success") {
-        //   location.reload();
-        // }
+        if (data.status == "success") {
+          location.reload();
+        }
       },
       error: function (error) {
         let errors = ``;
@@ -529,22 +528,67 @@ $(document).ready(function () {
   });
 
   // Delegation Type
-  $(".delegationType").on("change", function () {
+  $(".delegationType").on("change", function async() {
+    $(".select-country-field").addClass("d-none");
+    $(".select-state-field").addClass("d-none");
+    $("#select_country").val("");
+    $("#select_state").val("");
+    $(".fieldState").empty();
+
     const value = $(this).val();
     if (value === "selected") {
       $(".select-type-field").removeClass("d-none");
     } else {
       $(".select-type-field").addClass("d-none");
     }
-    // if (value == "multiple") {
-    //   $("#single_dates").addClass("d-none");
-    //   $("#multiple_dates").removeClass("d-none");
-    //   $(".countDownStatus").addClass("d-none");
-    // } else {
-    //   $("#single_dates").removeClass("d-none");
-    //   $("#multiple_dates").addClass("d-none");
-    //   $(".countDownStatus").removeClass("d-none");
-    // }
+  });
+
+  $(".selectTypeDelegation").on("change", function () {
+    $(".select-country-field").addClass("d-none");
+    $(".select-state-field").addClass("d-none");
+    $("#select_country").val("");
+    $("#select_state").val("");
+
+    const value = $("#select_type").val();
+
+    if (["province", "city/district"].includes(value.toLowerCase())) {
+      $(".select-country-field").removeClass("d-none");
+    }
+  });
+
+  $(".fieldCountry").on("change", function () {
+    const valueSelectionType = $("#select_type").val().toLowerCase();
+    const baseUrl = $("#base_url").val();
+    const getValueCountry = $("#select_country").val();
+    let contentOptionFieldState = "";
+
+    $(".fieldState").empty();
+    $("#select_state").val("");
+
+    if (valueSelectionType === "city/district") {
+      $.ajax({
+        url: `${baseUrl}/api/get-state/${getValueCountry}`,
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          contentOptionFieldState += `<option selected value="">Choose State</option>`;
+          if (response.data.length > 0) {
+            response.data.map((val) => {
+              contentOptionFieldState += `<option value="${val.id}">${val.name}</option>`;
+            });
+          }
+          $(".select-state-field").removeClass("d-none");
+          $("#select_state").append(contentOptionFieldState);
+        },
+        error: function (error) {
+          console.log("error:", error);
+        },
+      });
+    } else {
+      $(".select-state-field").addClass("d-none");
+      contentOptionFieldState += `<option selected value="">Choose State</option>`;
+      $("#select_state").append(contentOptionFieldState);
+    }
   });
 
   //add row for event dates
@@ -738,3 +782,59 @@ $("thead").on("click", ".addSetCategory", function () {
 $("tbody").on("click", ".deleteSetCategory", function () {
   $(this).parent().parent().remove();
 });
+
+const handleChooseEventContentLanguageCountry = (code) => {
+  const getCountryValue = $(`#${code}_country`).val();
+  $(`#${code}_state`).empty();
+  $(`#${code}_state`).val("");
+  $(`#${code}_city`).empty();
+  $(`#${code}_city`).val("");
+
+  let contentOption = "";
+  $.ajax({
+    url: `${baseUrl}/api/get-state/${getCountryValue}`,
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      contentOption += `<option selected value="">Choose State</option>`;
+      if (response.data.length > 0) {
+        response.data.map((val) => {
+          contentOption += `<option value="${val.id}">${val.name}</option>`;
+        });
+      }
+      $(`#${code}_state`).append(contentOption);
+    },
+    error: function (error) {
+      contentOption += `<option selected value="">Choose State</option>`;
+      $(`#${code}_state`).append(contentOption);
+      console.log("error:", error);
+    },
+  });
+};
+
+const handleChooseEventContentLanguageState = (code) => {
+  const getCountryValue = $(`#${code}_country`).val();
+  const getStateValue = $(`#${code}_state`).val();
+  $(`#${code}_city`).empty();
+  $(`#${code}_city`).val("");
+  let contentOption = "";
+  $.ajax({
+    url: `${baseUrl}/api/get-city/${getCountryValue}/${getStateValue}`,
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      contentOption += `<option selected value="">Choose City</option>`;
+      if (response.data.length > 0) {
+        response.data.map((val) => {
+          contentOption += `<option value="${val.id}">${val.name}</option>`;
+        });
+      }
+      $(`#${code}_city`).append(contentOption);
+    },
+    error: function (error) {
+      contentOption += `<option selected value="">Choose City</option>`;
+      $(`#${code}_city`).append(contentOption);
+      console.log("error:", error);
+    },
+  });
+};

@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\Event;
 use App\Models\Event\EventCategory;
 use App\Models\Event\EventContent;
+use App\Models\EventType;
 use App\Models\Organizer;
 use App\Models\OrganizerInfo;
 use Exception;
@@ -109,8 +110,21 @@ class OrganizerController extends Controller
         ->orderBy('serial_number', 'asc')->get();
       $information['categories'] = $categories;
 
+      $newListEvent = [];
 
-      $information['events'] = $events;
+      foreach ($events as $event) {
+        $checkType = EventType::where('event_id', $event->id)->first();
+        if (empty($checkType)) {
+          array_push($newListEvent, $event);
+        } else {
+          if (strtolower($checkType->event_type) != 'private') {
+            array_push($newListEvent, $event);
+          }
+        }
+      }
+
+      $information['events'] = $newListEvent;
+
       return view('frontend.organizer.details', $information); //code...
     } catch (\Exception $th) {
       return view('errors.404');
