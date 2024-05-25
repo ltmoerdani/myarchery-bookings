@@ -161,7 +161,7 @@
 
                                             <li
                                                 class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == '') active
-                        @elseif (request()->routeIs('admin.event_management.edit_event') && request()->input('event_type') == '') active 
+                        @elseif (request()->routeIs('admin.event_management.edit_event') && request()->input('event_type') == '') active
                         @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == '') active
                         @elseif (request()->routeIs('admin.event.add.ticket') && request()->input('event_type') == '') active
                         @elseif (request()->routeIs('admin.event.edit.ticket') && request()->input('event_type') == '') active @endif">
@@ -172,9 +172,9 @@
                                             </li>
 
                                             <li
-                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'venue') active 
+                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'venue') active
                         @elseif (request()->routeIs('admin.add.event.event') && request()->input('type') == 'venue') active
-                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'venue') active 
+                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'venue') active
                         @elseif (request()->routeIs('admin.event.add.ticket') && request()->input('event_type') == 'venue') active
                         @elseif (request()->routeIs('admin.event.edit.ticket') && request()->input('event_type') == 'venue') active @endif">
                                                 <a
@@ -184,7 +184,7 @@
                                             </li>
 
                                             <li
-                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'online') active 
+                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'online') active
                         @elseif (request()->routeIs('admin.add.event.event') && request()->input('type') == 'online') active @endif ">
                                                 <a
                                                     href="{{ route('admin.event_management.event', ['language' => $defaultLang->code, 'event_type' => 'online']) }}">
@@ -193,9 +193,9 @@
                                             </li>
 
                                             <li
-                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'tournament') active 
+                                                class="@if (request()->routeIs('admin.event_management.event') && request()->input('event_type') == 'tournament') active
                         @elseif (request()->routeIs('admin.add.event.event') && request()->input('type') == 'tournament') active
-                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'tournament') active 
+                        @elseif (request()->routeIs('admin.event.ticket') && request()->input('event_type') == 'tournament') active
                         @elseif (request()->routeIs('admin.event.add.ticket') && request()->input('event_type') == 'tournament') active
                         @elseif (request()->routeIs('admin.event.edit.ticket') && request()->input('event_type') == 'tournament') active @endif">
                                                 <a
@@ -217,10 +217,10 @@
                     <li
                         class="nav-item
           @if (request()->routeIs('admin.event.booking')) active
-          @elseif (request()->routeIs('admin.event_booking.details')) active  
-          @elseif (request()->routeIs('admin.event_management.coupons')) active  
-          @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) active  
-          @elseif (request()->routeIs('admin.event_booking.settings.tax_commission')) active  
+          @elseif (request()->routeIs('admin.event_booking.details')) active
+          @elseif (request()->routeIs('admin.event_management.coupons')) active
+          @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) active
+          @elseif (request()->routeIs('admin.event_booking.settings.tax_commission')) active
           @elseif (request()->routeIs('admin.event_booking.report')) active @endif">
                         <a data-toggle="collapse" href="#event_bookings">
                             <i class="fal fa-users-class"></i>
@@ -230,11 +230,11 @@
 
                         <div id="event_bookings"
                             class="collapse
-            @if (request()->routeIs('admin.event_management.coupons')) show 
-            @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) show 
-            @elseif (request()->routeIs('admin.event.booking')) show 
-            @elseif (request()->routeIs('admin.event_booking.details')) show 
-            @elseif (request()->routeIs('admin.event_booking.report')) show 
+            @if (request()->routeIs('admin.event_management.coupons')) show
+            @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) show
+            @elseif (request()->routeIs('admin.event.booking')) show
+            @elseif (request()->routeIs('admin.event_booking.details')) show
+            @elseif (request()->routeIs('admin.event_booking.report')) show
             @elseif (request()->routeIs('admin.event_booking.settings.tax_commission')) show @endif">
                             <ul class="nav nav-collapse">
 
@@ -245,8 +245,8 @@
                                         <span class="caret"></span>
                                     </a>
                                     <div class="collapse
-                    @if (request()->routeIs('admin.event_management.coupons')) show 
-                    @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) show 
+                    @if (request()->routeIs('admin.event_management.coupons')) show
+                    @elseif (request()->routeIs('admin.event_booking.settings.guest_checkout')) show
                     @elseif (request()->routeIs('admin.event_booking.settings.tax_commission')) show @endif"
                                         id="EventsSettings">
                                         <ul class="nav nav-collapse subnav">
@@ -332,13 +332,13 @@
                             class="collapse
             @if (request()->routeIs('admin.withdraw.payment_method')) show
             @elseif (request()->routeIs('admin.withdraw.payment_method')) show
-            @elseif (request()->routeIs('admin.withdraw_payment_method.mange_input')) show 
-            @elseif (request()->routeIs('admin.withdraw_payment_method.edit_input')) show 
+            @elseif (request()->routeIs('admin.withdraw_payment_method.mange_input')) show
+            @elseif (request()->routeIs('admin.withdraw_payment_method.edit_input')) show
             @elseif (request()->routeIs('admin.withdraw.withdraw_request')) show @endif">
                             <ul class="nav nav-collapse">
                                 <li
-                                    class="@if (request()->routeIs('admin.withdraw.payment_method')) active 
-                  @elseif (request()->routeIs('admin.withdraw_payment_method.mange_input')) active 
+                                    class="@if (request()->routeIs('admin.withdraw.payment_method')) active
+                  @elseif (request()->routeIs('admin.withdraw_payment_method.mange_input')) active
                   @elseif (request()->routeIs('admin.withdraw_payment_method.edit_input')) active @endif">
                                     <a
                                         href="{{ route('admin.withdraw.payment_method', ['language' => $defaultLang->code]) }}">
@@ -375,7 +375,7 @@
             @elseif (request()->routeIs('admin.organizer_management.add_organizer')) active
             @elseif (request()->routeIs('admin.organizer_management.organizer_details')) active
             @elseif (request()->routeIs('admin.edit_management.organizer_edit')) active
-            @elseif (request()->routeIs('admin.organizer_management.organizer.change_password')) active 
+            @elseif (request()->routeIs('admin.organizer_management.organizer.change_password')) active
             @elseif (request()->routeIs('admin.organizer_management.settings')) active @endif">
                         <a data-toggle="collapse" href="#organizer">
                             <i class="la flaticon-users"></i>
@@ -389,7 +389,7 @@
               @elseif (request()->routeIs('admin.organizer_management.organizer_details')) show
               @elseif (request()->routeIs('admin.edit_management.organizer_edit')) show
               @elseif (request()->routeIs('admin.organizer_management.add_organizer')) show
-              @elseif (request()->routeIs('admin.organizer_management.organizer.change_password')) show 
+              @elseif (request()->routeIs('admin.organizer_management.organizer.change_password')) show
               @elseif (request()->routeIs('admin.organizer_management.settings')) show @endif">
                             <ul class="nav nav-collapse">
                                 <li class="@if (request()->routeIs('admin.organizer_management.settings')) active @endif">
@@ -422,7 +422,7 @@
                         class="nav-item @if (request()->routeIs('admin.organizer_management.registered_customer')) active
             @elseif (request()->routeIs('admin.customer_management.customer_edit')) active
             @elseif (request()->routeIs('admin.customer_management.customer_details')) active
-            @elseif (request()->routeIs('admin.customer_management.customer.change_password')) active 
+            @elseif (request()->routeIs('admin.customer_management.customer.change_password')) active
             @elseif (request()->routeIs('admin.organizer_management.add_customer')) active @endif">
                         <a data-toggle="collapse" href="#customer">
                             <i class="fas fa-users"></i>
@@ -434,7 +434,7 @@
               @if (request()->routeIs('admin.organizer_management.registered_customer')) show
               @elseif (request()->routeIs('admin.customer_management.customer_details')) show
               @elseif (request()->routeIs('admin.customer_management.customer_edit')) show
-              @elseif (request()->routeIs('admin.customer_management.customer.change_password')) show 
+              @elseif (request()->routeIs('admin.customer_management.customer.change_password')) show
               @elseif (request()->routeIs('admin.organizer_management.add_customer')) show @endif">
                             <ul class="nav nav-collapse">
                                 <li
@@ -620,7 +620,7 @@
 
                                             <li
                                                 class="
-                        @if (request()->routeIs('admin.product.order') && empty(request()->input('type'))) active 
+                        @if (request()->routeIs('admin.product.order') && empty(request()->input('type'))) active
                         @elseif (request()->routeIs('admin.product_order.details')) active @endif">
                                                 <a href="{{ route('admin.product.order') }}">
                                                     <span class="sub-item">{{ __('All Orders') }}</span>
@@ -958,7 +958,7 @@
 
                 @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Push Notification', $rolePermissions)))
                     <li
-                        class="nav-item @if (request()->routeIs('admin.user_management.push_notification.settings')) active 
+                        class="nav-item @if (request()->routeIs('admin.user_management.push_notification.settings')) active
                     @elseif (request()->routeIs('admin.user_management.push_notification.notification_for_visitors')) active @endif">
                         <a data-toggle="collapse" href="#push_notification">
                             <i class="fal fa-bell"></i>
@@ -967,8 +967,8 @@
                         </a>
 
                         <div id="push_notification"
-                            class="collapse 
-              @if (request()->routeIs('admin.user_management.push_notification.settings')) show 
+                            class="collapse
+              @if (request()->routeIs('admin.user_management.push_notification.settings')) show
                     @elseif (request()->routeIs('admin.user_management.push_notification.notification_for_visitors')) show @endif">
                             <ul class="nav nav-collapse">
                                 <li
@@ -1027,7 +1027,7 @@
                 {{-- basic settings --}}
                 @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Basic Settings', $rolePermissions)))
                     <li
-                        class="nav-item @if (request()->routeIs('admin.basic_settings.general_settings')) active 
+                        class="nav-item @if (request()->routeIs('admin.basic_settings.general_settings')) active
             @elseif (request()->routeIs('admin.basic_settings.mail_from_admin')) active
             @elseif (request()->routeIs('admin.basic_settings.mail_to_admin')) active
             @elseif (request()->routeIs('admin.basic_settings.mail_templates')) active
@@ -1173,7 +1173,7 @@
                 @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('PWA Settings', $rolePermissions)))
                     <li
                         class="nav-item
-          @if (request()->routeIs('admin.pwa')) active 
+          @if (request()->routeIs('admin.pwa')) active
           @elseif (request()->routeIs('admin.pwa.scanner')) active @endif">
                         <a data-toggle="collapse" href="#pwa_setting">
                             <i class="fab fa-app-store-ios"></i>

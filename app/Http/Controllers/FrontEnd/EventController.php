@@ -209,17 +209,7 @@ class EventController extends Controller
 
       $category_id = $content->event_category_id;
       $event_id = $content->id;
-      $related_events = EventContent::join('events', 'events.id', 'event_contents.event_id')
-        ->where('event_contents.language_id', $language->id)
-        ->where('event_contents.event_category_id', $category_id)
-        ->where('events.id', '!=', $event_id)
-        ->whereDate('events.end_date_time', '>=', $this->now_date_time)
-        ->select('events.*', 'event_contents.title', 'event_contents.description', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
-        ->orderBy('events.id', 'desc')
-        ->get();
 
-
-      $information['related_events'] = $related_events;
       if ($information['content']->event_type == 'tournament') {
         $tickets = Ticket::where('event_id', '=', $event_id)->get();
 
@@ -265,8 +255,33 @@ class EventController extends Controller
 
         $information['category_tickets'] = $competition;
         $information['tickets'] = $tickets;
-        return view('frontend.event.event-tournament-details', $information); //code...
+
+        $related_events = EventContent::join('events', 'events.id', 'event_contents.event_id')
+          ->join('event_type', 'event_type.event_id', 'events.id')
+          ->where('event_type.event_type', 'public')
+          ->where('event_contents.language_id', $language->id)
+          ->where('event_contents.event_category_id', $category_id)
+          ->where('events.id', '!=', $event_id)
+          ->whereDate('events.end_date_time', '>=', $this->now_date_time)
+          ->select('events.*', 'event_contents.title', 'event_contents.description', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
+          ->orderBy('events.id', 'desc')
+          ->get();
+
+
+        $information['related_events'] = $related_events;
+
+        return view('frontend.event.event-tournament-details', $information);
       } else {
+        $related_events = EventContent::join('events', 'events.id', 'event_contents.event_id')
+          ->where('event_contents.language_id', $language->id)
+          ->where('event_contents.event_category_id', $category_id)
+          ->where('events.id', '!=', $event_id)
+          ->whereDate('events.end_date_time', '>=', $this->now_date_time)
+          ->select('events.*', 'event_contents.title', 'event_contents.description', 'event_contents.slug', 'event_contents.city', 'event_contents.country')
+          ->orderBy('events.id', 'desc')
+          ->get();
+
+        $information['related_events'] = $related_events;
         return view('frontend.event.event-details', $information); //code...
       }
     } catch (\Exception $th) {

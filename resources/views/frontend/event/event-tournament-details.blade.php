@@ -211,9 +211,9 @@
                                             id="pills-category-{{ $ct_value['id'] }}" role="tabpanel"
                                             aria-labelledby="pills-category-{{ $ct_value['id'] }}-tab">
                                             <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
-                                                @foreach ($ct_value['sub_category'] as $val_sub_category)
+                                                @foreach ($ct_value['sub_category'] as $key_sub_category => $val_sub_category)
                                                     <button
-                                                        class="btn btn-warning button-warning-custom info-detail-qouta-ticket"
+                                                        class="btn btn-warning button-warning-custom info-detail-qouta-ticket {{ $key_sub_category == 0 && $key_ct == 0 ? 'first-info-detail-quota-ticket' : '' }}"
                                                         type="button"
                                                         data-ticket-quota="{{ json_encode($val_sub_category['tickets']) }}">
                                                         {{ $val_sub_category['sub_category_name'] }} -
@@ -228,7 +228,7 @@
                             <div class="col-12 my-2">
                                 <div class="card bg-light text-primary" style="font-weight: bold">
                                     <div class="card-body py-1 px-0 d-flex justify-content-center">
-                                        Kouta Pertandingan
+                                        {{ __('Quota Match') }}
                                     </div>
                                 </div>
                             </div>
@@ -427,8 +427,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                        <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                        <hr> -->
+                                                                        <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                        <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -617,12 +617,16 @@
                                             ->groupBy('title')
                                             ->get();
 
-                                        $competitons = DB::select("SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
-                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id) AS competition_type
-                                            FROM `competitions`, competition_categories 
-                                            WHERE competitions.event_id=".$content->id." AND competition_categories.id=competitions.competition_category_id 
-                                            GROUP BY competitions.competition_type_id ORDER BY competitions.competition_category_id ASC");
-
+                                        $competitons = DB::select(
+                                            "SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
+                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id)
+AS competition_type
+                                            FROM `competitions`, competition_categories
+                                            WHERE competitions.event_id=" .
+                                                $content->id .
+                                                " AND competition_categories.id=competitions.competition_category_id
+                                            GROUP BY competitions.competition_type_id ORDER BY competitions.competition_category_id ASC",
+                                        );
                                     @endphp
                                     @if (count($tickets) > 0)
                                         <b>{{ __('Select Tickets') }}</b>
@@ -665,7 +669,8 @@
                                                         </h6>
                                                     </div>
                                                     <div class="quantity-input">
-                                                        <input type="hidden" name="category_ticket[{{ $ticket->id }}]" value="{{ $ticket->title }}">
+                                                        <input type="hidden" name="category_ticket[{{ $ticket->id }}]"
+                                                            value="{{ $ticket->title }}">
                                                         <button class="quantity-down" type="button" id="quantityDown">
                                                             -
                                                         </button>
@@ -1265,6 +1270,9 @@
 @endsection
 @section('custom-script')
     <script>
+        $(document).ready(function() {
+            $(".first-info-detail-quota-ticket").trigger('click');
+        });
         $(".info-detail-qouta-ticket").on("click", function() {
             $("#content-qouta-ticket").empty();
 
@@ -1289,7 +1297,9 @@
                 `
             })
 
-            $("#content-qouta-ticket").append(content);
+            setTimeout(() => {
+                $("#content-qouta-ticket").append(content);
+            }, 1000)
         });
     </script>
 @endsection

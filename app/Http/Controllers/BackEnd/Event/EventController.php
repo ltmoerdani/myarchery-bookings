@@ -19,7 +19,7 @@ use App\Models\Organizer;
 use App\Models\State;
 use App\Models\InternationalCountries;
 use App\Models\IndonesianProvince;
-use App\Models\IndonesianSubdistrict;
+use App\Models\IndonesianCities;
 use App\Models\InternationalStates;
 use App\Models\InternationalCities;
 use Carbon\Carbon;
@@ -382,13 +382,13 @@ class EventController extends Controller
           }
 
           if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
-            $event_content->country = $request[$language->code . '_country'];
+            $event_content->country = InternationalCountries::find($request[$language->code . '_country'])->name;
             $event_content->address = $request[$language->code . '_address'];
             $event_content->zip_code = $request[$language->code . '_zip_code'];
 
             if ($request[$language->code . '_country'] == 102 || $request[$language->code . '_country'] == '102') {
               $event_content->state = IndonesianProvince::find($request[$language->code . '_state'])->name;
-              $event_content->city = IndonesianSubdistrict::find($request[$language->code . '_city'])->name;
+              $event_content->city = IndonesianCities::find($request[$language->code . '_city'])->name;
             } else {
               $event_content->state = InternationalStates::find($request[$language->code . '_state'])->name;
               $event_content->city = InternationalCities::find($request[$language->code . '_city'])->name;
