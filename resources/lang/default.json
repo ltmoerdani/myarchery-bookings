@@ -386,5 +386,6 @@
   "Tickets Available": "Tickets Available",
   "Local Price": "Local Price",
   "International Price": "International Price",
-  "Actions": "Actions"
+  "Actions": "Actions",
+  "Error Minimum Quantity Ticket Tournament": "Please Select at least one ticket"
 }

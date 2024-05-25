@@ -221,7 +221,7 @@ class CheckOutController extends Controller
     });
 
     if (empty($quantityTournament)) {
-      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+      return back()->with(['alert-type' => 'error', 'message' => __('Error Minimum Quantity Ticket Tournament')]);
     }
 
     $basic = Basic::select('event_guest_checkout_status')->first();

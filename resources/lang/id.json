@@ -53,7 +53,7 @@
   "Follow Me": "Follow Me",
   "till": "till",
   "Discount available": "Discount available",
-  "Select Tickets": "Select Tickets",
+  "Select Tickets": "Pilih Tiket",
   "Yahoo": "Yahoo",
   "Google Calendar": "Google Calendar",
   "Add to Calendar": "Add to Calendar",
@@ -386,5 +386,6 @@
   "Tickets Available": "Tickets Available",
   "Local Price": "Local Price",
   "International Price": "International Price",
-  "Actions": "Actions"
+  "Actions": "Actions",
+  "Error Minimum Quantity Ticket Tournament": "Setidaknya harus memilih 1 tiket"
 }
