@@ -8,7 +8,7 @@
 @endsection
 @section('hero-section')
     <!-- Page Banner Start -->
-    <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
+    <!-- Sementara <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
         data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
         <div class="container">
             <div class="banner-inner">
@@ -33,7 +33,7 @@
                 </nav>
             </div>
         </div>
-    </section>
+    </section> -->
     <!-- Page Banner End -->
 @endsection
 @section('content')

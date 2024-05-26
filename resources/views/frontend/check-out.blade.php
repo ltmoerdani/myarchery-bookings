@@ -8,21 +8,21 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('hero-section')
   <!-- Page Banner Start -->
-  <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
-    data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
-    <div class="container">
-      <div class="banner-inner">
-        <h2 class="page-title">{{ __('Checkout') }}</h2>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
-            <li class="breadcrumb-item active">{{ __('Checkout') }}</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </section>
-  <!-- Page Banner End -->
+    <!-- Sementara <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
+        data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
+        <div class="container">
+            <div class="banner-inner">
+                <h2 class="page-title">{{ __('Checkout') }}</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('Checkout') }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </section> -->
+    <!-- Page Banner End -->
   @php
     $authUser = Auth::guard('customer')->user();
   @endphp

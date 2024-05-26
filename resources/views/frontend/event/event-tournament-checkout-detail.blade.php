@@ -78,19 +78,27 @@
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td rows="2">Name</td>
+                                                    <td rows="2">{{ __('Info Name Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->name }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->fname) ? '' : $customer->fname }}
+                                                        {{ empty($customer->lname) ? '' : $customer->lname }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">Phone Number</td>
+                                                    <td rows="2">
+                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->phone }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->phone) ? '' : $customer->phone }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">Email</td>
+                                                    <td rows="2">{{ __('Info Email Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->email }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->email) ? '' : $customer->email }}
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

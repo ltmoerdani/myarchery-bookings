@@ -25,7 +25,7 @@ $metaDescription = !empty($seo->meta_description_home) ? $seo->meta_description_
         <p>
           {{ $heroSection ? $heroSection->second_title : __('This is an affordable and powerful event ticketing platform for event organisers, promoters, and managers. Easily create, promote and sell tickets to your events of every type and size.') }}
         </p>
-        <form id="event-search" class="event-search mt-35" name="event-search" action="{{ route('events') }}" method="get">
+        <!-- Sementara <form id="event-search" class="event-search mt-35" name="event-search" action="{{ route('events') }}" method="get">
           <div class="search-item">
             <label for="borwseby"><i class="fas fa-list"></i></label>
             <select name="category" id="borwseby">
@@ -40,7 +40,7 @@ $metaDescription = !empty($seo->meta_description_home) ? $seo->meta_description_
             <input type="search" id="search" name="search-input" placeholder="{{ __('Search Anything') }}">
           </div>
           <button type="submit" class="theme-btn">{{ $heroSection ? $heroSection->first_button : __('Search') }}</button>
-        </form>
+        </form> -->
       </div>
     </div>
   </section>
@@ -741,7 +741,7 @@ $metaDescription = !empty($seo->meta_description_home) ? $seo->meta_description_
 
 
   <!-- Feature Section Start -->
-  <section class="feature-section pt-110 rpt-90 bg-lighter">
+  <!-- Sementara <section class="feature-section pt-110 rpt-90 bg-lighter">
     @if ($secInfo->features_section_status == 1)
     <div class="container pb-90 rpb-70">
       <div class="section-title text-center mb-55">
@@ -803,7 +803,7 @@ $metaDescription = !empty($seo->meta_description_home) ? $seo->meta_description_
     </div>
     @endif
     @endif
-  </section>
+  </section> -->
   <!-- Feature Section End -->
 
 

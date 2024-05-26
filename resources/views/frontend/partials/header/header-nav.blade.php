@@ -6,8 +6,10 @@
 
       <div class="header-inner">
         <div class="logo-outer">
-          <div class="logo"><a href="{{ route('index') }}"><img
-                src="{{ asset('assets/admin/img/' . $websiteInfo->logo) }}" alt="Logo"></a></div>
+          <!-- Sementara <div class="logo"><a href="{{ route('index') }}"><img
+                src="{{ asset('assets/admin/img/' . $websiteInfo->logo) }}" alt="Logo"></a></div> -->
+          <div class="logo"><a href="https://grandtriumph.id"><img
+              src="{{ asset('assets/admin/img/' . $websiteInfo->logo) }}" alt="Logo"></a></div> 
         </div>
 
         <div class="nav-outer clearfix ml-lg-auto">
@@ -86,14 +88,14 @@
                   </div>
                 @endif
                 @if (!Auth::guard('organizer')->check())
-                  <div class="dropdown">
+                  <!-- Sementara <div class="dropdown">
                     <button type="button" class="menu-btn dropdown-toggle"
                       data-toggle="dropdown">{{ __('Organizer') }}</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
                       <a class="dropdown-item" href="{{ route('organizer.login') }}">{{ __('Login') }}</a>
                       <a class="dropdown-item" href="{{ route('organizer.signup') }}">{{ __('Signup') }}</a>
                     </div>
-                  </div>
+                  </div> -->
                 @else
                   <div class="dropdown">
                     <button type="button" class="menu-btn dropdown-toggle mr-1"
