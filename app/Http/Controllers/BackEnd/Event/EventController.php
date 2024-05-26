@@ -17,6 +17,7 @@ use App\Models\Event\EventDates;
 use App\Models\Event\Ticket;
 use App\Models\Organizer;
 use App\Models\State;
+use App\Models\EventType;
 use App\Models\InternationalCountries;
 use App\Models\IndonesianProvince;
 use App\Models\IndonesianCities;
@@ -947,6 +948,31 @@ class EventController extends Controller
   {
     return HelperEvent::AutoGenerateCode();
   }
+
+  public function checkCodeEvent(Request $request)
+  {
+    $event_id = $request->get('eventId');
+    $code_access = $request->get('codeAccess');
+
+    if (empty($code_access)) {
+      return HelperResponse::Error([], "Code Access is required");
+    }
+
+    $checkEvent = Event::where('id', $event_id)->first();
+
+    if (empty($checkEvent)) {
+      return HelperResponse::Error([], "Not Found Event", 404);
+    }
+
+    $getEventType = EventType::where('event_id', $event_id)->first();
+
+    if ($getEventType->code != $code_access) {
+      return HelperResponse::Error([], "Not Match Code", 401);
+    }
+
+    return HelperResponse::Success([], "Code Valid!");
+  }
+
 
   public function getCompetitionType()
   {
