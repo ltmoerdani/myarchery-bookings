@@ -171,6 +171,11 @@ class CheckOutController extends Controller
 
         if ($club_delegation_individu) {
           $club_name = Clubs::where('id', $club[$k])->first();
+          if(!$club_name){
+            $club_new['name'] = $club_delegation_individu[$k];
+            $new_club = Clubs::create($club_new);
+            $club_name = Clubs::where('id', $new_club->id)->first();
+          }
         }
 
         $ticket_detail_order[] = [
