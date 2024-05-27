@@ -32,7 +32,7 @@ use Carbon\Carbon;
 
 class CheckOutController extends Controller
 {
-  protected $ppn_value = 11;
+  protected $ppn_value = 0;
 
   //checkout
   public function detailCheckout2Tournament(Request $request)
