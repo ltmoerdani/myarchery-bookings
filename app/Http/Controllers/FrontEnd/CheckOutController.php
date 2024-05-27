@@ -26,6 +26,8 @@ use App\Models\InternationalCities;
 use App\Models\DelegationType;
 use App\Models\ContingentType;
 use App\Models\Clubs;
+use App\Models\School;
+use App\Models\Organization;
 use Carbon\Carbon;
 
 class CheckOutController extends Controller
@@ -36,7 +38,6 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
-      dd("masuk sini?");
       $basic = Basic::select('event_guest_checkout_status')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
 
@@ -179,6 +180,16 @@ class CheckOutController extends Controller
           }
         }
 
+        if ($school_delegation_individu) {
+          $school_new['name'] = $school_delegation_individu[$k];
+          $new_school = School::create($school_new);
+        }
+
+        if ($organization_delegation_individu) {
+          $organization_new['name'] = $organization_delegation_individu[$k];
+          $new_organization = Organization::create($organization_new);
+        }
+
         $ticket_detail_order[] = [
           "id" => $v,
           "user_full_name" => $name[$k],
@@ -193,8 +204,8 @@ class CheckOutController extends Controller
           "city_name" => empty($city_name->name) ? null : $city_name->name,
           "club_id" => empty($club[$k]) ? null : $club[$k],
           "club_name" => empty($club_name->name) ? null : $club_name->name,
-          "school_name" => empty($school[$k]) ? null : $school[$k],
-          "organization_name" => empty($organization[$k]) ? null : $organization[$k],
+          "school_name" => empty($school_delegation_individu[$k]) ? null : $school_delegation_individu[$k],
+          "organization_name" => empty($organization_delegation_individu[$k]) ? null : $organization_delegation_individu[$k],
           "sub_category_ticket_id" => $v,
           "sub_category_ticket" => $tickettitle
         ];
@@ -205,7 +216,7 @@ class CheckOutController extends Controller
         "category" => 'individu',
         "ticket_detail_order" => $ticket_detail_order
       ];
-
+      
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $this->ppn_value;

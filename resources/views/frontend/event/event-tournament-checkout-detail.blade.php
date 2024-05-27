@@ -148,7 +148,7 @@
                                                                         case 'city':
                                                                             $delegation_from = $val_order_ticket['city_name'];
                                                                             break;
-                                                                        case 'school':
+                                                                        case 'school/universities':
                                                                             $delegation_from = $val_order_ticket['school_name'];
                                                                             break;
                                                                         case 'organization':
