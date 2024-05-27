@@ -58,6 +58,8 @@
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
+        <input type="hidden" class="contingent_type" value="{{ $delegation_event['contingent_type'] }}"
+            id="contingent_type">
 
         <section class="event-details-section pt-110 rpt-90 pb-90 rpb-70">
             <div class="container">
@@ -67,10 +69,10 @@
                             <div class="row">
                                 <div class="col-12">
                                     <h4 style="font-weight: bold">
-                                        Order Details
+                                        {{ __('Order Details') }}
                                     </h4>
                                     <small>
-                                        *These contact details will be used for sending e-tickets and refund purposes.
+                                        {{ __('Description Order Detail') }}
                                     </small>
                                 </div>
                                 <div class="col-12 mt-3">
@@ -78,19 +80,27 @@
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td rows="2">Name</td>
+                                                    <td rows="2">{{ __('Info Name Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->name }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->fname) ? '' : $customer->fname }}
+                                                        {{ empty($customer->lname) ? '' : $customer->lname }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">Phone Number</td>
+                                                    <td rows="2">
+                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->phone }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->phone) ? '' : $customer->phone }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">Email</td>
+                                                    <td rows="2">{{ __('Info Email Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
-                                                    <td rows="1">{{ $organizer->email }}</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->email) ? '' : $customer->email }}
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -101,17 +111,10 @@
                                         <section id="individu_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Individu Category
+                                                    {{ __('Category Order Individu') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Participant's name is exactly as written in the
-                                                    government
-                                                    issued
-                                                    ID/Passport/Driving License. Avoid any mistake, because some Organizer
-                                                    don't
-                                                    allow
-                                                    name
-                                                    corrections after booking.
+                                                    {{ __('Description Category Order Individu') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -124,7 +127,8 @@
                                                                 data-target="#collapse_participant_{{ $i }}"
                                                                 aria-expanded="false"
                                                                 aria-controls="collapse_participant_{{ $i }}">
-                                                                Participant Details {{ $i + 1 }}
+                                                                {{ __('Collapse Name Form Individu Category') }}
+                                                                {{ $i + 1 }}
                                                             </div>
                                                             <div id="collapse_participant_{{ $i }}"
                                                                 class="collapse {{ $i == 0 ? 'show' : '' }}"
@@ -165,16 +169,16 @@
                                                                                 id="birth_date_individu{{ $i }}"
                                                                                 name="birth_date_individu[]"
                                                                                 placeholder="{{ __('Select Date') }}"
-                                                                                required>
+                                                                                max="{{ date('Y-m-d') }}" required>
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 col-lg-6 form-group content-profile-country-individu-{{ $i }}">
+                                                                            class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
                                                                             <label
                                                                                 for="profile_country_individu{{ $i }}">
                                                                                 {{ __('Country') }}*
                                                                             </label>
                                                                             <select
-                                                                                class="form-select js-example-basic-single"
+                                                                                class="custom-select js-example-basic-single"
                                                                                 id="profile_country_individu{{ $i }}"
                                                                                 name="profile_country_individu[]"
                                                                                 onchange="handlerProfileCountry({{ $i }})"
@@ -191,7 +195,7 @@
                                                                             </select>
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 col-lg-6 form-group content-profile-city-individu-{{ $i }}">
+                                                                            class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
                                                                             <label
                                                                                 for="profile_city_individu{{ $i }}">
                                                                                 {{ __('City/District') }}*
@@ -207,7 +211,7 @@
                                                                         </div>
                                                                         @if (strtolower($delegation_event['contingent_type']) == 'open')
                                                                             <div
-                                                                                class="col-12 form-group content-delegation-individu-{{ $i }}">
+                                                                                class="col-12 form-group d-flex flex-column gap-2 content-delegation-individu-{{ $i }}">
                                                                                 <label
                                                                                     for="delegation_individu{{ $i }}">
                                                                                     {{ __('Delegation Type') }}*
@@ -231,29 +235,47 @@
                                                                                 </select>
                                                                             </div>
                                                                         @else
+                                                                            @if (strtolower($delegation_event['select_type']) == 'province')
+                                                                                <input type="hidden"
+                                                                                    class="country_delegation_individu{{ $i }}"
+                                                                                    value="{{ $delegation_event['country_id'] }}"
+                                                                                    id="country_delegation_individu{{ $i }}">
+                                                                            @endif
+
+                                                                            @if (strtolower($delegation_event['select_type']) == 'city/district')
+                                                                                <input type="hidden"
+                                                                                    class="country_delegation_individu{{ $i }}"
+                                                                                    value="{{ $delegation_event['country_id'] }}"
+                                                                                    id="country_delegation_individu{{ $i }}">
+                                                                                <input type="hidden"
+                                                                                    class="province_delegation_individu{{ $i }}"
+                                                                                    value="{{ $delegation_event['province_id'] }}"
+                                                                                    id="province_delegation_individu{{ $i }}">
+                                                                            @endif
                                                                             <input type="hidden"
+                                                                                class="delegation_individu_choosed{{ $i }}"
                                                                                 value="{{ $delegation_event['select_type'] }}"
-                                                                                name="delegation_individu[]">
+                                                                                id="delegation_individu{{ $i }}">
                                                                         @endif
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-country-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-country-individu-{{ $i }} d-none">
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-province-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-province-individu-{{ $i }} d-none">
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-city-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-city-individu-{{ $i }} d-none">
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-school-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-school-individu-{{ $i }} d-none">
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-club-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-club-individu-{{ $i }} d-none">
                                                                         </div>
                                                                         <div
-                                                                            class="col-12 form-group content-delegation-organization-individu-{{ $i }} d-none">
+                                                                            class="col-12 content-delegation-organization-individu-{{ $i }} d-none">
                                                                         </div>
-                                                                        <div class="col-12 form-group">
+                                                                        <div class="col-12">
                                                                             <label
                                                                                 for="category_individu{{ $i }}">
                                                                                 {{ __('Category') }}*
@@ -262,13 +284,13 @@
                                                                                 id="category_individu{{ $i }}"
                                                                                 name="category_individu[]">
                                                                                 <option value="" selected>
-                                                                                    {{ __('Select Category') }}</option> 
-                                                                                    @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                                        <option
-                                                                                            value="{{ $val_sub_cat_ticket['id'] }}">
-                                                                                            {{ $val_sub_cat_ticket['title'] }}
-                                                                                        </option>
-                                                                                    @endforeach
+                                                                                    {{ __('Select Category') }}</option>
+                                                                                @foreach ($sub_category_tickets as $val_sub_cat_ticket)
+                                                                                    <option
+                                                                                        value="{{ $val_sub_cat_ticket['id'] }}">
+                                                                                        {{ $val_sub_cat_ticket['title'] }}
+                                                                                    </option>
+                                                                                @endforeach
                                                                             </select>
                                                                         </div>
                                                                     </div>
@@ -285,13 +307,10 @@
                                         <section id="team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Team Category
+                                                    {{ __('Category Order Team') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Team's name is exactly. Avoid any mistake, because
-                                                    some
-                                                    Organizer don't allow name, category, delegation corrections after
-                                                    booking.
+                                                    {{ __('Description Category Order Team') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -303,7 +322,8 @@
                                                                 data-target="#collapse_team{{ $i }}"
                                                                 aria-expanded="false"
                                                                 aria-controls="collapse_team{{ $i }}">
-                                                                Team Details {{ $i + 1 }}
+                                                                {{ __('Collapse Name Form Team Category') }}
+                                                                {{ $i + 1 }}
                                                             </div>
                                                             <div id="collapse_team{{ $i }}"
                                                                 class="collapse {{ $i == 0 ? 'show' : '' }}"
@@ -327,13 +347,10 @@
                                         <section id="mix_team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Mix Team Category
+                                                    {{ __('Category Order Mix Team') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Team's name is exactly. Avoid any mistake, because
-                                                    some
-                                                    Organizer don't allow name, category, delegation corrections after
-                                                    booking.
+                                                    {{ __('Description Category Order Mix Team') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -345,7 +362,8 @@
                                                                 data-target="#collapse_mix_team{{ $i }}"
                                                                 aria-expanded="false"
                                                                 aria-controls="collapse_mix_team{{ $i }}">
-                                                                Mix Team Details {{ $i + 1 }}
+                                                                {{ __('Collapse Name Form Mix Team Category') }}
+                                                                {{ $i + 1 }}
                                                             </div>
                                                             <div id="collapse_mix_team{{ $i }}"
                                                                 class="collapse {{ $i == 0 ? 'show' : '' }}"
@@ -369,16 +387,10 @@
                                         <section id="official_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Official Category
+                                                    {{ __('Category Order Official') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Official's name is exactly as written in the
-                                                    government
-                                                    issued
-                                                    ID/Passport/Driving License. Avoid any mistake, because some Organizer
-                                                    don't
-                                                    allow
-                                                    name corrections after booking.
+                                                    {{ __('Description Category Order Official') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -390,7 +402,8 @@
                                                                 data-target="#collapse_official{{ $i }}"
                                                                 aria-expanded="false"
                                                                 aria-controls="collapse_official{{ $i }}">
-                                                                Official Details {{ $i + 1 }}
+                                                                {{ __('Collapse Name Form Official Category') }}
+                                                                {{ $i + 1 }}
                                                             </div>
                                                             <div id="collapse_official{{ $i }}"
                                                                 class="collapse {{ $i == 0 ? 'show' : '' }}"
@@ -484,22 +497,27 @@
                                         {{ $total_tickets_quantity }}
                                     </p>
                                 </div>
-                                <div class="col-12 mt-3 mb-2">
-                                    <h4 class="font-weight-bold">{{ __('Code Access') }}</h4>
-                                </div>
-                                <div class="col-12">
-                                    <div class="input-group mb-3">
-                                        <input type="text" name="code_access" id="code_access" class="form-control"
-                                            placeholder="type your code" aria-label="Example text with button addon"
-                                            aria-describedby="button-addon1">
-                                        <div class="input-group-prepend">
-                                            <button class="theme-btn w-100" type="button" id="button-addon1">
-                                                {{ __('Apply') }}
-                                            </button>
+                                @if (!empty($event->code))
+                                    <div class="col-12 mt-3 mb-2">
+                                        <h4 class="font-weight-bold">{{ __('Code Access') }}</h4>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="input-group mb-3">
+                                            <div class="status_code"></div>
+                                            <input type="text" name="code_access" id="code_access"
+                                                class="form-control" placeholder="type your code"
+                                                aria-label="Example text with button addon"
+                                                aria-describedby="button-addon1">
+                                            <div class="input-group-prepend">
+                                                <button class="theme-btn w-100" onclick="handleCheckCodeEvent()"
+                                                    type="button" id="button-addon1">
+                                                    {{ __('Apply') }}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
+                                @endif
+                                <div class="col-12 mt-3">
                                     <button class="theme-btn w-100" type="submit">
                                         {{ __('Continue') }}
                                     </button>

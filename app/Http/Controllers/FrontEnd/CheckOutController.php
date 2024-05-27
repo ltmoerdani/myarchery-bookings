@@ -36,6 +36,7 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
+      dd("masuk sini?");
       $basic = Basic::select('event_guest_checkout_status')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
 
@@ -226,7 +227,7 @@ class CheckOutController extends Controller
     });
 
     if (empty($quantityTournament)) {
-      return back()->with(['alert-type' => 'error', 'message' => 'Please Select at least one ticket']);
+      return back()->with(['alert-type' => 'error', 'message' => __('Error Minimum Quantity Ticket Tournament')]);
     }
 
     $basic = Basic::select('event_guest_checkout_status')->first();
@@ -276,8 +277,9 @@ class CheckOutController extends Controller
     $event = Event::where('id', $request->event_id)->select('event_type')->first();
 
     $event =  EventContent::join('events', 'events.id', 'event_contents.event_id')
+      ->join('event_type', 'event_type.event_id', 'events.id')
       ->where('events.id', $request->event_id)
-      ->select('events.*', 'event_contents.*')
+      ->select('events.*', 'event_contents.*', 'event_type.code', 'event_type.event_type', 'event_type.id')
       ->first();
 
     Session::put('event', $event);
@@ -345,6 +347,7 @@ class CheckOutController extends Controller
 
       $information['delegation_type'] = DelegationType::get()->toArray();
       $information['countries'] = InternationalCountries::get()->toArray();
+      // dd($information);
       return view('frontend.event.event-form-order-detail', $information);
     }
     return redirect()->route('check-out');
