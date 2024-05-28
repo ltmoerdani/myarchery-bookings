@@ -114,6 +114,7 @@
                                                         <th>{{ __('Organizer') }}</th>
                                                         <th>{{ __('Event Date') }}</th>
                                                         <th>{{ __('Booking Date') }}</th>
+                                                        <th>{{ __('Payment Status') }}</th>
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
@@ -155,8 +156,13 @@
                                                                 </td>
                                                                 <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('D, M d, Y h:i a') }}
                                                                 </td>
-                                                                <td><a href="{{ route('customer.booking_details', $item->id) }}"
-                                                                        class="btn">{{ __('Details') }}</a></td>
+                                                                <td>
+                                                                    <span class="badge badge-{{ $item->paymentStatus == 'completed' ? 'success' : 'danger' }}">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('customer.booking_details', $item->id) }}" class="btn">{{ __('Details') }}</a>
+                                                                    <a href="{{ route('event_booking.xindit.pay_booking', $item->id) }}" class="btn">{{ __('Pay') }}</a>
+                                                                </td>
                                                             </tr>
                                                         @endif
                                                     @endforeach

@@ -109,6 +109,7 @@ Route::middleware('change.lang')->group(function () {
 
   // tournament
   Route::post('/ticket-booking-tournament/{id}', 'FrontEnd\Event\BookingController@booking_tournament')->name('ticket.booking.tournament');
+  Route::post('/booking-tournament-pending/{id}', 'FrontEnd\Event\BookingController@booking_tournament_pending')->name('ticket.booking.tournament.pending');
 });
 
 
@@ -155,6 +156,7 @@ Route::prefix('event-booking')->group(function () {
   //yoco
   Route::get('/yoco/notify', 'FrontEnd\PaymentGateway\YocoController@notify')->name('event_booking.yoco.notify');
   //xindit
+  Route::get('/xendit/pay/{id}', 'FrontEnd\PaymentGateway\XenditController@pay_booking')->name('event_booking.xindit.pay_booking');
   Route::get('/xendit/notify', 'FrontEnd\PaymentGateway\XenditController@notify')->name('event_booking.xindit.notify');
 
   //perfect money
@@ -189,14 +191,9 @@ Route::middleware('change.lang')->group(function () {
   Route::get('remove/wishlist/{id}', 'FrontEnd\CustomerController@remove_wishlist')->name('remove.wishlist');
 
   // Checkout Tournament
-  Route::post(
-    '/detail-check-out-tournament',
-    'FrontEnd\CheckOutController@detailCheckout2Tournament'
-  )->name('detail-check-out-tournament');
-  Route::post(
-    '/check-out-tournament',
-    'FrontEnd\CheckOutController@checkout2Tournament'
-  )->name('check-out-tournament');
+  Route::post('/detail-check-out-tournament','FrontEnd\CheckOutController@detailCheckout2Tournament')->name('detail-check-out-tournament');
+  Route::post('/check-out-tournament','FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
+  Route::get('/check-out-tournament','FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
   Route::post('/check-out3', 'FrontEnd\CheckOutController@checkout3Tournament')->name('check-out3-tournament');
 
   Route::post('/check-out2', 'FrontEnd\CheckOutController@checkout2')->name('check-out2');

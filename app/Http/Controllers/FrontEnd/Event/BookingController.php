@@ -346,6 +346,81 @@ class BookingController extends Controller
     }
   }
 
+  public function booking_tournament_pending(Request $request, $id)
+  {
+    $basic = Basic::select('event_guest_checkout_status')->first();
+    if ($basic->event_guest_checkout_status == 0 && $request->type != 'guest') {
+      // check whether user is logged in or not
+      if (Auth::guard('customer')->check() == false) {
+        return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
+      }
+    }
+
+    // payment
+    if ($request->total != 0 || Session::get('sub_total') != 0) {
+
+      $xindit = new XenditController();
+      return $xindit->makePayment($request, $id);
+      $offline = new OfflineController();
+      return $offline->bookingProcess($request, $id);
+      
+    } else {
+      try {
+        $event = json_decode($request->event, true);
+        $arrData = array(
+          'event_id' => $event['id'],
+          'price' => 0,
+          'tax' => 0,
+          'commission' => 0,
+          'quantity' => $request->quantity,
+          'discount' => 0,
+          'total_early_bird_dicount' => 0,
+          'currencyText' => null,
+          'currencyTextPosition' => null,
+          'currencySymbol' => null,
+          'currencySymbolPosition' => null,
+          'fname' => $request->fname,
+          'lname' => $request->lname,
+          'email' => $request->email,
+          'phone' => $request->phone,
+          'country' => $request->country,
+          'state' => $request->state,
+          'city' => $request->city,
+          'zip_code' => $request->city,
+          'address' => $request->address,
+          'paymentMethod' => null,
+          'gatewayType' => null,
+          'paymentStatus' => 'free',
+          'event_date' => Session::get('event_date')
+        );
+
+        $bookingInfo = $this->storeData($arrData);
+
+        // generate an invoice in pdf format
+        $invoice = $this->generateInvoice($bookingInfo, $event['id']);
+        //unlink qr code
+        @mkdir(public_path('assets/admin/qrcodes/'), 0775, true);
+        @unlink(public_path('assets/admin/qrcodes/') . $bookingInfo->booking_id . '.svg');
+        //end unlink qr code
+
+        // then, update the invoice field info in database
+        $bookingInfo->update(['invoice' => $invoice]);
+
+        // send a mail to the customer with the invoice
+        $this->sendMail($bookingInfo);
+
+        $request->session()->forget('event_id');
+        $request->session()->forget('selTickets');
+        $request->session()->forget('arrData');
+        $request->session()->forget('discount');
+
+        return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
+      } catch (\Throwable $th) {
+        return view('errors.404');
+      }
+    }
+  }
+
   public function storeData($info)
   {
     try {

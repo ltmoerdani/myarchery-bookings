@@ -214,9 +214,35 @@
                                                     </td>
                                                     <td>
                                                         @if ($booking->gatewayType == 'online')
-                                                            <h2 class="d-inline-block"><span
+                                                            @if ($booking->paymentStatus == 'pending')
+                                                                <form class="d-inline-block paymentStatusForm"
+                                                                    action="{{ route('admin.event_booking.update_payment_status', $booking->id) }}"
+                                                                    method="post">
+                                                                    @csrf
+                                                                    <select
+                                                                        class="form-control paymentStatusBtn form-control-sm @if ($booking->paymentStatus == 'completed') bg-success @elseif ($booking->paymentStatus == 'pending') bg-warning text-dark @else bg-danger @endif"
+                                                                        name="payment_status">
+                                                                        <option value="completed"
+                                                                            {{ $booking->paymentStatus == 'completed' ? 'selected' : '' }}>
+                                                                            {{ __('Completed') }}
+                                                                        </option>
+                                                                        <option value="pending"
+                                                                            {{ $booking->paymentStatus == 'pending' ? 'selected' : '' }}>
+                                                                            {{ __('Pending') }}
+                                                                        </option>
+                                                                        <option value="rejected"
+                                                                            {{ $booking->paymentStatus == 'rejected' ? 'selected' : '' }}>
+                                                                            {{ __('Rejected') }}
+                                                                        </option>
+                                                                    </select>
+                                                                </form>
+                                                            @elseif ($booking->paymentStatus == 'completed')
+                                                                <h2 class="d-inline-block"><span
                                                                     class="badge badge-success">{{ __('Completed') }}</span>
-                                                            </h2>
+                                                                </h2>
+                                                            @else
+                                                                <span class="badge badge-{{ $booking->paymentStatus == 'rejected' ? 'danger' : 'success' }}">{{ ucfirst($booking->paymentStatus) }}</span>
+                                                            @endif
                                                         @elseif ($booking->gatewayType == 'offline')
                                                             @if ($booking->paymentStatus == 'pending')
                                                                 <form class="d-inline-block paymentStatusForm"
