@@ -174,20 +174,31 @@ class CheckOutController extends Controller
         if ($club_delegation_individu) {
           $club_name = Clubs::where('id', $club[$k])->first();
           if(!$club_name){
-            $club_new['name'] = $club_delegation_individu[$k];
-            $new_club = Clubs::create($club_new);
-            $club_name = Clubs::where('id', $new_club->id)->first();
+            $cek_club_name = Clubs::where('name', 'like', '%'.$club_delegation_individu[$k].'%')->first();
+            if(!$cek_club_name){
+              $club_new['name'] = $club_delegation_individu[$k];
+              $new_club = Clubs::create($club_new);
+              $club_name = Clubs::where('id', $new_club->id)->first();
+            }else{
+              $club_name = Clubs::where('name', 'like', '%'.$club_delegation_individu[$k].'%')->first();
+            }
           }
         }
 
         if ($school_delegation_individu) {
-          $school_new['name'] = $school_delegation_individu[$k];
-          $new_school = School::create($school_new);
+          $cek_school_name = School::where('name', 'like', '%'.$school_delegation_individu[$k].'%')->first();
+          if(!$cek_school_name){
+            $school_new['name'] = $school_delegation_individu[$k];
+            $new_school = School::create($school_new);
+          }
         }
 
         if ($organization_delegation_individu) {
-          $organization_new['name'] = $organization_delegation_individu[$k];
-          $new_organization = Organization::create($organization_new);
+          $cek_organization_name = Organization::where('name', 'like', '%'.$organization_delegation_individu[$k].'%')->first();
+          if(!$cek_organization_name){
+            $organization_new['name'] = $organization_delegation_individu[$k];
+            $new_organization = Organization::create($organization_new);
+          }
         }
 
         $ticket_detail_order[] = [
