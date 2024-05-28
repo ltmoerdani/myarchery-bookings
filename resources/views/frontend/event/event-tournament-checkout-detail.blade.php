@@ -54,7 +54,9 @@
 @endsection
 
 @section('content')
-    <form id="eventForm" action="{{ route('ticket.booking.tournament', [$re_event_id, 'type' => 'guest', 'form_type' => 'tournament']) }}" method="POST">
+    <form id="eventForm"
+        action="{{ route('ticket.booking.tournament', [$re_event_id, 'type' => 'guest', 'form_type' => 'tournament']) }}"
+        method="POST">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
@@ -65,12 +67,51 @@
                     <div class="row">
                         <div class="col-12 col-lg-8 order-1 order-lg-0 my-1">
                             <div class="row">
-                                <div class="col-12">
+                                {{-- <div class="col-12">
                                     <h4 style="font-weight: bold">
                                         Order Details
                                     </h4>
                                     <small>
                                         *These contact details will be used for sending e-tickets and refund purposes.
+                                    </small>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td rows="2">{{ __('Info Name Customer On Order Detail') }}</td>
+                                                    <td rows="1">:</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->fname) ? '' : $customer->fname }}
+                                                        {{ empty($customer->lname) ? '' : $customer->lname }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td rows="2">
+                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
+                                                    <td rows="1">:</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->phone) ? '' : $customer->phone }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td rows="2">{{ __('Info Email Customer On Order Detail') }}</td>
+                                                    <td rows="1">:</td>
+                                                    <td rows="1">
+                                                        {{ empty($customer->email) ? '' : $customer->email }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div> --}}
+                                <div class="col-12">
+                                    <h4 style="font-weight: bold">
+                                        {{ __('Order Details') }}
+                                    </h4>
+                                    <small>
+                                        {{ __('Description Order Detail') }}
                                     </small>
                                 </div>
                                 <div class="col-12 mt-3">
@@ -109,14 +150,10 @@
                                         <section id="individu_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Individu Category
+                                                    {{ __('Category Order Individu') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Participant's name is exactly as written in the
-                                                    government
-                                                    issued ID/Passport/Driving License. Avoid any mistake, because some
-                                                    Organizer
-                                                    don't allow name corrections after booking.
+                                                    {{ __('Description Category Order Individu') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -163,7 +200,8 @@
                                                                     <th scope="row">{{ $key + 1 }}</th>
                                                                     <td>{{ ucfirst($val_order_ticket['user_full_name']) }}
                                                                     </td>
-                                                                    <td>{{ ucfirst($val_order_ticket['user_gender']) }}</td>
+                                                                    <td>{{ ucfirst($val_order_ticket['user_gender']) }}
+                                                                    </td>
                                                                     <td>{{ !empty($delegation_from) ? $delegation_from : '-' }}
                                                                     </td>
                                                                     <td>{{ $val_order_ticket['sub_category_ticket'] }}</td>
@@ -177,17 +215,13 @@
                                         </section>
                                     @endif
                                     @if (strtolower($val_order['category']) == 'team' && count($val_order['ticket_detail_order']) > 0)
-                                        <section id="individu_section">
+                                        <section id="team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Individu Category
+                                                    {{ __('Category Order Team') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Participant's name is exactly as written in the
-                                                    government
-                                                    issued ID/Passport/Driving License. Avoid any mistake, because some
-                                                    Organizer
-                                                    don't allow name corrections after booking.
+                                                    {{ __('Description Category Order Team') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -227,17 +261,13 @@
                                         </section>
                                     @endif
                                     @if (strtolower($val_order['category']) == 'mix team' && count($val_order['ticket_detail_order']) > 0)
-                                        <section id="individu_section">
+                                        <section id="mix_team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Individu Category
+                                                    {{ __('Category Order Mix Team') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Participant's name is exactly as written in the
-                                                    government
-                                                    issued ID/Passport/Driving License. Avoid any mistake, because some
-                                                    Organizer
-                                                    don't allow name corrections after booking.
+                                                    {{ __('Description Category Order Mix Team') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -277,17 +307,13 @@
                                         </section>
                                     @endif
                                     @if (strtolower($val_order['category']) == 'official' && count($val_order['ticket_detail_order']) > 0)
-                                        <section id="individu_section">
+                                        <section id="official_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
-                                                    Individu Category
+                                                    {{ __('Category Order Official') }}
                                                 </h4>
                                                 <small>
-                                                    *Make sure that the Participant's name is exactly as written in the
-                                                    government
-                                                    issued ID/Passport/Driving License. Avoid any mistake, because some
-                                                    Organizer
-                                                    don't allow name corrections after booking.
+                                                    {{ __('Description Category Order Official') }}
                                                 </small>
                                             </div>
                                             <div class="col-12 mt-3">
@@ -330,6 +356,7 @@
 
                             </div>
                         </div>
+
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
                             <input type="hidden" name="event" value="{{ $event }}">
                             <input type="hidden" name="request_ticket_infos" value="{{ $request_ticket_infos }}">
@@ -423,7 +450,7 @@
                                         {{ __('Handling Fee') }} ({{ $ppn_value }}%)
                                     </p>
                                     <p class="font-weight-medium mb-0">
-                                        Rp. {{ $ppn_total = $fee_sub_total*$ppn_value/100 }}
+                                        Rp. {{ $ppn_total = ($fee_sub_total * $ppn_value) / 100 }}
                                     </p>
                                 </div>
                                 <div class="col-12 mt-0 mb-0">
@@ -446,7 +473,7 @@
                                     </select>
                                 </div>
 
-                                <input type="hidden" name="total" value="{{ $fee_sub_total+$ppn_total }}">
+                                <input type="hidden" name="total" value="{{ $fee_sub_total + $ppn_total }}">
                                 <input type="hidden" name="quantity" value="{{ $total_tickets_quantity }}">
 
                                 <div class="col-12 mt-3">

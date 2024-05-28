@@ -224,10 +224,10 @@ const handlerAddNewClubDelegationIndividu = (i) => {
     </label>
     <p>
       <a href="javascript:void()" class="text-primary" onclick="handlerSetContentDelegationClubIndividu(${i})">
-        Use what already have
+        Select from existing list
       </a>
     </p>
-    <input type="text" class="form-control" id="club_delegation_individu${i}" name="club_delegation_individu[]" placeholder="type club">
+    <input type="text" class="form-control" id="club_delegation_individu${i}" name="club_delegation_individu[]" placeholder="Input new club">
   `);
 };
 

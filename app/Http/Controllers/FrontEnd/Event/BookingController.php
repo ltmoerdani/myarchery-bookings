@@ -124,7 +124,7 @@ class BookingController extends Controller
         return $yoco->makePayment($request, $id);
       } else if ($request['gateway'] == 'xendit') {
         $xindit = new XenditController();
-        
+
         return $xindit->makePayment($request, $id);
       } else if ($request['gateway'] == 'myfatoorah') {
         $xindit = new MyFatoorahController();
@@ -207,7 +207,7 @@ class BookingController extends Controller
 
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
-      
+
       if (!$request->exists('gateway')) {
         Session::flash('error', 'Please select a payment method.');
 
@@ -275,7 +275,7 @@ class BookingController extends Controller
         return $yoco->makePayment($request, $id);
       } else if ($request['gateway'] == 'xendit') {
         $xindit = new XenditController();
-        
+
         return $xindit->makePayment($request, $id);
       } else if ($request['gateway'] == 'myfatoorah') {
         $xindit = new MyFatoorahController();
@@ -432,28 +432,28 @@ class BookingController extends Controller
           $organizer_id = null;
         }
       }
-      
-      if($info['form_type'] == "tournament"){
+
+      if ($info['form_type'] == "tournament") {
         $variations = $info['ticketInfos'];
-      }else{
+      } else {
         $variations = Session::get('selTickets');
       }
-      
+
       if ($variations) {
         foreach ($variations as $variation) {
-          if($info['form_type'] == "tournament"){
+          if ($info['form_type'] == "tournament") {
             $variation = (array) $variation;
           }
-          
+
           $ticket = Ticket::where('id', $variation['ticket_id'])->first();
           if ($ticket->pricing_type == 'normal' && $ticket->ticket_available_type == 'limited') {
-            
-            if($info['form_type'] == "tournament"){
+
+            if ($info['form_type'] == "tournament") {
               if ($ticket->ticket_available - $variation['quantity'] >= 0) {
                 $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
                 $ticket->save();
               }
-            }else{
+            } else {
               if ($ticket->ticket_available - $variation['qty'] >= 0) {
                 $ticket->ticket_available = $ticket->ticket_available - $variation['qty'];
                 $ticket->save();
@@ -499,7 +499,7 @@ class BookingController extends Controller
             }
           }
 
-          if($info['form_type'] == "tournament"){
+          if ($info['form_type'] == "tournament") {
             $variations_ticket[] = [
               "ticket_id" => $variation['ticket_id'],
               "early_bird_dicount" => 0,
@@ -509,10 +509,10 @@ class BookingController extends Controller
             ];
           }
         }
-        
-        if($info['form_type'] == "tournament"){
+
+        if ($info['form_type'] == "tournament") {
           $variations = json_encode($variations_ticket, true);
-        }else{
+        } else {
           $variations = json_encode(Session::get('selTickets'), true);
         }
       } else {
@@ -559,20 +559,20 @@ class BookingController extends Controller
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
 
-      if($info['form_type'] == "tournament"){
+      if ($info['form_type'] == "tournament") {
         $dataOrders = $info['dataOrders'];
-        foreach($dataOrders as $d){
+        foreach ($dataOrders as $d) {
           $ticket_id = $d->title;
           $category = $d->category;
           $ticket_detail_order = $d->ticket_detail_order;
 
-          foreach($ticket_detail_order as $t){
+          foreach ($ticket_detail_order as $t) {
             if ($t->country_id == "102") { //Indonesia
-              if($t->city_id){
+              if ($t->city_id) {
                 $city_name = IndonesianSubdistrict::select('id', 'name')->where('province_id', $t->city_id)->first();
               }
             } else {
-              if($t->city_id){
+              if ($t->city_id) {
                 $city_name = InternationalCities::select('id', 'name')->where('country_id', $t->country_id)->where('id', $t->city_id)->first();
               }
             }

@@ -2319,7 +2319,7 @@ blockquote {
 .footer-section p,
 .link-widget a:not(:hover) {
   opacity: 0.8;
-  color: #f7f7f7;
+  color: #000000;
   text-transform: capitalize;
 }
 
@@ -2336,7 +2336,7 @@ blockquote {
 }
 
 .footer-title {
-  color: white;
+  color: black;
   margin-bottom: 30px;
   text-transform: capitalize;
 }
