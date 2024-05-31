@@ -700,6 +700,15 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
   });
   // faq route end
 
+  // club route start
+  Route::prefix('/club-management')->middleware('permission:Club Management')->group(function () {
+    Route::get('', 'BackEnd\ClubController@index')->name('admin.club_management');
+    Route::post('/store-faq', 'BackEnd\ClubController@store')->name('admin.club_management.store_club');
+    Route::post('/delete-club/{id}', 'BackEnd\ClubController@destroy')->name('admin.club_management.delete_club');
+    Route::post('/bulk-delete-club', 'BackEnd\ClubController@bulkDestroy')->name('admin.club_management.bulk_delete_club');
+  });
+  // club route end
+
   // custom-pages route start
   Route::prefix('/custom-pages')->middleware('permission:Custom Pages')->group(function () {
     Route::get('', 'BackEnd\CustomPageController@index')->name('admin.custom_pages');

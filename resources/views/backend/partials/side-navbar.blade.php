@@ -870,7 +870,17 @@
                     </li>
                 @endif
 
-                {{-- faq --}}
+                {{-- club --}}
+                @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Club Management', $rolePermissions)))
+                    <li class="nav-item {{ request()->routeIs('admin.club_management') ? 'active' : '' }}">
+                        <a href="{{ route('admin.club_management', ['language' => $defaultLang->code]) }}">
+                            <i class="fa fa-users"></i>
+                            <p>{{ __('Club Management') }}</p>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- contact page --}}
                 @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Contact Page', $rolePermissions)))
                     <li
                         class="nav-item {{ request()->routeIs('admin.basic_settings.contact_page') ? 'active' : '' }}">
