@@ -703,7 +703,8 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
   // club route start
   Route::prefix('/club-management')->middleware('permission:Club Management')->group(function () {
     Route::get('', 'BackEnd\ClubController@index')->name('admin.club_management');
-    Route::post('/store-faq', 'BackEnd\ClubController@store')->name('admin.club_management.store_club');
+    Route::post('/update-club', 'BackEnd\ClubController@update')->name('admin.club_management.update_club');
+    Route::post('/store-club', 'BackEnd\ClubController@store')->name('admin.club_management.store_club');
     Route::post('/delete-club/{id}', 'BackEnd\ClubController@destroy')->name('admin.club_management.delete_club');
     Route::post('/bulk-delete-club', 'BackEnd\ClubController@bulkDestroy')->name('admin.club_management.bulk_delete_club');
   });

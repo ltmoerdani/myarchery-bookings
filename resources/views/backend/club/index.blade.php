@@ -93,7 +93,11 @@
                                                             <a class="btn btn-secondary mt-1 btn-xs mr-1 editBtn"
                                                                 href="#" data-toggle="modal" data-target="#editModal"
                                                                 data-id="{{ $club->id }}"
-                                                                data-name="{{ $club->name }}">
+                                                                data-name="{{ $club->name }}"
+                                                                data-place_name="{{ $club->place_name }}"
+                                                                data-address="{{ $club->address }}"
+                                                                data-description="{{ $club->description }}"
+                                                                data-club_logo="{{ $club->logo }}">
                                                                 <span class="btn-label">
                                                                     <i class="fas fa-edit"></i>
                                                                 </span>
@@ -127,4 +131,5 @@
         </div>
     </div>
     @include('backend.club.create')
+    @include('backend.club.edit')
 @endsection

@@ -353,7 +353,7 @@ $(function ($) {
   $(".editBtn").on("click", function () {
     let datas = $(this).data();
     delete datas["toggle"];
-
+    console.log("datas:", datas);
     for (let x in datas) {
       if ($("#in_" + x).hasClass("summernote")) {
         tinyMCE.activeEditor.setContent(datas[x]);
@@ -406,6 +406,15 @@ $(function ($) {
         }
 
         $("#edit-slot-input").removeClass("d-none");
+      }
+    }
+
+    if ("club_logo" in datas) {
+      $("#preview_logo_update_club").empty();
+      if (datas.club_logo) {
+        $("#preview_logo_update_club").append(`
+        <img src="${datas.club_logo}" alt="preview" class="rounded customer-img">
+      `);
       }
     }
 
