@@ -1,0 +1,32 @@
+stages:
+  - deploy
+
+variables:
+  DEPLOY_USER: "root"
+  DEPLOY_HOST: "103.217.144.63"
+  DEPLOY_PATH: "/www/wwwroot/booking-stg"
+  SSH_PRIVATE_KEY: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACAaBDEED3ZQpTThS5HD7On5Gz3tHwqsPCcMyqiDe/J3uQAAAJibHVjfmx1Y
+    3wAAAAtzc2gtZWQyNTUxOQAAACAaBDEED3ZQpTThS5HD7On5Gz3tHwqsPCcMyqiDe/J3uQ
+    AAAEBYDxTvOZS2nmUDGxk/cB4MUgrz0gu+LrIuQmCpCRR2aRoEMQQPdlClNOFLkcPs6fkb
+    Pe0fCqw8JwzKqIN78ne5AAAAE3Jvb3RAcHJvZC1teWFyY2hlcnkBAg==
+    -----END OPENSSH PRIVATE KEY-----
+
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $DEPLOY_HOST >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && git pull origin main && composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+  only:
+    - main
