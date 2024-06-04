@@ -42,6 +42,7 @@ use App\Models\DelegationType;
 use App\Models\Event\TicketContent;
 use App\Http\Helpers\HelperEvent;
 use App\Http\Helpers\HelperResponse;
+use Illuminate\Support\Facades\Auth;
 
 
 class EventController extends Controller
@@ -308,6 +309,11 @@ class EventController extends Controller
   public function store_tournament(StoreTournamentRequest $request)
   {
     try {
+      if (empty(Auth::guard('admin'))) {
+        Session::flash('error', 'Added Error, because not have sessions login');
+        return response()->json(['status' => 'error'], 401);
+      }
+
       DB::transaction(function () use ($request) {
         $request->is_featured = "yes";
         $request->date_type = "single";
