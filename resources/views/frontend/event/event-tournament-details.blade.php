@@ -1148,5 +1148,4 @@ AS competition_type
                 $("#content-qouta-ticket").append(content);
             }, 1000)
         });
-    </script>
 @endsection
