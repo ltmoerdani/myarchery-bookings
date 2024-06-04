@@ -406,5 +406,17 @@
   "Local Price": "Local Price",
   "International Price": "International Price",
   "Actions": "Actions",
-  "Error Minimum Quantity Ticket Tournament": "Please Select at least one ticket"
+  "Error Minimum Quantity Ticket Tournament": "Please Select at least one ticket",
+  "Club Management": "Club Management",
+  "Clubs": "Clubs",
+  "Add Club": "Add Club",
+  "NO Club FOUND": "NO Club FOUND",
+  "Logo Club": "Logo Club",
+  "Choose Image": "Choose Image",
+  "Enter Club Name": "Enter Club Name",
+  "Place Name": "Place Name",
+  "Enter Place Name Club": "Enter Place Name Club",
+  "Place Name Club Required": "Place Name Club Required",
+  "Enter Descritpion Club": "Enter Descritpion Club",
+  "Enter Address Club": "Enter Address Club"
 }

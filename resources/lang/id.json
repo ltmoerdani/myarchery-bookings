@@ -403,5 +403,17 @@
   "Local Price": "Harga Lokal",
   "International Price": "Harga Internasional",
   "Actions": "Tindakan",
-  "Error Minimum Quantity Ticket Tournament": "Setidaknya harus memilih 1 tiket"
+  "Error Minimum Quantity Ticket Tournament": "Setidaknya harus memilih 1 tiket",
+  "Club Management": "Club Management",
+  "Clubs": "Clubs",
+  "Add Club": "Add Club",
+  "NO Club FOUND": "NO Club FOUND",
+  "Logo Club": "Logo Club",
+  "Choose Image": "Choose Image",
+  "Enter Club Name": "Enter Club Name",
+  "Place Name": "Place Name",
+  "Enter Place Name Club": "Enter Place Name Club",
+  "Place Name Club Required": "Place Name Club Required",
+  "Enter Descritpion Club": "Enter Descritpion Club",
+  "Enter Address Club": "Enter Address Club"
 }
