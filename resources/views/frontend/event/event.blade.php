@@ -456,7 +456,7 @@
                                                                         </span>
                                                                     </span>
                                                                 @elseif($ticket->pricing_type == 'normal')
-                                                                    <span class="price" dir="ltr">
+                                                                    <span class="price" dir="ltr"> 
                                                                         @if ($currentLanguageInfo->direction == 1)
                                                                             <strong>{{ $event_count > 1 ? '*' : '' }}</strong>
                                                                         @endif

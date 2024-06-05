@@ -466,8 +466,7 @@
 
                                         $competitons = DB::select(
                                             "SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
-                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id)
-AS competition_type
+                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id) AS competition_type
                                             FROM `competitions`, competition_categories
                                             WHERE competitions.event_id=" .
                                                 $content->id .
