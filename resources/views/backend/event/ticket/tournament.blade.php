@@ -99,8 +99,8 @@
                                                 </th>
                                                 <th scope="col">{{ __('Title') }}</th>
                                                 <th scope="col">{{ __('Tickets Available') }}</th>
-                                                <th scope="col">{{ __('Local Price') }}</th>
-                                                <th scope="col">{{ __('International Price') }}</th>
+                                                <th scope="col">{{ __('Local Price*') }}</th>
+                                                <th scope="col">{{ __('International Price*') }}</th>
                                                 <th scope="col">{{ __('Actions') }}</th>
                                             </tr>
                                         </thead>
@@ -223,7 +223,40 @@
 
                                                     </td>
                                                     <td>
-                                                        {{ symbolPrice($ticket->international_price) }}
+                                                        <!-- {{ symbolPrice($ticket->international_price) }} -->
+                                                        @if ($ticket->pricing_type == 'normal')
+                                                            @if ($ticket->early_bird_discount == 'enable')
+                                                                @php
+                                                                    $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+                                                                @endphp
+
+                                                                @if ($ticket->early_bird_discount_type == 'fixed' && !$discount_date->isPast())
+                                                                    @php
+                                                                        $calculate_price = $ticket->international_price - $ticket->early_bird_discount_amount;
+                                                                    @endphp
+                                                                    {{ symbolPrice($calculate_price) }}
+                                                                    <del>
+                                                                        {{ symbolPrice($ticket->international_price) }}
+                                                                    </del>
+                                                                @elseif ($ticket->early_bird_discount_type == 'percentage' && !$discount_date->isPast())
+                                                                    @php
+                                                                        $c_price = ($ticket->international_price * $ticket->early_bird_discount_amount) / 100;
+                                                                        $calculate_price = $ticket->international_price - $c_price;
+                                                                    @endphp
+                                                                    {{ symbolPrice($calculate_price) }}
+                                                                    <del>
+                                                                        {{ symbolPrice($ticket->international_price) }}
+                                                                    </del>
+                                                                @else
+                                                                    @php
+                                                                        $calculate_price = $ticket->international_price;
+                                                                    @endphp
+                                                                    {{ symbolPrice($calculate_price) }}
+                                                                @endif
+                                                            @else
+                                                                {{ symbolPrice($ticket->international_price) }}
+                                                            @endif
+                                                        @endif
                                                     </td>
                                                     <td>
                                                         <div class="dropdown">
@@ -260,8 +293,9 @@
                             @endif
                         </div>
                     </div>
+                    *) Price per ticket
                 </div>
-
+                
                 <div class="card-footer"></div>
             </div>
         </div>
