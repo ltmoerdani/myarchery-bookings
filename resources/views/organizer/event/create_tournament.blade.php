@@ -26,7 +26,7 @@
                 <i class="flaticon-right-arrow"></i>
             </li>
             <li class="nav-item">
-                <a href="#">{{ __('Add Event Tournament') }}</a> 
+                <a href="#">{{ __('Add Event Tournament') }}</a>
             </li>
         </ul>
     </div>
@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <label for="" class="mb-2"><strong>{{ __('Gallery Images') }} **</strong></label>
-                                <form action="{{ route('organizer.event.imagesstore') }}" id="my-dropzone"
+                                <form action="{{ route('organizer.event.imagesstore-tournament') }}" id="my-dropzone"
                                     enctype="multipart/formdata" class="dropzone create">
                                     @csrf
                                     <div class="fallback">
@@ -64,7 +64,7 @@
 
                                 </div>
                             </div>
-                            <form id="eventForm" action="{{ route('organizer.event_management.store_event') }}"
+                            <form id="eventForm" action="{{ route('organizer.event_management.store_event_tournament') }}"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="event_type" value="{{ request()->input('type') }}">
@@ -126,30 +126,33 @@
                                                     <div class="col-12 mt-2">
                                                         <div class="form-group">
                                                             <label>
-                                                                {{ __('Currency Type') . '*' }}
+                                                                {{ __('Pricing Scheme') . '*' }}
                                                             </label>
                                                             <div class="selectgroup w-100">
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="currency_type"
-                                                                        value="idr"
-                                                                        class="selectgroup-input eventDateType" checked>
+                                                                    <input type="radio" name="pricing_scheme"
+                                                                        value="single_price"
+                                                                        class="selectgroup-input countDownStatusType"
+                                                                        checked>
                                                                     <span
-                                                                        class="selectgroup-button">{{ __('Single Currency') }}</span>
+                                                                        class="selectgroup-button">{{ __('Single Price') }}</span>
                                                                 </label>
 
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="currency_type"
-                                                                        value="idr,usd"
-                                                                        class="selectgroup-input eventDateType">
+                                                                    <input type="radio" name="pricing_scheme"
+                                                                        value="dual_price"
+                                                                        class="selectgroup-input countDownStatusType">
                                                                     <span
-                                                                        class="selectgroup-button">{{ __('Dual Currency') }}</span>
+                                                                        class="selectgroup-button">{{ __('Dual Price') }}</span>
                                                                 </label>
                                                             </div>
-                                                            <p class="mb-0 p-0">*Select 'Dual Currency' to display prices
-                                                                in
-                                                                both IDR
-                                                                (primary) and USD.</p>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-12 px-4">
+                                                        <p class="font-weight-bold mt-0">
+                                                            *Choose 'Dual Price' to set different pricing for local and
+                                                            international customers.
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -162,11 +165,11 @@
                                                     <div class="col-12 mt-2">
                                                         <div class="form-group">
                                                             <label>
-                                                                {{ __('Event Type') . '*' }}
+                                                                {{ __('Event Publisher') . '*' }}
                                                             </label>
                                                             <div class="selectgroup w-100">
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="event_type"
+                                                                    <input type="radio" name="event_publisher"
                                                                         value="public" class="selectgroup-input eventType"
                                                                         checked>
                                                                     <span
@@ -174,7 +177,7 @@
                                                                 </label>
 
                                                                 <label class="selectgroup-item">
-                                                                    <input type="radio" name="event_type"
+                                                                    <input type="radio" name="event_publisher"
                                                                         value="private"
                                                                         class="selectgroup-input eventType">
                                                                     <span
@@ -399,9 +402,15 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select Type') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_type"
-                                                                name="select_type" required>
-                                                                <option selected value="province">Province</option>
+                                                            <select class="custom-select selectTypeDelegation"
+                                                                id="select_type" name="select_type" required>
+                                                                <option value="" selected disabled>Choose Delegation
+                                                                    Type</option>
+                                                                @foreach ($delegation_type as $val_delegation_type)
+                                                                    <option value="{{ $val_delegation_type->name }}">
+                                                                        {{ $val_delegation_type->name }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
@@ -410,9 +419,15 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select Country') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_country"
-                                                                name="select_country" required>
-                                                                <option selected value="country">Country</option>
+                                                            <select class="custom-select select2 fieldCountry"
+                                                                id="select_country" name="select_country">
+                                                                <option selected value="">Choose Country</option>
+                                                                @foreach ($international_countries as $value_international_country)
+                                                                    <option
+                                                                        value="{{ $value_international_country->id }}">
+                                                                        {{ $value_international_country->name }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
@@ -421,9 +436,9 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select State') . '*' }}
                                                             </label>
-                                                            <select class="custom-select" id="select_state"
-                                                                name="select_state" required>
-                                                                <option selected value="state">state</option>
+                                                            <select class="custom-select select2 fieldState"
+                                                                id="select_state" name="select_state">
+                                                                <option selected value="">Choose State</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -450,8 +465,8 @@
                                                         </label>
                                                         <select class="custom-select" id="team" name="team"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
@@ -460,8 +475,8 @@
                                                         </label>
                                                         <select class="custom-select" id="mixed_team" name="mixed_team"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
@@ -470,8 +485,8 @@
                                                         </label>
                                                         <select class="custom-select" id="official" name="official"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -484,14 +499,14 @@
                                                 <div class="row">
                                                     <div class="col-12 col-md-6">
                                                         <label class="mb-1">
-                                                            {{ __('Upload File') }}
+                                                            {{ __('Upload File THB') }}
                                                         </label>
                                                         <div class="custom-file">
                                                             <input type="file" class="custom-file-input"
-                                                                id="upload_file" name="upload_file"
-                                                                aria-describedby="upload_file" accept=".doc,.docx,.pdf"
+                                                                id="thb_file" name="thb_file"
+                                                                aria-describedby="thb_file" accept=".doc,.docx,.pdf"
                                                                 style="background:#fff">
-                                                            <label class="custom-file-label" for="upload_file"
+                                                            <label class="custom-file-label" for="thb_file"
                                                                 style="background:#fff">Choose
                                                                 file</label>
                                                         </div>
@@ -505,9 +520,38 @@
                                                         </label>
                                                         <select class="custom-select" id="status" name="status"
                                                             required>
-                                                            <option selected value="active">Active</option>
-                                                            <option value="disable">Disable</option>
+                                                            <option selected value="1">Active</option>
+                                                            <option value="0">Disable</option>
                                                         </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="">{{ __('Latitude') }}*</label>
+                                                            <input type="text" name="latitude" placeholder="Latitude"
+                                                                class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="">{{ __('Longitude') }}*</label>
+                                                            <input type="text" placeholder="Longitude"
+                                                                name="longitude" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mt-0 px-4">
+                                                        <p class="font-weight-bold">
+                                                            *Enter a Latitude and Longitude from Google Maps
+                                                            Platform(website or application mobile) for to display
+                                                            the location on Google Maps on the event page.
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -570,10 +614,9 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    @if (request()->input('type') == 'venue')
+                                                    @if (request()->input('type') == 'venue' || request()->input('type') == 'tournament')
                                                         <div class="row">
-                                                            <div class="col-lg-8">
+                                                            <div class="col-lg-12">
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="">{{ __('Address') . '*' }}</label>
@@ -581,36 +624,69 @@
                                                                         name="{{ $language->code }}_address"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
                                                                         placeholder="{{ __('Enter Address') }}">
+                                                                    <p class="font-weight-bold">
+                                                                        *Enter a full address or location name to display
+                                                                        the location on Google Maps on the event page.
+                                                                    </p>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('County') . '*' }}</label>
-                                                                    <input type="text"
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_country"
                                                                         placeholder="{{ __('Enter Country') }}"
-                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"> --}}
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_country"
+                                                                        onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_country">
+                                                                        <option selected disable value="">
+                                                                            Choose Country
+                                                                        </option>
+                                                                        @foreach ($international_countries as $value_international_country)
+                                                                            <option
+                                                                                value="{{ $value_international_country->id }}">
+                                                                                {{ $value_international_country->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('State') }}</label>
-                                                                    <input type="text"
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_state"
+                                                                        onchange="handleChooseEventContentLanguageState('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_state">
+                                                                        <option selected disable value="">
+                                                                            Choose State
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_state"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="{{ __('Enter State') }}">
+                                                                        placeholder="{{ __('Enter State') }}"> --}}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label for="">{{ __('City') . '*' }}</label>
-                                                                    <input type="text"
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_city"
+                                                                        id="{{ $language->code }}_city">
+                                                                        <option selected disable value="">
+                                                                            Choose City
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
                                                                         name="{{ $language->code }}_city"
                                                                         class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="Enter City">
+                                                                        placeholder="Enter City"> --}}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4">
+                                                            <div class="col-lg-6">
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="">{{ __('Zip/Post Code') }}</label>

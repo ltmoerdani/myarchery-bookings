@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <label for="" class="mb-2"><strong>{{ __('Gallery Images') }} **</strong></label>
-                                <form action="{{ route('admin.event.imagermvtournament') }}" id="my-dropzone"
+                                <form action="{{ route('admin.event.imagesstoretournament') }}" id="my-dropzone"
                                     enctype="multipart/formdata" class="dropzone create">
                                     @csrf
                                     <div class="fallback">

@@ -5,23 +5,35 @@ namespace App\Http\Controllers\BackEnd\Organizer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Event\StoreRequest;
+use App\Http\Requests\Event\StoreTournamentRequest;
 use App\Http\Requests\Event\UpdateRequest;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Event;
 use App\Models\EventKurs;
+use App\Models\InternationalCountries;
+use App\Models\IndonesianProvince;
+use App\Models\IndonesianCities;
+use App\Models\InternationalStates;
+use App\Models\InternationalCities;
+use App\Models\EventType;
+use App\Models\Organizer;
 use App\Models\ContingentType;
 use App\Models\Competitions;
+use App\Models\CompetitionType;
 use App\Models\CompetitionCategories;
 use App\Models\CompetitionClassType;
 use App\Models\CompetitionClassName;
 use App\Models\CompetitionDistance;
+use App\Models\DelegationType;
 use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\EventDates;
 use App\Models\Event\Ticket;
 use App\Models\State;
+use App\Models\EventPublisher;
+use App\Models\Event\TicketContent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,21 +84,24 @@ class EventController extends Controller
   public function add_event(Request $request)
   {
     // get all the languages from db
+    $information = [];
     $languages = Language::get();
     $information['languages'] = $languages;
+    $countries = Country::get();
+    $information['countries'] = $countries;
+    $organizers = Organizer::get();
+    $information['organizers'] = $organizers;
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
     if ($request->query('type') == 'tournament') {
-      $countries = Country::get();
-      $information['countries'] = $countries;
       $information['competition_categories'] = CompetitionCategories::all();
       $information['competition_class_type'] = CompetitionClassType::all();
       $information['competition_class_name'] = CompetitionClassName::all();
       $information['competition_distance'] = CompetitionDistance::all();
+      $information['delegation_type'] = DelegationType::all();
+      $information['international_countries'] = InternationalCountries::all();
       return view('organizer.event.create_tournament', $information);
     } else {
-      $countries = Country::get();
-      $information['countries'] = $countries;
       return view('organizer.event.create', $information);
     }
   }
@@ -296,6 +311,324 @@ class EventController extends Controller
 
     Session::flash('success', 'Added Successfully');
     return response()->json(['status' => 'success'], 200);
+  }
+
+  public function store_tournament(StoreTournamentRequest $request)
+  {
+    try {
+      if (empty(Auth::guard('organizer'))) {
+        Session::flash('error', 'Added Error, because not have sessions login');
+        return response()->json(['status' => 'error'], 401);
+      }
+      DB::transaction(function () use ($request) {
+        $request->is_featured = "yes";
+        $request->date_type = "single";
+        //calculate duration
+        if ($request->date_type == 'single') {
+          $start = Carbon::parse($request->start_date . $request->start_time);
+          $end =  Carbon::parse($request->end_date . $request->end_time);
+          $diffent = DurationCalulate($start, $end);
+        }
+        //calculate duration end
+
+        $in = $request->all();
+        $in['organizer_id'] = Auth::guard('organizer')->user()->id;
+        $in['duration'] = $request->date_type == 'single' ? $diffent : '';
+
+        $img = $request->file('thumbnail');
+        if ($request->hasFile('thumbnail')) {
+          $filename = time() . '.' . $img->getClientOriginalExtension();
+          $directory = public_path('assets/admin/img/event/thumbnail/');
+          @mkdir($directory, 0775, true);
+          $request->file('thumbnail')->move($directory, $filename);
+          $in['thumbnail'] = $filename;
+        }
+
+        $thb_file = $request->file('thb_file');
+        if ($request->hasFile('thb_file')) {
+          $filename = 'thb-file-' . time()  . $thb_file->getClientOriginalExtension();
+          $directory = public_path('assets/admin/img/event/tournament_uploaded/');
+          @mkdir($directory, 0775, true);
+          $request->file('thb_file')->move($directory, $filename);
+          $in['thb_file'] = $filename;
+        }
+
+        $in['f_price'] = $request->price;
+        $in['end_date_time'] = Carbon::parse($request->end_date . ' ' . $request->end_time);
+        $in['is_featured'] = $request->is_featured;
+        $event = Event::create($in);
+
+
+        $in['event_id'] = $event->id;
+        if ($request->event_type == 'online') {
+          if (!$request->pricing_type) {
+            $in['pricing_type'] = 'normal';
+          }
+          $in['early_bird_discount'] = $request->early_bird_discount_type;
+          $in['early_bird_discount_type'] = $request->discount_type;
+          Ticket::create($in);
+        }
+
+        $slders = $request->slider_images;
+        foreach ($slders as $key => $id) {
+          $event_image = EventImage::where('id', $id)->first();
+          if ($event_image) {
+            $event_image->event_id = $event->id;
+            $event_image->save();
+          }
+        }
+
+        $languages = Language::all();
+        foreach ($languages as $language) {
+          $event_content = new EventContent();
+          $event_content->language_id = $language->id;
+          $event_content->event_category_id = $request[$language->code . '_category_id'];
+          $event_content->event_id = $event->id;
+          $event_content->title = $request[$language->code . '_title'];
+
+          if ($request->event_type == 'venue') {
+            $event_content->address = $request[$language->code . '_address'];
+            $event_content->country = $request[$language->code . '_country'];
+            $event_content->state = $request[$language->code . '_state'];
+            $event_content->city = $request[$language->code . '_city'];
+            $event_content->zip_code = $request[$language->code . '_zip_code'];
+          }
+
+          if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
+            $event_content->country = InternationalCountries::find($request[$language->code . '_country'])->name;
+            $event_content->address = $request[$language->code . '_address'];
+            $event_content->zip_code = $request[$language->code . '_zip_code'];
+
+            if ($request[$language->code . '_country'] == 102 || $request[$language->code . '_country'] == '102') {
+              $event_content->state = IndonesianProvince::find($request[$language->code . '_state'])->name;
+              $event_content->city = IndonesianCities::find($request[$language->code . '_city'])->name;
+            } else {
+              $event_content->state = InternationalStates::find($request[$language->code . '_state'])->name;
+              $event_content->city = InternationalCities::find($request[$language->code . '_city'])->name;
+            }
+          }
+
+          $event_content->slug = createSlug($request[$language->code . '_title']);
+          $event_content->description = Purifier::clean($request[$language->code . '_description'], 'youtube');
+          $event_content->refund_policy = $request[$language->code . '_refund_policy'];
+          $event_content->meta_keywords = $request[$language->code . '_meta_keywords'];
+          $event_content->meta_description = $request[$language->code . '_meta_description'];
+          $event_content->save();
+        }
+
+        // event type public or private
+        if ($request->event_publisher) {
+          $input['event_id'] = $event->id;
+          $input['event_type'] = $request->event_publisher;
+          $input['shared_type'] = 'event type ' . $request->event_publisher;
+          $input['link_event'] = $request->link_event_publisher;
+          $input['code'] = $request->code;
+          $input['description'] = $request->description_event_publisher;
+          EventPublisher::create($input);
+        }
+
+        // contingent type
+        if ($request->delegation_type) {
+          $input['event_id'] = $event->id;
+          $input['contingent_type'] = $request->delegation_type;
+          $input['select_type'] = $request->select_type;
+          $input['country_id'] = $request->select_country;
+          $input['country'] = $request->contingent_country;
+          $input['province_id'] = $request->select_state;
+          $input['province'] = $request->contingent_province;
+          $input['state_id'] = $request->select_state;
+          $input['state'] = $request->contingent_state;
+          $input['city_id'] = $request->contingent_city_id;
+          $input['city'] = $request->contingent_city;
+          ContingentType::create($input);
+        }
+
+        // Add Competition Category
+        $i = 1;
+        foreach ($request->competition_categories as $key => $c) {
+          $competition_categories = CompetitionCategories::where('id', $request->competition_categories[$key])->first();
+          $name_competition = $competition_categories->name . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key] . ' Meter';
+
+          $competitions = Competitions::create([
+            'event_id' => $event->id,
+            'name' => $name_competition,
+            'competition_type_id' => 0,
+            'competition_category_id' => $request->competition_categories[$key],
+            'gender' => null,
+            'contingent' => null,
+            'distance' => $request->competition_distance[$key],
+            'class_type' => $request->competition_class_type[$key],
+            'class_name' => $request->competition_class_name[$key],
+            'description' => null,
+          ]);
+          $competition_id = $competitions->id;
+
+          // Individual
+          $gender = ['Putra', 'Putri'];
+          foreach ($gender as $g) {
+            $ticket['event_id'] = $event->id;
+            $ticket['competition_id'] = $competition_id;
+            $ticket['event_type'] = 'tournament';
+            $ticket['title'] = 'Individu';
+            $ticket['ticket_available_type'] = 'limited';
+            $ticket['ticket_available'] = 100;
+            $ticket['max_ticket_buy_type'] = 'limited';
+            $ticket['max_buy_ticket'] = 10;
+            $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
+            $ticket['price'] = 300000;
+            $ticket['f_price'] = 300000;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
+            $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
+            $t = Ticket::create($ticket);
+
+            $languages = Language::all();
+            foreach ($languages as $language) {
+              if ($language->id == 8) {
+                if ($g == 'Putra') {
+                  $g = 'Men';
+                } elseif ($g == 'Putri') {
+                  $g = 'Women';
+                }
+              }
+
+              if ($language->id == 23) {
+                if ($g == 'Men') {
+                  $g = 'Putra';
+                } elseif ($g == 'Women') {
+                  $g = 'Putri';
+                }
+              }
+
+              $data['language_id'] = $language->id;
+              $data['ticket_id'] = $t->id;
+              $data['title'] = $name_competition . ' Individu ' . $g;
+              $data['description'] = null;
+              TicketContent::create($data);
+            }
+          }
+
+          // Team
+          if ($request->team == "active") {
+            $gender = ['Putra', 'Putri'];
+            foreach ($gender as $g) {
+              $ticket['event_id'] = $event->id;
+              $ticket['event_type'] = 'tournament';
+              $ticket['title'] = 'Team';
+              $ticket['ticket_available_type'] = 'limited';
+              $ticket['ticket_available'] = 100;
+              $ticket['max_ticket_buy_type'] = 'limited';
+              $ticket['max_buy_ticket'] = 10;
+              $ticket['pricing_type'] = 'normal';
+              $ticket['pricing_scheme'] = $request['pricing_scheme'];
+              $ticket['price'] = 300000;
+              $ticket['f_price'] = 300000;
+              $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+              $ticket['early_bird_discount'] = 'disable';
+              $ticket['early_bird_discount_type'] = 'fixed';
+              $ticket['late_price_discount'] = 'disable';
+              $ticket['late_price_discount_type'] = 'fixed';
+              $t = Ticket::create($ticket);
+
+              $languages = Language::all();
+              foreach ($languages as $language) {
+                if ($language->id == 8) {
+                  if ($g == 'Putra') {
+                    $g = 'Men';
+                  } elseif ($g == 'Putri') {
+                    $g = 'Women';
+                  }
+                }
+
+                if ($language->id == 23) {
+                  if ($g == 'Men') {
+                    $g = 'Putra';
+                  } elseif ($g == 'Women') {
+                    $g = 'Putri';
+                  }
+                }
+
+                $data['language_id'] = $language->id;
+                $data['ticket_id'] = $t->id;
+                $data['title'] = $name_competition . ' Team ' . $g;
+                $data['description'] = null;
+                TicketContent::create($data);
+              }
+            }
+          }
+
+          // Mix Team
+          if ($request->mixed_team == "active") {
+            $ticket['event_id'] = $event->id;
+            $ticket['event_type'] = 'tournament';
+            $ticket['title'] = 'Mix Team';
+            $ticket['ticket_available_type'] = 'limited';
+            $ticket['ticket_available'] = 100;
+            $ticket['max_ticket_buy_type'] = 'limited';
+            $ticket['max_buy_ticket'] = 10;
+            $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
+            $ticket['price'] = 300000;
+            $ticket['f_price'] = 300000;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
+            $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
+            $t = Ticket::create($ticket);
+
+            $languages = Language::all();
+            foreach ($languages as $language) {
+              $data['language_id'] = $language->id;
+              $data['ticket_id'] = $t->id;
+              $data['title'] = $name_competition . ' Mix Team';
+              $data['description'] = null;
+              TicketContent::create($data);
+            }
+          }
+
+          // Official
+          if ($request->official == "active") {
+            $ticket['event_id'] = $event->id;
+            $ticket['event_type'] = 'tournament';
+            $ticket['title'] = 'Official';
+            $ticket['ticket_available_type'] = 'limited';
+            $ticket['ticket_available'] = 100;
+            $ticket['max_ticket_buy_type'] = 'limited';
+            $ticket['max_buy_ticket'] = 10;
+            $ticket['pricing_type'] = 'normal';
+            $ticket['pricing_scheme'] = $request['pricing_scheme'];
+            $ticket['price'] = 300000;
+            $ticket['f_price'] = 300000;
+            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['early_bird_discount'] = 'disable';
+            $ticket['early_bird_discount_type'] = 'fixed';
+            $ticket['late_price_discount'] = 'disable';
+            $ticket['late_price_discount_type'] = 'fixed';
+            $t = Ticket::create($ticket);
+
+            $languages = Language::all();
+            foreach ($languages as $language) {
+              $data['language_id'] = $language->id;
+              $data['ticket_id'] = $t->id;
+              $data['title'] = $name_competition . ' Official';
+              $data['description'] = null;
+              TicketContent::create($data);
+            }
+          }
+
+          $i++;
+        }
+      });
+
+      Session::flash('success', 'Added Successfully');
+      return response()->json(['status' => 'success'], 200);
+    } catch (\Exception $e) {
+      return $e->getMessage();
+    }
   }
   /**
    * Update status (active/DeActive) of a specified resource.

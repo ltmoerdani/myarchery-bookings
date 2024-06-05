@@ -58,6 +58,7 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::post('event-imagesstore-tournament', 'BackEnd\Organizer\EventController@gallerystoreTournament')->name('organizer.event.imagesstore-tournament');
   Route::post('event-imagermv-tournament', 'BackEnd\Organizer\EventController@imagermvTournament')->name('organizer.event.imagermv-tournament');
   Route::post('event-store', 'BackEnd\Organizer\EventController@store')->name('organizer.event_management.store_event');
+  Route::post('event-store-tournament', 'BackEnd\Organizer\EventController@store_tournament')->name('organizer.event_management.store_event_tournament');
   Route::post('/event/{id}/update-status', 'BackEnd\Organizer\EventController@updateStatus')->name('organizer.event_management.event.event_status');
   Route::post('/event/{id}/update-featured', 'BackEnd\Organizer\EventController@updateFeatured')->name('organizer.event_management.event.update_featured');
   Route::post('/delete-event/{id}', 'BackEnd\Organizer\EventController@destroy')->name('organizer.event_management.delete_event');
