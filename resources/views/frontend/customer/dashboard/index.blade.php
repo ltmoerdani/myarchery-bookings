@@ -161,7 +161,9 @@
                                                                 </td>
                                                                 <td>
                                                                     <a href="{{ route('customer.booking_details', $item->id) }}" class="btn">{{ __('Details') }}</a>
+                                                                    @if ($item->paymentStatus == 'pending')
                                                                     <a href="{{ route('event_booking.xindit.pay_booking', $item->id) }}" class="btn">{{ __('Pay') }}</a>
+                                                                    @endif
                                                                 </td>
                                                             </tr>
                                                         @endif
