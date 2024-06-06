@@ -90,6 +90,7 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
     Route::post('/event/{id}/update-status', 'BackEnd\Event\EventController@updateStatus')->name('admin.event_management.event.event_status');
     Route::post('/event/{id}/update-featured', 'BackEnd\Event\EventController@updateFeatured')->name('admin.event_management.event.update_featured');
     Route::post('/delete-event/{id}', 'BackEnd\Event\EventController@destroy')->name('admin.event_management.delete_event');
+    Route::post('/delete-event-tournament/{id}', 'BackEnd\Event\EventController@destroy_tournament')->name('admin.event_management.delete_event_tournament');
     Route::get('/edit-event/{id}', 'BackEnd\Event\EventController@edit')->name('admin.event_management.edit_event');
     Route::post('/event-img-dbrmv', 'BackEnd\Event\EventController@imagedbrmv')->name('admin.event.imgdbrmv');
 
