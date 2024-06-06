@@ -42,6 +42,8 @@ use App\Models\DelegationType;
 use App\Models\Event\TicketContent;
 use App\Http\Helpers\HelperEvent;
 use App\Http\Helpers\HelperResponse;
+use App\Models\Event\Booking;
+use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -340,7 +342,7 @@ class EventController extends Controller
 
         $thb_file = $request->file('thb_file');
         if ($request->hasFile('thb_file')) {
-          $filename = 'thb-file-' . time()  . $thb_file->getClientOriginalExtension();
+          $filename = 'thb-file-' . time() . '.' . $thb_file->getClientOriginalExtension();
           $directory = public_path('assets/admin/img/event/tournament_uploaded/');
           @mkdir($directory, 0775, true);
           $request->file('thb_file')->move($directory, $filename);
@@ -849,6 +851,10 @@ class EventController extends Controller
   {
     $event = Event::find($id);
 
+    if (empty($event)) {
+      return redirect()->back()->with('warning', 'Delete failed, because event not found!');
+    }
+
     @unlink(public_path('assets/admin/img/event/thumbnail/') . $event->thumbnail);
 
     $event_contents = EventContent::where('event_id', $event->id)->get();
@@ -895,6 +901,69 @@ class EventController extends Controller
 
     return redirect()->back()->with('success', 'Deleted Successfully');
   }
+
+  public function destroy_tournament($id)
+  {
+    $event = Event::find($id);
+    if (empty($event)) {
+      return redirect()->back()->with('warning', 'Delete failed, because event not found!');
+    }
+
+    $checkBookings = Booking::where('event_id', $id)->count();
+    if ($checkBookings > 0) {
+      return redirect()->back()->with('warning', 'Delete failed, because have a participants order!');
+    }
+
+
+    @unlink(public_path('assets/admin/img/event/thumbnail/') . $event->thumbnail);
+
+    if (!empty($event->thb_file)) {
+      @unlink(public_path('assets/admin/img/event/tournament_uploaded/') . $event->thb_file);
+    }
+
+
+    $event_contents = EventContent::where('event_id', $event->id)->get();
+    foreach ($event_contents as $event_content) {
+      $event_content->delete();
+    }
+
+    // delete publication events
+    EventPublisher::where('event_id', $event->id)->delete();
+    ContingentType::where('event_id', $event->id)->delete();
+
+    $event_images = EventImage::where('event_id', $event->id)->get();
+    foreach ($event_images as $event_image) {
+      @unlink(public_path('assets/admin/img/event-gallery/') . $event_image->image);
+      $event_image->delete();
+    }
+
+
+    //tickets & ticket contents
+    $tickets = $event->tickets()->get();
+    foreach ($tickets as $ticket) {
+      TicketContent::where('ticket_id', $ticket->id)->delete();
+      TicketPrice::where('ticket_id', $ticket->id)->delete();
+      $ticket->delete();
+    }
+
+    //wishlists
+    $wishlists = $event->wishlists()->get();
+    foreach ($wishlists as $wishlist) {
+      $wishlist->delete();
+    }
+
+    //dates
+    $dates = $event->dates()->get();
+    foreach ($dates as $date) {
+      $date->delete();
+    }
+
+    // finally delete the event
+    $event->delete();
+
+    return redirect()->back()->with('success', 'Deleted Successfully');
+  }
+
   //bulk_delete
   public function bulk_delete(Request $request)
   {

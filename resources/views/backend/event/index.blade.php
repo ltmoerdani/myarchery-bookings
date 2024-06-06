@@ -125,9 +125,9 @@
                                     <table class="table table-striped mt-3">
                                         <thead>
                                             <tr>
-                                                <th scope="col">
+                                                {{-- <th scope="col">
                                                     <input type="checkbox" class="bulk-check" data-val="all">
-                                                </th>
+                                                </th> --}}
                                                 <th scope="col" width="30%">{{ __('Title') }}</th>
                                                 <th scope="col">{{ __('Organizer') }}</th>
                                                 <th scope="col">{{ __('Type') }}</th>
@@ -141,10 +141,10 @@
                                         <tbody>
                                             @foreach ($events as $event)
                                                 <tr>
-                                                    <td>
+                                                    {{-- <td>
                                                         <input type="checkbox" class="bulk-check"
                                                             data-val="{{ $event->id }}">
-                                                    </td>
+                                                    </td> --}}
                                                     <td width="20%">
                                                         <a target="_blank"
                                                             href="{{ route('event.details', ['slug' => $event->slug, 'id' => $event->id]) }}">{{ strlen($event->title) > 30 ? mb_substr($event->title, 0, 30, 'UTF-8') . '....' : $event->title }}</a>
@@ -195,8 +195,7 @@
                                                     </td>
                                                     <td>
 
-                                                        <form id="featuredForm-{{ $event->id }}"
-                                                            class="d-inline-block"
+                                                        <form id="featuredForm-{{ $event->id }}" class="d-inline-block"
                                                             action="{{ route('admin.event_management.event.update_featured', ['id' => $event->id]) }}"
                                                             method="post">
 
@@ -232,15 +231,28 @@
                                                                     {{ __('Edit') }}
                                                                 </a>
 
-                                                                <form class="deleteForm d-block"
-                                                                    action="{{ route('admin.event_management.delete_event', ['id' => $event->id]) }}"
-                                                                    method="post">
+                                                                @if ($event->event_type == 'tournament' || $event->event_type == 'turnamen')
+                                                                    <form class="deleteForm d-block"
+                                                                        action="{{ route('admin.event_management.delete_event_tournament', ['id' => $event->id]) }}"
+                                                                        method="post">
+                                                                        @csrf
+                                                                        <button type="submit"
+                                                                            class="btn btn-sm deleteBtn">
+                                                                            {{ __('Delete') }}
+                                                                        </button>
+                                                                    </form>
+                                                                @else
+                                                                    <form class="deleteForm d-block"
+                                                                        action="{{ route('admin.event_management.delete_event', ['id' => $event->id]) }}"
+                                                                        method="post">
 
-                                                                    @csrf
-                                                                    <button type="submit" class="btn btn-sm deleteBtn">
-                                                                        {{ __('Delete') }}
-                                                                    </button>
-                                                                </form>
+                                                                        @csrf
+                                                                        <button type="submit"
+                                                                            class="btn btn-sm deleteBtn">
+                                                                            {{ __('Delete') }}
+                                                                        </button>
+                                                                    </form>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </td>
