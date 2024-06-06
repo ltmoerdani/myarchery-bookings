@@ -183,7 +183,7 @@ class CheckOutController extends Controller
           $start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
           $end = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
           $event_end_date_time = Carbon::parse($event->end_date_time);
-          if (($start) >= ($event_end_date_time)) {
+          if (($start) <= ($event_end_date_time)) {
             $late_price_discount_international_ticket = empty($ticket->late_price_discount_amount_international) ? 0 : $ticket->late_price_discount_amount_international;
             if ($ticket->late_price_discount_type == 'fixed') {
               $late_price_dicount = $ticket->late_price_discount_amount;
@@ -205,12 +205,26 @@ class CheckOutController extends Controller
           $ticketprice = $ticket->price;
           $tickettitle = $ticket->title;
           $ticketprice_first = $ticketprice;
-          $ticketprice = $ticketprice - $early_bird_dicount;
+
+          if($early_bird_dicount > 0){
+            $ticketprice = $ticketprice - $early_bird_dicount;
+          }
+
+          if($late_price_dicount > 0){
+            $ticketprice = $ticketprice + $late_price_dicount;
+          }
         } else {
           $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
           $tickettitle = $ticket->title . ' (Internasional)';
           $ticketprice_first = $ticketprice;
-          $ticketprice = $ticketprice - $early_bird_dicount_international;
+
+          if($early_bird_dicount_international > 0){
+            $ticketprice = $ticketprice - $early_bird_dicount_international;
+          }
+
+          if($late_price_dicount_international > 0){
+            $ticketprice = $ticketprice + $late_price_dicount_international;
+          }          
         }
 
         if ($categorytickets['title'] != $tickettitle) {
