@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event\Booking;
+use App\Models\Transaction;
 
 class XenditController extends Controller
 {
@@ -330,6 +331,11 @@ class XenditController extends Controller
                         $booking->paymentStatus = "completed";
                         $booking->save();
 
+                        // status update paid
+                        $updateTransaction = Transaction::where('booking_id', $arrData['booking_id'])->first();
+                        $updateTransaction->payment_status = 1;
+                        $updateTransaction->save();
+
                         // remove all session data
                         Session::forget('event_id');
                         Session::forget('selTickets');
@@ -347,6 +353,11 @@ class XenditController extends Controller
                         $booking = Booking::where('booking_id', $booking_id)->first();
                         $booking->paymentStatus = "completed";
                         $booking->save();
+
+                        // status update paid
+                        $updateTransaction = Transaction::where('booking_id', $arrData['booking_id'])->first();
+                        $updateTransaction->payment_status = 1;
+                        $updateTransaction->save();
 
                         // remove all session data
                         Session::forget('event_id');
