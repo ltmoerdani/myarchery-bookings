@@ -97,10 +97,8 @@ class XenditController extends Controller
             $earning->save();
 
             //storeTransaction
-            $bookingInfo['paymentStatus'] = 1;
+            $bookingInfo['paymentStatus'] = 3;
             $bookingInfo['transcation_type'] = 1;
-
-            storeTranscation($bookingInfo);
 
             //store amount to organizer
             $organizerData['organizer_id'] = $bookingInfo['organizer_id'];
@@ -133,6 +131,10 @@ class XenditController extends Controller
 
             $arrData['invoice_url_booking'] = $response['invoice_url'];
             $bookingInfo['invoice_url_booking'] = $response['invoice_url'];
+            
+            $bookingInfo['payment_url'] = $response['invoice_url'];
+            storeTranscation($bookingInfo);
+
             // Update invoice_url_booking in table bookings
             $updateBooking = Booking::where('booking_id', $bookingInfo->booking_id)->first();
             $updateBooking->invoice_url_booking = $response['invoice_url'];

@@ -288,6 +288,69 @@
                       </table>
                     </div>
                   @endif
+
+
+                  @if ($booking->variation != null)
+                    <div class="table-responsive product-list">
+                      <h5>{{ __('Participant') }}</h5>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>{{ __('No') }}</th>
+                            <th>{{ __('Participant') }}</th>
+                            <th>{{ __('Ticket') }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                          @php
+                            $variations = json_decode($booking->variation, true);
+                            $no = 1;
+                          @endphp
+                          @foreach ($variations as $variation)
+                            <tr>
+                              <td>{{ $no }}</td>
+                              <td>
+                                @php
+                                  $competitions = App\Models\ParticipantCompetitions::where('ticket_id', $variation['ticket_id'])->first();
+                                  $participant = App\Models\Participant::where('id', $competitions->participant_id)->first();
+                                @endphp
+                                {{ $participant->fname }}
+                              </td>
+                              <td>
+                                @php
+                                  $ticket = App\Models\Event\Ticket::where('id', $variation['ticket_id'])->first();
+                                  $ticketContent = App\Models\Event\TicketContent::where([['ticket_id', $ticket->id], ['language_id', $currentLanguageInfo->id]])->first();
+                                @endphp
+                                @if ($ticketContent && $ticket)
+                                  {{ $ticketContent->title }}
+                                  @if ($ticket->pricing_type == 'variation')
+                                    @php
+                                      $varition_key = App\Models\Event\VariationContent::where([['ticket_id', $ticket->id], ['name', $variation['name']]])
+                                          ->select('key')
+                                          ->first();
+                                      
+                                      $varition_name = App\Models\Event\VariationContent::where([['ticket_id', $ticket->id], ['language_id', $currentLanguageInfo->id], ['key', $varition_key->key]])->first();
+                                      
+                                      if ($varition_name) {
+                                          $name = $varition_name->name;
+                                      } else {
+                                          $name = '';
+                                      }
+                                    @endphp
+                                    <small>({{ $name }})</small>
+                                  @endif
+                                @endif
+                              </td>
+                            </tr>
+                            @php
+                            $no++;
+                            @endphp
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  @endif
                 </div>
               </div>
             </div>

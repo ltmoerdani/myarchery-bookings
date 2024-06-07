@@ -242,6 +242,7 @@ if (!function_exists('storeTranscation')) {
       'organizer_id' => $booking->organizer_id,
       'payment_status' => $booking->paymentStatus,
       'payment_method' => $booking->paymentMethod,
+      'payment_url' => $booking->invoice_url_booking,
       'grand_total' => $booking->price,
       'tax' => $booking->tax,
       'commission' => $booking->commission,

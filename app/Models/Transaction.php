@@ -19,6 +19,7 @@ class Transaction extends Model
         'organizer_id',
         'payment_status',
         'payment_method',
+        'payment_url',
         'grand_total',
         'pre_balance',
         'after_balance',
