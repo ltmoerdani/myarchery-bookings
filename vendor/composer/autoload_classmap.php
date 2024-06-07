@@ -637,6 +637,7 @@ return array(
     'Database\\Seeders\\InternationalCitiesSeeder' => $baseDir . '/database/seeders/InternationalCitiesSeeder.php',
     'Database\\Seeders\\InternationalCountriesSeeder' => $baseDir . '/database/seeders/InternationalCountriesSeeder.php',
     'Database\\Seeders\\InternationalStatesSeeder' => $baseDir . '/database/seeders/InternationalStatesSeeder.php',
+    'Database\\Seeders\\SeederMailTemplates' => $baseDir . '/database/seeders/SeederMailTemplates.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
     'DateException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
     'DateInvalidOperationException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',

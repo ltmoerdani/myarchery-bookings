@@ -67,6 +67,7 @@ class XenditController extends Controller
                 'paymentMethod' => 'Xendit',
                 'gatewayType' => 'online',
                 'paymentStatus' => 'pending',
+                'paymentStatusBooking' => 'pending',
                 'ticketInfos' => json_decode($request->request_ticket_infos),
                 'dataOrders' => json_decode($request->request_orders),
                 'form_type' => 'tournament',
@@ -108,9 +109,6 @@ class XenditController extends Controller
             $organizerData['commission'] = $bookingInfo->commission;
             storeOrganizer($organizerData);
 
-            // send a mail to the customer with the invoice
-            $booking->sendMail($bookingInfo);
-
             $payable_amount = round($total + $tax_amount, 2);
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ~~~~~~~~~~~~~~~~~ Booking End ~~~~~~~~~~~~~~
@@ -133,6 +131,17 @@ class XenditController extends Controller
             $response = $data_request->object();
             $response = json_decode(json_encode($response), true);
 
+            $arrData['invoice_url_booking'] = $response['invoice_url'];
+            $bookingInfo['invoice_url_booking'] = $response['invoice_url'];
+            // Update invoice_url_booking in table bookings
+            $updateBooking = Booking::where('booking_id', $bookingInfo->booking_id)->first();
+            $updateBooking->invoice_url_booking = $response['invoice_url'];
+            $updateBooking->save();
+
+            // send a mail to the customer with the invoice
+            $bookingInfo['paymentStatusBooking'] = 'pending';
+            $booking->sendMail($bookingInfo);
+            
             if (!empty($response['success_redirect_url'])) {
                 $request->session()->put('booking_id', $bookingInfo->booking_id);
                 $request->session()->put('event_id', $event_id);

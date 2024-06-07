@@ -162,7 +162,7 @@
                                                                 <td>
                                                                     <a href="{{ route('customer.booking_details', $item->id) }}" class="btn">{{ __('Details') }}</a>
                                                                     @if ($item->paymentStatus == 'pending')
-                                                                    <a href="{{ route('event_booking.xindit.pay_booking', $item->id) }}" class="btn">{{ __('Pay') }}</a>
+                                                                    <a href="{{ $item->invoice_url_booking }}" class="btn" target="_blank">{{ __('Pay') }}</a> 
                                                                     @endif
                                                                 </td>
                                                             </tr>

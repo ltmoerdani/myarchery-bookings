@@ -553,6 +553,7 @@ class BookingController extends Controller
         'paymentMethod' => $info['paymentMethod'],
         'gatewayType' => $info['gatewayType'],
         'paymentStatus' => $info['paymentStatus'],
+        'paymentStatusBooking' => $info['paymentStatusBooking'],
         'invoice' => array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null,
         'attachmentFile' => array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null,
         'event_date' => Session::get('event_date'),
@@ -644,10 +645,17 @@ class BookingController extends Controller
 
   public function sendMail($bookingInfo)
   {
-    // first get the mail template info from db
-    $mailTemplate = MailTemplate::where('mail_type', 'event_booking')->first();
-    $mailSubject = $mailTemplate->mail_subject;
-    $mailBody = $mailTemplate->mail_body;
+    if($bookingInfo->paymentStatusBooking == 'pending'){
+      // first get the mail template info from db
+      $mailTemplate = MailTemplate::where('mail_type', 'event_booking_pending')->first();
+      $mailSubject = $mailTemplate->mail_subject;
+      $mailBody = $mailTemplate->mail_body;
+    }else{
+      // first get the mail template info from db
+      $mailTemplate = MailTemplate::where('mail_type', 'event_booking')->first();
+      $mailSubject = $mailTemplate->mail_subject;
+      $mailBody = $mailTemplate->mail_body;
+    }
 
     // second get the website title & mail's smtp info from db
     $info = DB::table('basic_settings')
@@ -667,6 +675,10 @@ class BookingController extends Controller
     $mailBody = str_replace('{order_id}', $orderId, $mailBody);
     $mailBody = str_replace('{title}', '<a href="' . route('event.details', [$eventContent->slug, $eventContent->event_id]) . '">' . $eventTitle . '</a>', $mailBody);
     $mailBody = str_replace('{website_title}', $websiteTitle, $mailBody);
+
+    if($bookingInfo->paymentStatusBooking == 'pending'){
+      $mailBody = str_replace('{complete_your_payment}', '<a href="' . $bookingInfo->invoice_url_booking . '">Complete Your Payment</a>', $mailBody);
+    }
 
     // initialize a new mail
     $mail = new PHPMailer(true);
