@@ -898,14 +898,15 @@ class BasicController extends Controller
   // /taxCommission
   public function taxCommission()
   {
-    $content = DB::table('basic_settings')->select('tax', 'commission')->first();
+    $content = DB::table('basic_settings')->select('tax', 'commission', 'percent_handling_fee')->first();
     return view('backend.event.tax', compact('content'));
   }
 
   public function updateEventTaxCommission(Request $request)
   {
     $rules = [
-      'tax' => 'required|numeric'
+      'tax' => 'required|numeric',
+      'percent_handling_fee' => 'required|numeric'
     ];
 
     $validator = Validator::make($request->all(), $rules);
@@ -918,7 +919,8 @@ class BasicController extends Controller
       ['uniqid' => 12345],
       [
         'tax' => $request->tax,
-        'commission' => $request->commission
+        'commission' => $request->commission,
+        'percent_handling_fee' => $request->percent_handling_fee
       ]
     );
     $request->session()->flash('success', 'Updated Successfully');

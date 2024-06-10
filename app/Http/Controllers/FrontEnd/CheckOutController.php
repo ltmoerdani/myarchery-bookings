@@ -32,14 +32,14 @@ use Carbon\Carbon;
 
 class CheckOutController extends Controller
 {
-  protected $ppn_value = 0;
 
   //checkout
   public function detailCheckout2Tournament(Request $request)
   {
     try {
-      $basic = Basic::select('event_guest_checkout_status')->first();
+      $basic = Basic::select('event_guest_checkout_status','percent_handling_fee')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
+      $percent_handling_fee = $basic->percent_handling_fee;
 
       if ($event_guest_checkout_status != 1) {
         if (!Auth::guard('customer')->user()) {
@@ -296,7 +296,7 @@ class CheckOutController extends Controller
       
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
-      $information['ppn_value'] = $this->ppn_value;
+      $information['ppn_value'] = $percent_handling_fee;
 
       $information['request_ticket_infos'] = json_encode($category_ticket);
       $information['request_orders'] = json_encode($orders);
