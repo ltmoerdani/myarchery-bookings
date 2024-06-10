@@ -99,7 +99,7 @@ class EventController extends Controller
     $information['organizers'] = $organizers;
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
-    if ($request->type == "tournament") {
+    if ($request->type == "tournament" || $request->type == "turnamen") {
       $information['competition_categories'] = CompetitionCategories::all();
       $information['competition_class_type'] = CompetitionClassType::all();
       $information['competition_class_name'] = CompetitionClassName::all();
@@ -694,8 +694,28 @@ class EventController extends Controller
 
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
-    return view('backend.event.edit', $information);
+    if ($event->event_type == "tournament" || $event->event_type == "turnamen") {
+      $information['ticket_info'] =  Ticket::where('event_id', $id)->where('deleted_at', null)->first();
+      $information['individu_allowed'] = Ticket::where('event_id', $id)->where('title', 'Individu')->where('deleted_at', null)->exists();
+      $information['team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Team')->where('deleted_at', null)->exists();
+      $information['mix_team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Mix Team')->where('deleted_at', null)->exists();
+      $information['official_allowed'] = Ticket::where('event_id', $id)->where('title', 'Official')->where('deleted_at', null)->exists();
+      $information['event_publisher'] = EventPublisher::where('event_id', $id)->first();
+      $information['contingent_type'] = ContingentType::where('event_id', $id)->first();
+      $information['competitions'] = Competitions::where('event_id', $id)->get();
+      $information['competition_categories'] = CompetitionCategories::all();
+      $information['competition_class_type'] = CompetitionClassType::all();
+      $information['competition_class_name'] = CompetitionClassName::all();
+      $information['competition_distance'] = CompetitionDistance::all();
+      $information['delegation_type'] = DelegationType::all();
+      $information['international_countries'] = InternationalCountries::all();
+      // dd($information['contingent_type']);
+      return view('backend.event.edit_tournament', $information);
+    } else {
+      return view('backend.event.edit', $information);
+    }
   }
+
   public function imagedbrmv(Request $request)
   {
     $pi = EventImage::where('id', $request->fileid)->first();
