@@ -19,7 +19,7 @@ class Participant extends Model
         'city_id',
         'city',
         'category',
-        'club_id',
+        'delegation_id',
         'customer_id',
     ];
 

@@ -589,7 +589,7 @@ class BookingController extends Controller
             $input['city_id'] = $t->city_id;
             $input['city'] = empty($city_name) ? null : $city_name;;
             $input['category'] = $t->delegation_type;
-            $input['club_id'] = empty($t->club_id) ? null : $t->club_id;
+            $input['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
             $input['customer_id'] = Auth::guard('customer')->user()->id;
             $peserta = Participant::create($input);
 
