@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('earnings', function (Blueprint $table) {
-            //
-        });
+        DB::statement('ALTER TABLE earnings MODIFY COLUMN `total_revenue` FLOAT(20,2) DEFAULT 0');
+        DB::statement('ALTER TABLE earnings MODIFY COLUMN `total_earning` DOUBLE(20,2) DEFAULT 0');
+
+        // Schema::table('earnings', function (Blueprint $table) {
+        //     $table->float('total_revenue', 12, 2)->nullable()->change();
+        //     $table->double('total_earning', 12, 2)->nullable()->change();
+        // });
     }
 
     /**
@@ -25,8 +29,12 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('earnings', function (Blueprint $table) {
-            //
-        });
+        DB::statement('ALTER TABLE earnings MODIFY COLUMN `total_revenue` FLOAT(8,2) DEFAULT 0');
+        DB::statement('ALTER TABLE earnings MODIFY COLUMN `total_earning` DOUBLE(8,2) DEFAULT 0');
+
+        // Schema::table('earnings', function (Blueprint $table) {
+        //     $table->float('total_revenue', 8, 2)->nullable()->change();
+        //     $table->double('total_earning', 8, 2)->nullable()->change();
+        // });
     }
 };
