@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event\Booking;
 use App\Models\Transaction;
+use App\Models\Event\EventContent;
 
 class XenditController extends Controller
 {
@@ -30,16 +31,18 @@ class XenditController extends Controller
 
         if($request->form_type == "tournament"){
             $cust = Auth::guard('customer')->user();
+            $event_content = EventContent::where('event_id', $event_id)->where('language_id', $request->language_id)->first();
             
             $total = $request->total;
             $quantity = $request->quantity;
             $discount = 0;
             
-            //tax and commission end
-            $basicSetting = Basic::select('commission')->first();
+            //tax and commission end, handling fee
+            $basicSetting = Basic::select('commission','percent_handling_fee')->first();
 
             $tax_amount = Session::get('tax');
             $commission_amount = ($total * $basicSetting->commission) / 100;
+            $handling_fee_amount = ($total * $basicSetting->percent_handling_fee) / 100;
 
             $total_early_bird_dicount = Session::get('total_early_bird_dicount');
             // changing the currency before redirect to PayPal
@@ -49,6 +52,7 @@ class XenditController extends Controller
                 'price' => $total,
                 'tax' => $tax_amount,
                 'commission' => $commission_amount,
+                'percent_handling_fee' => $handling_fee_amount,
                 'quantity' => $quantity,
                 'discount' => $discount,
                 'total_early_bird_dicount' => $total_early_bird_dicount,
@@ -73,7 +77,7 @@ class XenditController extends Controller
                 'dataOrders' => json_decode($request->request_orders),
                 'form_type' => 'tournament',
             );
-
+            
             //============== create booking and invoice =============================
             $booking = new BookingController();
             // store the course enrolment information in database
@@ -108,7 +112,7 @@ class XenditController extends Controller
             $organizerData['commission'] = $bookingInfo->commission;
             storeOrganizer($organizerData);
 
-            $payable_amount = round($total + $tax_amount, 2);
+            $payable_amount = round($total + $tax_amount + $handling_fee_amount, 2);
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ~~~~~~~~~~~~~~~~~ Booking End ~~~~~~~~~~~~~~
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -124,6 +128,7 @@ class XenditController extends Controller
             ])->post('https://api.xendit.co/v2/invoices', [
                 'external_id' => $external_id,
                 'amount' => $payable_amount,
+                'description' => $event_content->title.' ('.$cust->email.')',
                 'currency' => $currencyInfo->base_currency_text,
                 'success_redirect_url' => route('event_booking.xindit.notify')
             ]);
@@ -429,56 +434,56 @@ class XenditController extends Controller
     }
 
     // return to success page
-    public function pay_booking(Request $request){
-        try {
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ~~~~~~~~~~~~~~~~~ Payment Gateway Info ~~~~~~~~~~~~~~
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-            $booking = Booking::find($request->id);
+    // public function pay_booking(Request $request){
+    //     try {
+    //         /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //         ~~~~~~~~~~~~~~~~~ Payment Gateway Info ~~~~~~~~~~~~~~
+    //         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    //         $booking = Booking::find($request->id);
 
-            $external_id = $booking->booking_id;
-            $secret_key = 'Basic ' . config('xendit.key_auth');
+    //         $external_id = $booking->booking_id;
+    //         $secret_key = 'Basic ' . config('xendit.key_auth');
 
-            $currencyInfo = $this->getCurrencyInfo();
-            $allowed_currency = array('IDR', 'PHP', 'USD', 'SGD', 'MYR');
-            if (!in_array($currencyInfo->base_currency_text, $allowed_currency)) {
-                return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
-            }
+    //         $currencyInfo = $this->getCurrencyInfo();
+    //         $allowed_currency = array('IDR', 'PHP', 'USD', 'SGD', 'MYR');
+    //         if (!in_array($currencyInfo->base_currency_text, $allowed_currency)) {
+    //             return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
+    //         }
 
-            $data_request = Http::withHeaders([
-                'Authorization' => $secret_key
-            ])->post('https://api.xendit.co/v2/invoices', [
-                'external_id' => $external_id,
-                'amount' => $booking->price,
-                'currency' => $currencyInfo->base_currency_text,
-                'success_redirect_url' => route('event_booking.xindit.notify')
-            ]);
-            $response = $data_request->object();
-            $response = json_decode(json_encode($response), true);
+    //         $data_request = Http::withHeaders([
+    //             'Authorization' => $secret_key
+    //         ])->post('https://api.xendit.co/v2/invoices', [
+    //             'external_id' => $external_id,
+    //             'amount' => $booking->price,
+    //             'currency' => $currencyInfo->base_currency_text,
+    //             'success_redirect_url' => route('event_booking.xindit.notify')
+    //         ]);
+    //         $response = $data_request->object();
+    //         $response = json_decode(json_encode($response), true);
 
-            if (!empty($response['success_redirect_url'])) {
+    //         if (!empty($response['success_redirect_url'])) {
                 
-                $arrData = array(
-                    'event_id' => $booking->event_id,
-                    'booking_id' => $request->id,
-                    'form_type' => 'tournament',
-                    'paymentMethod' => 'Xendit',
-                    'gatewayType' => 'online',
-                    'paymentStatus' => 'completed',
-                );
+    //             $arrData = array(
+    //                 'event_id' => $booking->event_id,
+    //                 'booking_id' => $request->id,
+    //                 'form_type' => 'tournament',
+    //                 'paymentMethod' => 'Xendit',
+    //                 'gatewayType' => 'online',
+    //                 'paymentStatus' => 'completed',
+    //             );
 
-                $request->session()->put('event_id', $booking->event_id);
-                $request->session()->put('arrData', $arrData);
-                $request->session()->put('xendit_id', $response['id']);
-                $request->session()->put('secret_key', config('xendit.key_auth'));
-                $request->session()->put('xendit_payment_type', 'event');
-                return redirect($response['invoice_url']);
-            } else {
-                return redirect()->route('check-out')->with(['alert-type' => 'error', 'message' => $response['message']]);
-            }
-        } catch (\Exception $e) {
-            return $e;
-        }
-    }
+    //             $request->session()->put('event_id', $booking->event_id);
+    //             $request->session()->put('arrData', $arrData);
+    //             $request->session()->put('xendit_id', $response['id']);
+    //             $request->session()->put('secret_key', config('xendit.key_auth'));
+    //             $request->session()->put('xendit_payment_type', 'event');
+    //             return redirect($response['invoice_url']);
+    //         } else {
+    //             return redirect()->route('check-out')->with(['alert-type' => 'error', 'message' => $response['message']]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return $e;
+    //     }
+    // }
 
 }

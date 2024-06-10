@@ -41,6 +41,9 @@ class CheckOutController extends Controller
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
       $percent_handling_fee = $basic->percent_handling_fee;
 
+      $language = $this->getLanguage();
+      $language_id = $language->id;
+
       if ($event_guest_checkout_status != 1) {
         if (!Auth::guard('customer')->user()) {
           return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
@@ -153,7 +156,7 @@ class CheckOutController extends Controller
         }
 
         $ticket = Ticket::where('id', $v)->first();
-        $tickets = TicketContent::where('ticket_id', $v)->where('language_id', 8)->first();
+        $tickets = TicketContent::where('ticket_id', $v)->where('language_id', $language_id)->first();
 
         // ============================ early_bird_discount ====================================
         if ($ticket->early_bird_discount == 'enable') {
@@ -247,6 +250,7 @@ class CheckOutController extends Controller
               $club_name = Clubs::where('id', $new_club->id)->first();
             }else{
               $club_name = Clubs::where('name', 'like', '%'.$club_delegation_individu[$k].'%')->first();
+              $club[$k] = $club_name->id;
             }
           }
         }
@@ -266,7 +270,7 @@ class CheckOutController extends Controller
             $new_organization = Organization::create($organization_new);
           }
         }
-
+        
         $ticket_detail_order[] = [
           "id" => $v,
           "user_full_name" => $name[$k],
@@ -287,7 +291,7 @@ class CheckOutController extends Controller
           "sub_category_ticket" => $tickettitle
         ];
       }
-
+      
       $orders[] = [
         "title" => $v,
         "category" => 'individu',
@@ -297,7 +301,8 @@ class CheckOutController extends Controller
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $percent_handling_fee;
-
+      $information['language_id'] = $language_id;
+      
       $information['request_ticket_infos'] = json_encode($category_ticket);
       $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
@@ -308,6 +313,9 @@ class CheckOutController extends Controller
 
   public function checkout2Tournament(Request $request)
   {
+    $language = $this->getLanguage();
+    $language_id = $language->id;
+
     $quantityTournament = array_filter($request->quantity, function ($param) {
       if ($param > 0) {
         return $param;
@@ -417,7 +425,7 @@ class CheckOutController extends Controller
 
       $tickets_list = Ticket::leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')
         ->select('tickets.*', 'ticket_contents.title as contents_title')
-        ->where('ticket_contents.language_id', 8)
+        ->where('ticket_contents.language_id', $language_id)
         ->where('tickets.event_id', $request->event_id)->where('tickets.title', 'Individu')->get();
 
       foreach ($tickets_list as $list) {
