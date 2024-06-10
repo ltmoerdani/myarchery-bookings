@@ -541,6 +541,7 @@ class BookingController extends Controller
         'price' => round($info['price'], 2),
         'tax' => round($info['tax'], 2),
         'commission' => round($info['commission'], 2),
+        'handling_fee_amount' => round($info['percent_handling_fee'], 2),
         'tax_percentage' => $basic->tax,
         'commission_percentage' => $basic->commission,
         'quantity' => $info['quantity'],
@@ -595,6 +596,7 @@ class BookingController extends Controller
             $p['competition_name'] = $t->sub_category_ticket;
             $p['participant_id'] = $peserta->id;
             $p['ticket_id'] = $t->id;
+            $p['booking_id'] = $booking->id;
             $p['description'] = null;
             ParticipantCompetitions::create($p);
           }

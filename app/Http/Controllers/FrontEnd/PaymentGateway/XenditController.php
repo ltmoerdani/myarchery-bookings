@@ -136,6 +136,7 @@ class XenditController extends Controller
             $response = json_decode(json_encode($response), true);
 
             $arrData['invoice_url_booking'] = $response['invoice_url'];
+            $arrData['booking_id'] = $bookingInfo->booking_id;
             $bookingInfo['invoice_url_booking'] = $response['invoice_url'];
             
             $bookingInfo['payment_url'] = $response['invoice_url'];
@@ -329,15 +330,14 @@ class XenditController extends Controller
 
                 // if type tournament
                 if($arrData['form_type'] == "tournament"){
-
                     if(!empty($arrData['booking_id'])){
                         // status update completed
-                        $booking = Booking::find($arrData['booking_id']);
+                        $booking = Booking::where('booking_id', $arrData['booking_id'])->first();
                         $booking->paymentStatus = "completed";
                         $booking->save();
 
                         // status update paid
-                        $updateTransaction = Transaction::where('booking_id', $arrData['booking_id'])->first();
+                        $updateTransaction = Transaction::where('booking_id', $booking->id)->first();
                         $updateTransaction->payment_status = 1;
                         $updateTransaction->save();
 
@@ -350,7 +350,7 @@ class XenditController extends Controller
                         Session::forget('xendit_id');
                         Session::forget('secret_key');
                         Session::forget('xendit_payment_type');
-                        return redirect()->route('event_booking.complete', ['id' => $arrData['event_id'], 'booking_id' => $arrData['booking_id']]);
+                        return redirect()->route('event_booking.complete', ['id' => $arrData['event_id'], 'booking_id' => $booking->id]);
                     }else{
                         $booking_id = Session::get('booking_id');
 

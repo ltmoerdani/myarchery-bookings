@@ -13,6 +13,7 @@ class ParticipantCompetitions extends Model
         'competition_name',
         'participant_id',
         'ticket_id',
+        'booking_id',
         'description',
     ];
 

@@ -32,6 +32,7 @@ class Booking extends Model
     'commission_percentage',
     'tax',
     'commission',
+    'handling_fee_amount',
     'quantity',
     'discount',
     'early_bird_discount',

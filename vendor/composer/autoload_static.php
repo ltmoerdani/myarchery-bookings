@@ -851,6 +851,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'Anhskohbo\\NoCaptcha\\Facades\\NoCaptcha' => __DIR__ . '/..' . '/anhskohbo/no-captcha/src/Facades/NoCaptcha.php',
         'Anhskohbo\\NoCaptcha\\NoCaptcha' => __DIR__ . '/..' . '/anhskohbo/no-captcha/src/NoCaptcha.php',
         'Anhskohbo\\NoCaptcha\\NoCaptchaServiceProvider' => __DIR__ . '/..' . '/anhskohbo/no-captcha/src/NoCaptchaServiceProvider.php',
+        'App\\Console\\Commands\\CheckEventPaymentPending' => __DIR__ . '/../..' . '/app/Console/Commands/CheckEventPaymentPending.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Exports\\BookingExport' => __DIR__ . '/../..' . '/app/Exports/BookingExport.php',
