@@ -15,11 +15,15 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event\Booking;
 use App\Models\Transaction;
 use App\Models\Event\EventContent;
+use Illuminate\Support\Facades\DB;
 
 class XenditController extends Controller
 {
     public function makePayment(Request $request, $event_id)
     {
+      DB::beginTransaction();
+
+      try {
         /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ~~~~~~~~~~~~~~~~~ Booking Info ~~~~~~~~~~~~~~
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -122,6 +126,8 @@ class XenditController extends Controller
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
             $external_id = Str::random(10);
             $secret_key = 'Basic ' . config('xendit.key_auth');
+
+            DB::commit();
 
             $data_request = Http::withHeaders([
                 'Authorization' => $secret_key
@@ -231,6 +237,8 @@ class XenditController extends Controller
             $external_id = Str::random(10);
             $secret_key = 'Basic ' . config('xendit.key_auth');
 
+            DB::commit();
+
             $data_request = Http::withHeaders([
                 'Authorization' => $secret_key
             ])->post('https://api.xendit.co/v2/invoices', [
@@ -253,6 +261,10 @@ class XenditController extends Controller
                 return redirect()->route('check-out')->with(['alert-type' => 'error', 'message' => $response['message']]);
             }
         }
+      
+      } catch (\Exception $e) {
+        DB::rollback();
+      }
 
     }
 

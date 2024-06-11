@@ -125,6 +125,10 @@
                   class="text-muted">{{ $position == 'left' ? $currency . ' ' : '' }}{{ is_null($bookingInfo->tax) ? '0.00' : $bookingInfo->tax }}{{ $position == 'right' ? ' ' . $currency : '' }}</span>
               </p>
 
+              <p>
+                {{ __('Handling Fee') }} : <span
+                  class="text-muted">{{ $position == 'left' ? $currency . ' ' : '' }}{{ is_null($bookingInfo->handling_fee_amount ) ? '0.00' : $bookingInfo->handling_fee_amount }}{{ $position == 'right' ? ' ' . $currency : '' }}</span>
+              </p>
 
               <p>
                 {{ __('Early Bird Discount') . ': ' }} <span
@@ -137,7 +141,7 @@
 
               <p>
                 {{ __('Total Paid') . ': ' }} <span
-                  class="text-muted">{{ $position == 'left' ? $currency . ' ' : '' }}{{ $bookingInfo->price + $bookingInfo->tax }}{{ $position == 'right' ? ' ' . $currency : '' }}</span>
+                  class="text-muted">{{ $position == 'left' ? $currency . ' ' : '' }}{{ $bookingInfo->price + $bookingInfo->tax + $bookingInfo->handling_fee_amount }}{{ $position == 'right' ? ' ' . $currency : '' }}</span>
               </p>
 
               <p>

@@ -607,7 +607,6 @@ class BookingController extends Controller
     }
   }
 
-
   public function complete(Request $request)
   {
     $language = $this->getLanguage();
