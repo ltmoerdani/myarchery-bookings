@@ -313,12 +313,12 @@
 
                           @php
                             $competitions = App\Models\ParticipantCompetitions::where('booking_id', $booking->id)
-                                            ->selectRaw('tickets.*, participant.*, participant_competitions.*, ticket_contents.title, COUNT(1) AS qty')
-                                            ->leftjoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
-                                            ->leftjoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
-                                            ->leftjoin('ticket_contents', 'tickets.id', '=', 'ticket_contents.ticket_id')
+                                            ->selectRaw('tickets.*, participant.*, participant_competitions.*, ticket_contents.title, 1 AS qty')
+                                            ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
+                                            ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
+                                            ->leftJoin('ticket_contents', 'tickets.id', '=', 'ticket_contents.ticket_id')
                                             ->where('ticket_contents.language_id', $currentLanguageInfo->id)
-                                            ->groupBy('ticket_contents.title')
+                                            ->where('participant_competitions.booking_id', $booking->id)
                                             ->get();
                             $no = 1;
                           @endphp
