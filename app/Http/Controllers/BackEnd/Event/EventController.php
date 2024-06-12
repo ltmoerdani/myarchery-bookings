@@ -709,7 +709,16 @@ class EventController extends Controller
       $information['competition_distance'] = CompetitionDistance::all();
       $information['delegation_type'] = DelegationType::all();
       $information['international_countries'] = InternationalCountries::all();
-      // dd($information['contingent_type']);
+      if (strtolower($information['contingent_type']->select_type) == 'city/district') {
+        if ($information['contingent_type']->country_id == 102) {
+          $information['state_delegation_list'] = IndonesianProvince::select('id', 'name')->get();
+        } else {
+          $information['state_delegation_list'] = InternationalStates::select('id', 'name')
+            ->where('country_id', $information['contingent_type']->country_id)
+            ->get();
+        }
+      }
+      // dd($information['state_list']);
       return view('backend.event.edit_tournament', $information);
     } else {
       return view('backend.event.edit', $information);

@@ -434,7 +434,7 @@
                                                                     Type</option>
                                                                 @foreach ($delegation_type as $val_delegation_type)
                                                                     <option value="{{ $val_delegation_type->name }}">
-                                                                        {{ $val_delegation_type->name }}
+                                                                        {{ strtolower($val_delegation_type->name) == 'club' ? 'Club/Team' : $val_delegation_type->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>

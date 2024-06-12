@@ -482,7 +482,7 @@
                                                                     <input type="radio" name="delegation_type"
                                                                         value="selected" id="delegation_type"
                                                                         class="selectgroup-input delegationType"
-                                                                        {{ $contingent_type->contigent_type == 'selected' ? 'checked' : '' }}>
+                                                                        {{ $contingent_type->contingent_type == 'selected' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Selected') }}</span>
                                                                 </label>
@@ -495,48 +495,65 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-type-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-type-field {{ $contingent_type->contingent_type != 'selected' ? 'd-none' : '' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select Type') . '*' }}
                                                             </label>
                                                             <select class="custom-select selectTypeDelegation"
-                                                                id="select_type" name="select_type" required>
-                                                                <option value="" selected disabled>Choose Delegation
+                                                                id="select_type" name="select_type" required
+                                                                value="{{ $contingent_type->select_type }}">
+                                                                <option value="" disabled>Choose Delegation
                                                                     Type</option>
                                                                 @foreach ($delegation_type as $val_delegation_type)
-                                                                    <option value="{{ $val_delegation_type->name }}">
-                                                                        {{ $val_delegation_type->name }}
+                                                                    <option value="{{ $val_delegation_type->name }}"
+                                                                        {{ $contingent_type->select_type == $val_delegation_type->name ? 'selected' : '' }}>
+                                                                        {{ strtolower($val_delegation_type->name) == 'club' ? 'Club/Team' : $val_delegation_type->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-country-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-country-field {{ strtolower($contingent_type->select_type) == 'province' || strtolower($contingent_type->select_type) == 'city/district' ? '' : 'd-none' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select Country') . '*' }}
                                                             </label>
                                                             <select class="custom-select select2 fieldCountry"
-                                                                id="select_country" name="select_country">
+                                                                id="select_country" name="select_country"
+                                                                value="{{ $contingent_type->country_id }}">
                                                                 <option selected value="">Choose Country</option>
                                                                 @foreach ($international_countries as $value_international_country)
-                                                                    <option
-                                                                        value="{{ $value_international_country->id }}">
+                                                                    <option value="{{ $value_international_country->id }}"
+                                                                        {{ $contingent_type->country_id == $value_international_country->id ? 'selected' : '' }}>
                                                                         {{ $value_international_country->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-state-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-state-field {{ strtolower($contingent_type->select_type) == 'city/district' ? '' : 'd-none' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select State') . '*' }}
                                                             </label>
                                                             <select class="custom-select select2 fieldState"
-                                                                id="select_state" name="select_state">
-                                                                <option selected value="">Choose State</option>
+                                                                id="select_state" name="select_state"
+                                                                value="{{ !$contingent_type->province_id ? '' : $contingent_type->province_id }}">
+                                                                <option value=""
+                                                                    {{ !$contingent_type->province_id ? 'selected' : '' }}
+                                                                    disabled>Choose State</option>
+                                                                @if (strtolower($contingent_type->select_type) == 'city/district')
+                                                                    @foreach ($state_delegation_list as $value_state_delegation)
+                                                                        <option value="{{ $value_state_delegation->id }}"
+                                                                            {{ $contingent_type->province_id == $value_state_delegation->id ? 'selected' : '' }}>
+                                                                            {{ $value_state_delegation->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @endif
                                                             </select>
                                                         </div>
                                                     </div>
@@ -673,6 +690,225 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div id="accordion" class="mt-3">
+                                    @foreach ($languages as $language)
+                                        <div class="version">
+                                            <div class="version-header" id="heading{{ $language->id }}">
+                                                <h5 class="mb-0">
+                                                    <button type="button" class="btn btn-link" data-toggle="collapse"
+                                                        data-target="#collapse{{ $language->id }}"
+                                                        aria-expanded="{{ $language->is_default == 1 ? 'true' : 'false' }}"
+                                                        aria-controls="collapse{{ $language->id }}">
+                                                        {{ $language->name . ' ' . __('Language') }}
+                                                        {{ $language->is_default == 1 ? '(' . __('Default') . ')' : '' }}
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            @php
+                                                $event_content = DB::table('event_contents')
+                                                    ->where('language_id', $language->id)
+                                                    ->where('event_id', $event->id)
+                                                    ->first();
+                                            @endphp
+                                            <div id="collapse{{ $language->id }}"
+                                                class="collapse {{ $language->is_default == 1 ? 'show' : '' }}"
+                                                aria-labelledby="heading{{ $language->id }}" data-parent="#accordion">
+                                                <div class="version-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                <label>{{ __('Event Title') . '*' }}</label>
+                                                                <input type="text" class="form-control"
+                                                                    name="{{ $language->code }}_title"
+                                                                    placeholder="{{ __('Enter Event Name') }}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                @php
+                                                                    $categories = DB::table('event_categories')
+                                                                        ->where('language_id', $language->id)
+                                                                        ->where('status', 1)
+                                                                        ->orderBy('serial_number', 'asc')
+                                                                        ->get();
+                                                                @endphp
+
+                                                                <label for="">{{ __('Category') . '*' }}</label>
+                                                                <select name="{{ $language->code }}_category_id"
+                                                                    class="form-control">
+                                                                    <option selected disabled>{{ __('Select Category') }}
+                                                                    </option>
+
+                                                                    @foreach ($categories as $category)
+                                                                        <option value="{{ $category->id }}">
+                                                                            {{ $category->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @if (request()->input('type') == 'venue' || request()->input('type') == 'tournament')
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="">{{ __('Address') . '*' }}</label>
+                                                                    <input type="text"
+                                                                        name="{{ $language->code }}_address"
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
+                                                                        placeholder="{{ __('Enter Address') }}">
+                                                                    <p class="font-weight-bold">
+                                                                        *Enter a full address or location name to display
+                                                                        the location on Google Maps on the event page.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="">{{ __('County') . '*' }}</label>
+                                                                    {{-- <input type="text"
+                                                                        name="{{ $language->code }}_country"
+                                                                        placeholder="{{ __('Enter Country') }}"
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"> --}}
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_country"
+                                                                        onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_country">
+                                                                        <option selected disable value="">
+                                                                            Choose Country
+                                                                        </option>
+                                                                        @foreach ($international_countries as $value_international_country)
+                                                                            <option
+                                                                                value="{{ $value_international_country->id }}">
+                                                                                {{ $value_international_country->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <label for="">{{ __('State') }}</label>
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_state"
+                                                                        onchange="handleChooseEventContentLanguageState('{{ $language->code }}')"
+                                                                        id="{{ $language->code }}_state">
+                                                                        <option selected disable value="">
+                                                                            Choose State
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
+                                                                        name="{{ $language->code }}_state"
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
+                                                                        placeholder="{{ __('Enter State') }}"> --}}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <label for="">{{ __('City') . '*' }}</label>
+                                                                    <select class="custom-select select2"
+                                                                        name="{{ $language->code }}_city"
+                                                                        id="{{ $language->code }}_city">
+                                                                        <option selected disable value="">
+                                                                            Choose City
+                                                                        </option>
+                                                                    </select>
+                                                                    {{-- <input type="text"
+                                                                        name="{{ $language->code }}_city"
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
+                                                                        placeholder="Enter City"> --}}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="">{{ __('Zip/Post Code') }}</label>
+                                                                    <input type="text"
+                                                                        placeholder="{{ __('Enter Zip/Post Code') }}"
+                                                                        name="{{ $language->code }}_zip_code"
+                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                <label>{{ __('Description') . '*' }}</label>
+                                                                <textarea id="descriptionTmce{{ $language->id }}" class="form-control summernote"
+                                                                    name="{{ $language->code }}_description" placeholder="{{ __('Enter Event Description') }}" data-height="300"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                <label>{{ __('Refund Policy') }} *</label>
+                                                                <textarea class="form-control" name="{{ $language->code }}_refund_policy" rows="5"
+                                                                    placeholder="{{ __('Enter Refund Policy') }}"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                <label>{{ __('Meta Keywords') }}</label>
+                                                                <input class="form-control"
+                                                                    name="{{ $language->code }}_meta_keywords"
+                                                                    placeholder="{{ __('Enter Meta Keywords') }}"
+                                                                    data-role="tagsinput">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div
+                                                                class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                <label>{{ __('Meta Description') }}</label>
+                                                                <textarea class="form-control" name="{{ $language->code }}_meta_description" rows="5"
+                                                                    placeholder="{{ __('Enter Meta Description') }}"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            @php $currLang = $language; @endphp
+
+                                                            @foreach ($languages as $language)
+                                                                @continue($language->id == $currLang->id)
+
+                                                                <div class="form-check py-0">
+                                                                    <label class="form-check-label">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', event)">
+                                                                        <span
+                                                                            class="form-check-sign">{{ __('Clone for') }}
+                                                                            <strong
+                                                                                class="text-capitalize text-secondary">{{ $language->name }}</strong>
+                                                                            {{ __('language') }}</span>
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div id="sliders"></div>
                             </form>
                         </div>
                     </div>
