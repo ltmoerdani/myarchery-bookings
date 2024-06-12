@@ -67,6 +67,7 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::post('/event-img-dbrmv', 'BackEnd\Organizer\EventController@imagedbrmv')->name('organizer.event.imgdbrmv');
   Route::get('/event-images/{id}', 'BackEnd\Organizer\EventController@images')->name('organizer.event.images');
   Route::post('/event-update', 'BackEnd\Organizer\EventController@update')->name('organizer.event.update');
+  Route::post('/event-update-tournament', 'BackEnd\Organizer\EventController@update_tournament')->name('organizer.event.update-tournament');
   Route::post('bulk/delete/event', 'BackEnd\Organizer\EventController@bulk_delete')->name('organizer.event_management.bulk_delete_event');
 
 

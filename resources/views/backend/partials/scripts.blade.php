@@ -1,9 +1,9 @@
 <script>
-  'use strict';
+    'use strict';
 
-  const baseUrl = "{{ url('/') }}";
-  var loadImgs = '';
-  var ProductloadImgs = '';
+    const baseUrl = "{{ url('/') }}";
+    var loadImgs = '';
+    var ProductloadImgs = '';
 </script>
 
 {{-- core js files --}}
@@ -65,75 +65,75 @@
 <script type="text/javascript" src="{{ asset('assets/admin/js/webfont.min.js') }}"></script>
 
 <script>
-  "use strict";
-  WebFont.load({
-    google: {
-      "families": ["Lato:300,400,700,900"]
-    },
-    custom: {
-      "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands",
-        "simple-line-icons"
-      ],
-      urls: ['{{ asset('assets/admin/css/fonts.min.css') }}']
-    },
-    active: function() {
-      sessionStorage.fonts = true;
-    }
-  });
+    "use strict";
+    WebFont.load({
+        google: {
+            "families": ["Lato:300,400,700,900"]
+        },
+        custom: {
+            "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands",
+                "simple-line-icons"
+            ],
+            urls: ['{{ asset('assets/admin/css/fonts.min.css') }}']
+        },
+        active: function() {
+            sessionStorage.fonts = true;
+        }
+    });
 </script>
 
 @if (session()->has('success'))
-  <script>
-    "use strict";
-    var content = {};
+    <script>
+        "use strict";
+        var content = {};
 
-    content.message = '{{ __(session('success')) }}';
-    content.title = 'Success';
-    content.icon = 'fa fa-bell';
+        content.message = '{{ __(session('success')) }}';
+        content.title = 'Success';
+        content.icon = 'fa fa-bell';
 
-    $.notify(content, {
-      type: 'success',
-      placement: {
-        from: 'top',
-        align: 'right'
-      },
-      showProgressbar: true,
-      time: 1000,
-      delay: 4000
-    });
-  </script>
+        $.notify(content, {
+            type: 'success',
+            placement: {
+                from: 'top',
+                align: 'right'
+            },
+            showProgressbar: true,
+            time: 1000,
+            delay: 4000
+        });
+    </script>
 @endif
 
 @if (session()->has('warning'))
-  <script>
-    "use strict";
-    var content = {};
+    <script>
+        "use strict";
+        var content = {};
 
-    content.message = '{{ __(session('warning')) }}';
-    content.title = 'Warning!';
-    content.icon = 'fa fa-bell';
+        content.message = '{{ __(session('warning')) }}';
+        content.title = 'Warning!';
+        content.icon = 'fa fa-bell';
 
-    $.notify(content, {
-      type: 'warning',
-      placement: {
-        from: 'top',
-        align: 'right'
-      },
-      showProgressbar: true,
-      time: 1000,
-      delay: 4000
-    });
-  </script>
+        $.notify(content, {
+            type: 'warning',
+            placement: {
+                from: 'top',
+                align: 'right'
+            },
+            showProgressbar: true,
+            time: 1000,
+            delay: 4000
+        });
+    </script>
 @endif
 
 <script>
-  'use strict';
-  const account_status = 1;
-  const secret_login = 1;
+    'use strict';
+    const account_status = 1;
+    const secret_login = 1;
 </script>
 
 {{-- admin-main js --}}
-<script type="text/javascript" src="{{ asset('assets/admin/js/admin-main.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/admin/js/admin-main.js?' . time()) }}"></script>
 
 @yield('variables')
 

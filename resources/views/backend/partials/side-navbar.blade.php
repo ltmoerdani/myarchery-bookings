@@ -4,19 +4,25 @@
         <div class="sidebar-content">
             <div class="user">
                 <div class="avatar-sm float-left mr-2">
-                    @if (Auth::guard('admin')->user()->image != null)
-                        <img src="{{ asset('assets/admin/img/admins/' . Auth::guard('admin')->user()->image) }}"
-                            alt="Admin Image" class="avatar-img rounded-circle">
+                    @if (!empty(Auth::guard('admin')->user()))
+                        @if (Auth::guard('admin')->user()->image != null)
+                            <img src="{{ asset('assets/admin/img/admins/' . Auth::guard('admin')->user()->image) }}"
+                                alt="Admin Image" class="avatar-img rounded-circle">
+                        @else
+                            <img src="{{ asset('assets/admin/img/blank_user.jpg') }}" alt=""
+                                class="avatar-img rounded-circle">
+                        @endif
                     @else
                         <img src="{{ asset('assets/admin/img/blank_user.jpg') }}" alt=""
                             class="avatar-img rounded-circle">
                     @endif
+
                 </div>
 
                 <div class="info">
                     <a data-toggle="collapse" href="#adminProfileMenu" aria-expanded="true">
                         <span>
-                            {{ Auth::guard('admin')->user()->first_name }}
+                            {{ !empty(Auth::guard('admin')->user()) ? Auth::guard('admin')->user()->first_name : '' }}
 
                             @if (is_null($roleInfo))
                                 <span class="user-level">{{ __('Super Admin') }}</span>

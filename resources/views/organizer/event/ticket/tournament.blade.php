@@ -1,11 +1,11 @@
-@extends('backend.layout')
+@extends('organizer.layout')
 
 @section('content')
     <div class="page-header">
         <h4 class="page-title">{{ __('Tickets') }}</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('organizer.dashboard') }}">
                     <i class="flaticon-home"></i>
                 </a>
             </li>
@@ -20,7 +20,7 @@
             </li>
             <li class="nav-item">
                 <a
-                    href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
+                    href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
             </li>
 
             <li class="separator">
@@ -37,7 +37,7 @@
             </li>
             <li class="nav-item">
                 <a
-                    href="{{ route('admin.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">{{ __('Tickets') }}</a>
+                    href="{{ route('organizer.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">{{ __('Tickets') }}</a>
             </li>
 
         </ul>
@@ -55,7 +55,8 @@
                         </div>
 
                         <div class="col-lg-4 offset-lg-1 mt-2 mt-lg-0">
-                            <a href="{{ route('admin.event_management.event', ['language' => $defaultLang->code, 'event_type' => request()->input('event_type')]) }}"
+
+                            <a href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code, 'event_type' => request()->input('event_type')]) }}"
                                 class="btn btn-info  btn-sm float-right"><i class="fas fa-backward"></i>
                                 {{ __('Back') }}</a>
 

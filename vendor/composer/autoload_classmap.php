@@ -189,6 +189,7 @@ return array(
     'App\\Http\\Requests\\Event\\TicketRequest' => $baseDir . '/app/Http/Requests/Event/TicketRequest.php',
     'App\\Http\\Requests\\Event\\UpdateCategoryRequest' => $baseDir . '/app/Http/Requests/Event/UpdateCategoryRequest.php',
     'App\\Http\\Requests\\Event\\UpdateRequest' => $baseDir . '/app/Http/Requests/Event/UpdateRequest.php',
+    'App\\Http\\Requests\\Event\\UpdateRequestTournament' => $baseDir . '/app/Http/Requests/Event/UpdateRequestTournament.php',
     'App\\Http\\Requests\\FeatureRequest' => $baseDir . '/app/Http/Requests/FeatureRequest.php',
     'App\\Http\\Requests\\Instructor\\StoreRequest' => $baseDir . '/app/Http/Requests/Instructor/StoreRequest.php',
     'App\\Http\\Requests\\Instructor\\UpdateRequest' => $baseDir . '/app/Http/Requests/Instructor/UpdateRequest.php',

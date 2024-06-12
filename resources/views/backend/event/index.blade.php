@@ -93,11 +93,6 @@
                                     </a>
                                 </div>
                             </div>
-
-                            <button class="btn btn-danger btn-sm float-right mr-2 d-none bulk-delete"
-                                data-href="{{ route('admin.event_management.bulk_delete_event') }}">
-                                <i class="flaticon-interface-5"></i> {{ __('Delete') }}
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -125,9 +120,6 @@
                                     <table class="table table-striped mt-3">
                                         <thead>
                                             <tr>
-                                                {{-- <th scope="col">
-                                                    <input type="checkbox" class="bulk-check" data-val="all">
-                                                </th> --}}
                                                 <th scope="col" width="30%">{{ __('Title') }}</th>
                                                 <th scope="col">{{ __('Organizer') }}</th>
                                                 <th scope="col">{{ __('Type') }}</th>
@@ -141,10 +133,6 @@
                                         <tbody>
                                             @foreach ($events as $event)
                                                 <tr>
-                                                    {{-- <td>
-                                                        <input type="checkbox" class="bulk-check"
-                                                            data-val="{{ $event->id }}">
-                                                    </td> --}}
                                                     <td width="20%">
                                                         <a target="_blank"
                                                             href="{{ route('event.details', ['slug' => $event->slug, 'id' => $event->id]) }}">{{ strlen($event->title) > 30 ? mb_substr($event->title, 0, 30, 'UTF-8') . '....' : $event->title }}</a>

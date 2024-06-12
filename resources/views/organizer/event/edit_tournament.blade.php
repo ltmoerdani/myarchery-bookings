@@ -1,11 +1,10 @@
-@extends('backend.layout')
-
+@extends('organizer.layout')
 @section('content')
     <div class="page-header">
-        <h4 class="page-title">{{ __('Add Event Tournament') }}</h4>
+        <h4 class="page-title">{{ __('Edit Event Tournament') }}</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('organizer.dashboard') }}">
                     <i class="flaticon-home"></i>
                 </a>
             </li>
@@ -13,35 +12,74 @@
                 <i class="flaticon-right-arrow"></i>
             </li>
             <li class="nav-item">
-                <a href="#">{{ __('Event Management') }}</a>
+                <a href="#">{{ __('Events Management') }}</a>
             </li>
             <li class="separator">
                 <i class="flaticon-right-arrow"></i>
             </li>
             <li class="nav-item">
                 <a
-                    href="{{ route('choose-event-type', ['language' => $defaultLang->code]) }}">{{ __('Choose Event Type') }}</a>
+                    href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
             </li>
             <li class="separator">
                 <i class="flaticon-right-arrow"></i>
             </li>
+
+            @php
+                $event_title = DB::table('event_contents')
+                    ->where('language_id', $defaultLang->id)
+                    ->where('event_id', $event->id)
+                    ->select('title')
+                    ->first();
+                if (empty($event_title)) {
+                    $event_title = DB::table('event_contents')
+                        ->where('event_id', $event->id)
+                        ->select('title')
+                        ->first();
+                }
+
+            @endphp
             <li class="nav-item">
-                <a href="#">{{ __('Add Event Tournament') }}</a>
+                <a href="#">
+                    {{ strlen($event_title->title) > 35 ? mb_substr($event_title->title, 0, 35, 'UTF-8') . '...' : $event_title->title }}
+                </a>
+
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+
+            <li class="nav-item">
+                <a href="#">{{ __('Edit Event Tournament') }}</a>
             </li>
         </ul>
     </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title d-inline-block">{{ __('Add Event Tournament') }}</div>
-                    <a class="btn btn-info btn-sm float-right d-inline-block"
-                        href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">
+                    <div class="card-title d-inline-block">{{ __('Edit Event Tournament') }}</div>
+                    <a class="btn btn-info btn-sm float-right d-inline-block" href="{{ url()->previous() }}">
                         <span class="btn-label">
                             <i class="fas fa-backward"></i>
                         </span>
                         {{ __('Back') }}
+                    </a>
+                    <a class="mr-2 btn btn-success btn-sm float-right d-inline-block"
+                        href="{{ route('event.details', ['slug' => eventSlug($defaultLang->id, $event->id), 'id' => $event->id]) }}"
+                        target="_blank">
+                        <span class="btn-label">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        {{ __('Preview') }}
+                    </a>
+                    <a class="mr-2 btn btn-secondary btn-sm float-right d-inline-block"
+                        href="{{ route('organizer.event.ticket', ['language' => $defaultLang->code, 'event_id' => $event->id, 'event_type' => $event->event_type]) }}"
+                        target="_blank">
+                        <span class="btn-label">
+                            <i class="far fa-ticket"></i>
+                        </span>
+                        {{ __('Tickets') }}
                     </a>
                 </div>
                 <div class="card-body">
@@ -51,32 +89,48 @@
                                 <button type="button" class="close" data-dismiss="alert">×</button>
                                 <ul></ul>
                             </div>
-                            <div class="col-lg-12">
-                                <label for="" class="mb-2"><strong>{{ __('Gallery Images') }} **</strong></label>
-                                <form action="{{ route('admin.event.imagesstoretournament') }}" id="my-dropzone"
-                                    enctype="multipart/formdata" class="dropzone create">
-                                    @csrf
-                                    <div class="fallback">
-                                        <input name="file" type="file" multiple />
-                                    </div>
-                                </form>
-                                <div class=" mb-0" id="errpreimg">
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="" class="mb-2">
+                                <strong>{{ __('Gallery Images') }} **</strong>
+                            </label>
+                            <div id="reload-slider-div">
+                                <div class="row mt-2">
+                                    <div class="col">
+                                        <table class="table" id="img-table">
 
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                            <form id="eventForm" action="{{ route('admin.event_management.store_event_tournament') }}"
-                                method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('organizer.event.imagesstore-tournament') }}" id="my-dropzone"
+                                enctype="multipart/formdata" class="dropzone create">
                                 @csrf
-                                <input type="hidden" name="event_type" value="{{ request()->input('type') }}">
+                                <div class="fallback">
+                                    <input name="file" type="file" multiple />
+                                </div>
+                                <input type="hidden" value="{{ $event->id }}" name="event_id">
+                            </form>
+                            <div class=" mb-0" id="errpreimg">
+
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <form id="eventForm" action="{{ route('organizer.event.update-tournament') }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="event_id" value="{{ $event->id }}">
+                                <input type="hidden" name="event_type" value="{{ $event->event_type }}">
+                                <input type="hidden" name="gallery_images" value="0">
                                 <input type="hidden" id="base_url" value="{{ url('/') }}">
+
                                 <div class="form-group">
                                     <label for="">{{ __('Thumbnail Image') . '*' }}</label>
                                     <br>
                                     <div class="thumb-preview">
-                                        <img src="{{ asset('assets/admin/img/noimage.jpg') }}" alt="..."
-                                            class="uploaded-img">
+                                        <img src="{{ $event->thumbnail ? asset('assets/admin/img/event/thumbnail/' . $event->thumbnail) : asset('assets/admin/img/noimage.jpg') }}"
+                                            alt="..." class="uploaded-img">
                                     </div>
-
                                     <div class="mt-3">
                                         <div role="button" class="btn btn-primary btn-sm upload-btn">
                                             {{ __('Choose Image') }}
@@ -84,34 +138,7 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row">
-                                    <div class="col-12">
-                                        <div class="card border border-1">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-12 mt-2">
-                                                        <label class="mb-1 px-2">
-                                                            {{ __('Organizer') }}
-                                                        </label>
-                                                        <div class="form-group">
-                                                            <select class="custom-select select2" id="organizer_id"
-                                                                name="organizer_id" required>
-                                                                <option selected disabled value="">
-                                                                    Choose Organizer
-                                                                </option>
-                                                                @foreach ($organizers as $val_organizer)
-                                                                    <option value="{{ $val_organizer->id }}">
-                                                                        {{ $val_organizer->email }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -126,7 +153,7 @@
                                                                     <input type="radio" name="countdown_status"
                                                                         value="1"
                                                                         class="selectgroup-input countDownStatusType"
-                                                                        checked>
+                                                                        {{ $event->countdown_status == 1 ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Active') }}</span>
                                                                 </label>
@@ -134,7 +161,8 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="countdown_status"
                                                                         value="0"
-                                                                        class="selectgroup-input countDownStatusType">
+                                                                        class="selectgroup-input countDownStatusType"
+                                                                        {{ $event->countdown_status == 0 ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Disable') }}</span>
                                                                 </label>
@@ -159,7 +187,7 @@
                                                                     <input type="radio" name="pricing_scheme"
                                                                         value="single_price"
                                                                         class="selectgroup-input countDownStatusType"
-                                                                        checked>
+                                                                        {{ $ticket_info->pricing_scheme == 'single_price' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Single Price') }}</span>
                                                                 </label>
@@ -167,7 +195,8 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="pricing_scheme"
                                                                         value="dual_price"
-                                                                        class="selectgroup-input countDownStatusType">
+                                                                        class="selectgroup-input countDownStatusType"
+                                                                        {{ $ticket_info->pricing_scheme == 'dual_price' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Dual Price') }}</span>
                                                                 </label>
@@ -197,7 +226,7 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="event_publisher"
                                                                         value="public" class="selectgroup-input eventType"
-                                                                        checked>
+                                                                        {{ $event_publisher->event_type == 'public' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Public') }}</span>
                                                                 </label>
@@ -205,7 +234,8 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="event_publisher"
                                                                         value="private"
-                                                                        class="selectgroup-input eventType">
+                                                                        class="selectgroup-input eventType"
+                                                                        {{ $event_publisher->event_type == 'private' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Private') }}</span>
                                                                 </label>
@@ -224,7 +254,8 @@
                                                             </div>
                                                             <div class="col-12 col-md-6 my-1">
                                                                 <input class="form-control" type="text" name="code"
-                                                                    id="code" placeholder="type your code" />
+                                                                    id="code" value="{{ $event_publisher->code }}"
+                                                                    placeholder="type your code" />
                                                             </div>
                                                             <div class="col-12 col-md-6 my-1">
                                                                 <Button type="button"
@@ -255,7 +286,7 @@
                                                         </label>
                                                         <input class="form-control" type="date"
                                                             placeholder="Choose Date" name="start_date" id="start_date"
-                                                            required />
+                                                            required value="{{ $event->start_date }}" />
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
@@ -263,7 +294,7 @@
                                                         </label>
                                                         <input class="form-control" type="time"
                                                             placeholder="Choose Date" name="start_time" id="start_time"
-                                                            required />
+                                                            required value="{{ $event->start_time }}" />
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
@@ -271,7 +302,7 @@
                                                         </label>
                                                         <input class="form-control" type="date"
                                                             placeholder="Choose Date" name="end_date" id="end_date"
-                                                            required />
+                                                            required value="{{ $event->end_date }}" />
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
@@ -279,7 +310,7 @@
                                                         </label>
                                                         <input class="form-control" type="time"
                                                             placeholder="Choose Date" name="end_time" id="end_time"
-                                                            required />
+                                                            required value="{{ $event->end_time }}" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -325,62 +356,73 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="dynamic_content_set_category">
-                                                                    <tr>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_categories[]"
-                                                                                    id="competition_categories[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_categories as $cat)
-                                                                                        <option
-                                                                                            value="{{ $cat->id }}">
-                                                                                            {{ $cat->name }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_class_type[]"
-                                                                                    id="competition_class_type[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_class_type as $type)
-                                                                                        <option
-                                                                                            value="{{ $type->id }}">
-                                                                                            {{ $type->name }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="text"
-                                                                                    name="competition_class_name[]"
-                                                                                    id="competition_class_name[]"
-                                                                                    value="" class="form-control">
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <select name="competition_distance[]"
-                                                                                    id="competition_distance[]"
-                                                                                    class="form-control">
-                                                                                    @foreach ($competition_distance as $dis)
-                                                                                        <option
-                                                                                            value="{{ $dis->id }}">
-                                                                                            {{ $dis->name }} Meter
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <a href="javascript:void(0)"
-                                                                                id="buttonDelete[]"
-                                                                                class="btn btn-sm btn-danger deleteSetCategory">
-                                                                                <i class="fas fa-minus"></i></a>
-                                                                        </td>
-                                                                    </tr>
+                                                                    @foreach ($competitions as $competition)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <div class="form-group">
+                                                                                    <select name="competition_categories[]"
+                                                                                        id="competition_categories[]"
+                                                                                        class="form-control"
+                                                                                        value="{{ $competition->competition_category_id }}">
+                                                                                        @foreach ($competition_categories as $cat)
+                                                                                            <option
+                                                                                                value="{{ $cat->id }}"
+                                                                                                {{ $cat->id == $competition->competition_category_id ? 'selected' : '' }}>
+                                                                                                {{ $cat->name }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-group">
+                                                                                    <select name="competition_class_type[]"
+                                                                                        id="competition_class_type[]"
+                                                                                        class="form-control"
+                                                                                        value="{{ $competition->class_type }}">
+                                                                                        @foreach ($competition_class_type as $type)
+                                                                                            <option
+                                                                                                value="{{ $type->id }}"
+                                                                                                {{ $type->id == $competition->class_type ? 'selected' : '' }}>
+                                                                                                {{ $type->name }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-group">
+                                                                                    <input type="text"
+                                                                                        name="competition_class_name[]"
+                                                                                        id="competition_class_name[]"
+                                                                                        value="{{ $competition->class_name }}"
+                                                                                        class="form-control">
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-group">
+                                                                                    <select name="competition_distance[]"
+                                                                                        id="competition_distance[]"
+                                                                                        class="form-control"
+                                                                                        value="{{ $competition->distance }}">
+                                                                                        @foreach ($competition_distance as $dis)
+                                                                                            <option
+                                                                                                value="{{ $dis->id }}"
+                                                                                                {{ $dis->id == $competition->distance ? 'selected' : '' }}>
+                                                                                                {{ $dis->name }} Meter
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <a href="javascript:void(0)"
+                                                                                    id="buttonDelete[]"
+                                                                                    class="btn btn-sm btn-danger deleteSetCategory">
+                                                                                    <i class="fas fa-minus"></i></a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -402,7 +444,8 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="delegation_type"
                                                                         value="open" id="delegation_type"
-                                                                        class="selectgroup-input delegationType" checked>
+                                                                        class="selectgroup-input delegationType"
+                                                                        {{ $contingent_type->contingent_type == 'open' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Open') }}</span>
                                                                 </label>
@@ -410,7 +453,8 @@
                                                                 <label class="selectgroup-item">
                                                                     <input type="radio" name="delegation_type"
                                                                         value="selected" id="delegation_type"
-                                                                        class="selectgroup-input delegationType">
+                                                                        class="selectgroup-input delegationType"
+                                                                        {{ $contingent_type->contingent_type == 'selected' ? 'checked' : '' }}>
                                                                     <span
                                                                         class="selectgroup-button">{{ __('Selected') }}</span>
                                                                 </label>
@@ -423,48 +467,65 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-type-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-type-field {{ $contingent_type->contingent_type != 'selected' ? 'd-none' : '' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select Type') . '*' }}
                                                             </label>
                                                             <select class="custom-select selectTypeDelegation"
-                                                                id="select_type" name="select_type" required>
-                                                                <option value="" selected disabled>Choose Delegation
+                                                                id="select_type" name="select_type" required
+                                                                value="{{ $contingent_type->select_type }}">
+                                                                <option value="" disabled>Choose Delegation
                                                                     Type</option>
                                                                 @foreach ($delegation_type as $val_delegation_type)
-                                                                    <option value="{{ $val_delegation_type->name }}">
+                                                                    <option value="{{ $val_delegation_type->name }}"
+                                                                        {{ $contingent_type->select_type == $val_delegation_type->name ? 'selected' : '' }}>
                                                                         {{ strtolower($val_delegation_type->name) == 'club' ? 'Club/Team' : $val_delegation_type->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-country-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-country-field {{ strtolower($contingent_type->select_type) == 'province' || strtolower($contingent_type->select_type) == 'city/district' ? '' : 'd-none' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select Country') . '*' }}
                                                             </label>
                                                             <select class="custom-select select2 fieldCountry"
-                                                                id="select_country" name="select_country">
+                                                                id="select_country" name="select_country"
+                                                                value="{{ $contingent_type->country_id }}">
                                                                 <option selected value="">Choose Country</option>
                                                                 @foreach ($international_countries as $value_international_country)
-                                                                    <option
-                                                                        value="{{ $value_international_country->id }}">
+                                                                    <option value="{{ $value_international_country->id }}"
+                                                                        {{ $contingent_type->country_id == $value_international_country->id ? 'selected' : '' }}>
                                                                         {{ $value_international_country->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 mt-2 select-state-field d-none">
+                                                    <div
+                                                        class="col-12 mt-2 select-state-field {{ strtolower($contingent_type->select_type) == 'city/district' ? '' : 'd-none' }}">
                                                         <div class="form-group">
                                                             <label class="mb-1">
                                                                 {{ __('Select State') . '*' }}
                                                             </label>
                                                             <select class="custom-select select2 fieldState"
-                                                                id="select_state" name="select_state">
-                                                                <option selected value="">Choose State</option>
+                                                                id="select_state" name="select_state"
+                                                                value="{{ !$contingent_type->province_id ? '' : $contingent_type->province_id }}">
+                                                                <option value=""
+                                                                    {{ !$contingent_type->province_id ? 'selected' : '' }}
+                                                                    disabled>Choose State</option>
+                                                                @if (strtolower($contingent_type->select_type) == 'city/district')
+                                                                    @foreach ($state_delegation_list as $value_state_delegation)
+                                                                        <option value="{{ $value_state_delegation->id }}"
+                                                                            {{ $contingent_type->province_id == $value_state_delegation->id ? 'selected' : '' }}>
+                                                                            {{ $value_state_delegation->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @endif
                                                             </select>
                                                         </div>
                                                     </div>
@@ -489,30 +550,33 @@
                                                         <label class="mb-1">
                                                             {{ __('Team') }}
                                                         </label>
-                                                        <select class="custom-select" id="team" name="team"
-                                                            required>
+                                                        <select class="custom-select"
+                                                            value="{{ $team_allowed == true ? 'active' : 'disable' }}"
+                                                            id="team" name="team" required>
                                                             <option value="active">Active</option>
-                                                            <option selected value="disable">Disable</option>
+                                                            <option value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
                                                             {{ __('Mixed Team') }}
                                                         </label>
-                                                        <select class="custom-select" id="mixed_team" name="mixed_team"
-                                                            required>
+                                                        <select class="custom-select"
+                                                            value="{{ $mix_team_allowed == true ? 'active' : 'disable' }}"
+                                                            id="mixed_team" name="mixed_team" required>
                                                             <option value="active">Active</option>
-                                                            <option selected value="disable">Disable</option>
+                                                            <option value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-12 col-md-6 col-xl-3 mt-2">
                                                         <label class="mb-1">
                                                             {{ __('Official') }}
                                                         </label>
-                                                        <select class="custom-select" id="official" name="official"
-                                                            required>
+                                                        <select class="custom-select"
+                                                            value="{{ $official_allowed == true ? 'active' : 'disable' }}"
+                                                            id="official" name="official" required>
                                                             <option value="active">Active</option>
-                                                            <option selected value="disable">Disable</option>
+                                                            <option value="disable">Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -536,6 +600,14 @@
                                                                 style="background:#fff">Choose
                                                                 file</label>
                                                         </div>
+                                                        @cannot($event->thb_file)
+                                                            <div class="my-2">
+                                                                <a href="{{ asset('assets/admin/img/event/tournament_uploaded/' . $event->thb_file) }}"
+                                                                    target="_blank">
+                                                                    {{ __('Download THB File') }}
+                                                                </a>
+                                                            </div>
+                                                        @endcannot
                                                         <small>
                                                             *Doc and PDF only. Max 2mb
                                                         </small>
@@ -545,9 +617,13 @@
                                                             {{ __('Status') }}
                                                         </label>
                                                         <select class="custom-select" id="status" name="status"
-                                                            required>
-                                                            <option selected value="1">Active</option>
-                                                            <option value="0">Disable</option>
+                                                            value="{{ $event->status }}" required>
+                                                            <option value="1"
+                                                                {{ $event->status == 1 ? 'selected' : '' }}>
+                                                                Active</option>
+                                                            <option value="0"
+                                                                {{ $event->status == 0 ? 'selected' : '' }}>
+                                                                Disable</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -562,14 +638,16 @@
                                                         <div class="form-group">
                                                             <label for="">{{ __('Latitude') }}*</label>
                                                             <input type="text" name="latitude" placeholder="Latitude"
-                                                                class="form-control" required>
+                                                                class="form-control" value="{{ $event->latitude }}"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
                                                             <label for="">{{ __('Longitude') }}*</label>
                                                             <input type="text" placeholder="Longitude"
-                                                                name="longitude" class="form-control" required>
+                                                                name="longitude" class="form-control"
+                                                                value="{{ $event->longitude }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mt-0 px-4">
@@ -584,7 +662,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div id="accordion" class="mt-3">
                                     @foreach ($languages as $language)
                                         <div class="version">
@@ -599,7 +676,12 @@
                                                     </button>
                                                 </h5>
                                             </div>
-
+                                            @php
+                                                $event_content = DB::table('event_contents')
+                                                    ->where('language_id', $language->id)
+                                                    ->where('event_id', $event->id)
+                                                    ->first();
+                                            @endphp
                                             <div id="collapse{{ $language->id }}"
                                                 class="collapse {{ $language->is_default == 1 ? 'show' : '' }}"
                                                 aria-labelledby="heading{{ $language->id }}" data-parent="#accordion">
@@ -611,7 +693,8 @@
                                                                 <label>{{ __('Event Title') . '*' }}</label>
                                                                 <input type="text" class="form-control"
                                                                     name="{{ $language->code }}_title"
-                                                                    placeholder="{{ __('Enter Event Name') }}">
+                                                                    placeholder="{{ __('Enter Event Name') }}"
+                                                                    value="{{ @$event_content->title }}">
                                                             </div>
                                                         </div>
 
@@ -628,12 +711,16 @@
 
                                                                 <label for="">{{ __('Category') . '*' }}</label>
                                                                 <select name="{{ $language->code }}_category_id"
-                                                                    class="form-control">
-                                                                    <option selected disabled>{{ __('Select Category') }}
+                                                                    class="form-control"
+                                                                    value="{{ @$event_content->event_category_id }}">
+                                                                    <option disabled value=""
+                                                                        {{ empty($event_content->event_category_id) ? 'selected' : '' }}>
+                                                                        {{ __('Select Category') }}
                                                                     </option>
 
                                                                     @foreach ($categories as $category)
-                                                                        <option value="{{ $category->id }}">
+                                                                        <option value="{{ $category->id }}"
+                                                                            {{ @$event_content->event_category_id == $category->id ? 'selected' : '' }}>
                                                                             {{ $category->name }}</option>
                                                                     @endforeach
                                                                 </select>
@@ -647,7 +734,8 @@
                                                                 <input type="text"
                                                                     name="{{ $language->code }}_address"
                                                                     class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                    placeholder="{{ __('Enter Address') }}">
+                                                                    placeholder="{{ __('Enter Address') }}"
+                                                                    value="{{ $event_content->address }}">
                                                                 <p class="font-weight-bold">
                                                                     *Enter a full address or location name to display
                                                                     the location on Google Maps on the event page.
@@ -660,13 +748,17 @@
                                                                 <select class="custom-select select2"
                                                                     name="{{ $language->code }}_country"
                                                                     onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
-                                                                    id="{{ $language->code }}_country">
-                                                                    <option selected disable value="">
+                                                                    id="{{ $language->code }}_country"
+                                                                    value="{{ $event_content->country_id }}">
+                                                                    <option disable
+                                                                        {{ empty($event_content->country_id) ? 'selected' : '' }}
+                                                                        value="">
                                                                         Choose Country
                                                                     </option>
                                                                     @foreach ($international_countries as $value_international_country)
                                                                         <option
-                                                                            value="{{ $value_international_country->id }}">
+                                                                            value="{{ $value_international_country->id }}"
+                                                                            {{ $event_content->country_id == $value_international_country->id ? 'selected' : '' }}>
                                                                             {{ $value_international_country->name }}
                                                                         </option>
                                                                     @endforeach
@@ -675,35 +767,81 @@
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
+                                                                @php
+                                                                    $state_list = [];
+                                                                    if (!empty($event_content->country_id)) {
+                                                                        if ($event_content->country_id == 102) {
+                                                                            $state_list = DB::table('indonesian_province')
+                                                                                ->select('id', 'name')
+                                                                                ->get();
+                                                                        } else {
+                                                                            $state_list = DB::table('international_states')
+                                                                                ->select('id', 'name')
+                                                                                ->where('country_id', $event_content->country_id)
+                                                                                ->get();
+                                                                        }
+                                                                    }
+                                                                @endphp
                                                                 <label for="">{{ __('State') }}</label>
                                                                 <select class="custom-select select2"
                                                                     name="{{ $language->code }}_state"
                                                                     onchange="handleChooseEventContentLanguageState('{{ $language->code }}')"
-                                                                    id="{{ $language->code }}_state">
-                                                                    <option selected disable value="">
+                                                                    id="{{ $language->code }}_state"
+                                                                    value="{{ empty($event_content->state_id) ? '' : $event_content->state_id }}">
+                                                                    <option
+                                                                        {{ empty($event_content->state_id) ? 'selected' : '' }}
+                                                                        disable value="">
                                                                         Choose State
                                                                     </option>
+                                                                    @if (!empty($state_list))
+                                                                        @foreach ($state_list as $value_state)
+                                                                            <option value="{{ $value_state->id }}"
+                                                                                {{ $event_content->state_id == $value_state->id ? 'selected' : '' }}>
+                                                                                {{ $value_state->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    @endif
+
                                                                 </select>
-                                                                {{-- <input type="text"
-                                                                        name="{{ $language->code }}_state"
-                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="{{ __('Enter State') }}"> --}}
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
+                                                                @php
+                                                                    $city_list = [];
+                                                                    if (!empty($event_content->state_id)) {
+                                                                        if ($event_content->country_id == 102) {
+                                                                            $city_list = DB::table('indonesian_cities')
+                                                                                ->select('id', 'name')
+                                                                                ->where('province_id', $event_content->state_id)
+                                                                                ->get();
+                                                                        } else {
+                                                                            $city_list = DB::table('international_cities')
+                                                                                ->select('id', 'name')
+                                                                                ->where('state_id', $event_content->state_id)
+                                                                                ->get();
+                                                                        }
+                                                                    }
+                                                                @endphp
                                                                 <label for="">{{ __('City') . '*' }}</label>
                                                                 <select class="custom-select select2"
                                                                     name="{{ $language->code }}_city"
-                                                                    id="{{ $language->code }}_city">
-                                                                    <option selected disable value="">
+                                                                    id="{{ $language->code }}_city"
+                                                                    value="{{ empty($event_content->city_id) ? '' : $event_content->city_id }}">
+                                                                    <option
+                                                                        {{ empty($event_content->city_id) ? 'selected' : '' }}
+                                                                        disable value="">
                                                                         Choose City
                                                                     </option>
+                                                                    @if (!empty($city_list))
+                                                                        @foreach ($city_list as $value_city)
+                                                                            <option value="{{ $value_city->id }}"
+                                                                                {{ $event_content->city_id == $value_city->id ? 'selected' : '' }}>
+                                                                                {{ $value_city->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    @endif
                                                                 </select>
-                                                                {{-- <input type="text"
-                                                                        name="{{ $language->code }}_city"
-                                                                        class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                        placeholder="Enter City"> --}}
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6">
@@ -712,7 +850,8 @@
                                                                 <input type="text"
                                                                     placeholder="{{ __('Enter Zip/Post Code') }}"
                                                                     name="{{ $language->code }}_zip_code"
-                                                                    class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
+                                                                    class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
+                                                                    value="{{ $event_content->zip_code }}">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -723,7 +862,9 @@
                                                                 class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
                                                                 <label>{{ __('Description') . '*' }}</label>
                                                                 <textarea id="descriptionTmce{{ $language->id }}" class="form-control summernote"
-                                                                    name="{{ $language->code }}_description" placeholder="{{ __('Enter Event Description') }}" data-height="300"></textarea>
+                                                                    name="{{ $language->code }}_description" placeholder="{{ __('Enter Event Description') }}" data-height="300">
+                                                                  {!! @$event_content->description !!}
+                                                                </textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -734,7 +875,9 @@
                                                                 class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
                                                                 <label>{{ __('Refund Policy') }} *</label>
                                                                 <textarea class="form-control" name="{{ $language->code }}_refund_policy" rows="5"
-                                                                    placeholder="{{ __('Enter Refund Policy') }}"></textarea>
+                                                                    placeholder="{{ __('Enter Refund Policy') }}">
+                                                                  {{ @$event_content->refund_policy }}
+                                                                </textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -747,6 +890,7 @@
                                                                 <input class="form-control"
                                                                     name="{{ $language->code }}_meta_keywords"
                                                                     placeholder="{{ __('Enter Meta Keywords') }}"
+                                                                    value="{{ @$event_content->meta_keywords }}"
                                                                     data-role="tagsinput">
                                                             </div>
                                                         </div>
@@ -758,7 +902,9 @@
                                                                 class="form-group {{ $language->direction == 1 ? 'rtl text-right' : '' }}">
                                                                 <label>{{ __('Meta Description') }}</label>
                                                                 <textarea class="form-control" name="{{ $language->code }}_meta_description" rows="5"
-                                                                    placeholder="{{ __('Enter Meta Description') }}"></textarea>
+                                                                    placeholder="{{ __('Enter Meta Description') }}">
+                                                                  {{ @$event_content->meta_description }}
+                                                                  </textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -789,18 +935,16 @@
                                         </div>
                                     @endforeach
                                 </div>
-
                                 <div id="sliders"></div>
                             </form>
                         </div>
                     </div>
                 </div>
-
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-12 text-center">
-                            <button type="submit" id="EventSubmit" class="btn btn-success">
-                                {{ __('Save') }}
+                            <button type="submit" id="EventSubmit" class="btn btn-primary">
+                                {{ __('Update') }}
                             </button>
                         </div>
                     </div>
@@ -809,7 +953,6 @@
         </div>
     </div>
 @endsection
-
 @section('script')
     @php
         $languages = App\Models\Language::get();
@@ -819,15 +962,20 @@
     </script>
     <script type="text/javascript" src="{{ asset('assets/admin/js/admin-partial.js?' . time()) }}"></script>
     <script src="{{ asset('assets/admin/js/admin_dropzone.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2();
+        });
+    </script>
 @endsection
 
 @section('variables')
     <script>
         "use strict";
-        var storeUrl = "{{ route('admin.event.imagesstoretournament') }}";
-        var removeUrl = "{{ route('admin.event.imagermvtournament') }}";
-        var loadImgs = 0;
+        var storeUrl = "{{ route('organizer.event.imagesstore-tournament') }}";
+        var removeUrl = "{{ route('organizer.event.imagermv-tournament') }}";
 
-        // let i = 0;
+        var rmvdbUrl = "{{ route('organizer.event.imgdbrmv') }}";
+        var loadImgs = "{{ route('organizer.event.images', $event->id) }}";
     </script>
 @endsection

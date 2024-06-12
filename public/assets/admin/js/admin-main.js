@@ -1016,7 +1016,6 @@ $("#EventSubmit").on("click", function (e) {
     },
     error: function (error) {
       let errors = ``;
-
       for (let x in error.responseJSON.errors) {
         errors += `<li>
                 <p class="text-danger mb-0">${error.responseJSON.errors[x][0]}</p>

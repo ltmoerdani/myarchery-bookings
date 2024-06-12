@@ -35,11 +35,42 @@ class TicketController extends Controller
     if (empty($event)) {
       $event = EventContent::where('event_id', $request->event_id)->first();
     }
-    $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
+
+    if (empty($event)) {
+      return abort(404);
+    }
     $information['event'] = $event;
 
-    $information['tickets'] = $tickets;
-    return view('organizer.event.ticket.index', compact('information', 'languages'));
+    if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
+      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
+      foreach ($tickets as $key => $ticket) {
+        $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        // $price_list = [];
+        $ticket_available = [];
+        $international_price = [];
+
+        foreach ($detailTicket as $valDetailTicket) {
+          // array_push($price_list,  intval($valDetailTicket->price));
+          array_push($ticket_available, intval($valDetailTicket->ticket_available));
+          array_push($international_price, intval($valDetailTicket->international_price));
+        }
+        // $tickets[$key]->price = array_sum($price_list);
+        $tickets[$key]->ticket_available = array_sum($ticket_available);
+        $tickets[$key]->international_price = array_sum($international_price);
+      };
+      $information['tickets'] = $tickets;
+      return view('organizer.event.ticket.tournament', compact('information', 'languages'));
+    } else {
+      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
+      $information['tickets'] = $tickets;
+      return view('organizer.event.ticket.index', compact('information', 'languages'));
+    }
+
+    // $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
+    // $information['event'] = $event;
+
+    // $information['tickets'] = $tickets;
+    // return view('organizer.event.ticket.index', compact('information', 'languages'));
   }
   //create
   public function create(Request $request)

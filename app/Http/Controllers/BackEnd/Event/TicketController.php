@@ -33,7 +33,7 @@ class TicketController extends Controller
 
     $information['event'] = $event;
 
-    if ($request->event_type == 'tournament') {
+    if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
       $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
       foreach ($tickets as $key => $ticket) {
         $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();

@@ -98,6 +98,7 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
 
     Route::get('/event-images/{id}', 'BackEnd\Event\EventController@images')->name('admin.event.images');
     Route::post('/event-update', 'BackEnd\Event\EventController@update')->name('admin.event.update');
+    Route::post('/event-update-tournament', 'BackEnd\Event\EventController@update_tournament')->name('admin.event.update_tournament');
     Route::post('bulk/delete/event', 'BackEnd\Event\EventController@bulk_delete')->name('admin.event_management.bulk_delete_event');
 
     Route::get('event/ticket', 'BackEnd\Event\TicketController@index')->name('admin.event.ticket');

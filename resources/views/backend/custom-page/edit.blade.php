@@ -172,5 +172,5 @@
     <script>
         let languages = "{{ $languages }}";
     </script>
-    <script type="text/javascript" src="{{ asset('assets/admin/js/admin-partial.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/admin/js/admin-partial.js?' . time()) }}"></script>
 @endsection

@@ -1015,6 +1015,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'App\\Http\\Requests\\Event\\TicketRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Event/TicketRequest.php',
         'App\\Http\\Requests\\Event\\UpdateCategoryRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Event/UpdateCategoryRequest.php',
         'App\\Http\\Requests\\Event\\UpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Event/UpdateRequest.php',
+        'App\\Http\\Requests\\Event\\UpdateRequestTournament' => __DIR__ . '/../..' . '/app/Http/Requests/Event/UpdateRequestTournament.php',
         'App\\Http\\Requests\\FeatureRequest' => __DIR__ . '/../..' . '/app/Http/Requests/FeatureRequest.php',
         'App\\Http\\Requests\\Instructor\\StoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Instructor/StoreRequest.php',
         'App\\Http\\Requests\\Instructor\\UpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Instructor/UpdateRequest.php',
