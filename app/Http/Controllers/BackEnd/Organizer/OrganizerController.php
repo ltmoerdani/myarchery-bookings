@@ -181,7 +181,7 @@ class OrganizerController extends Controller
         ->first();
 
       $name = $request->username;
-      $token =  $request->email;
+      $token =  base64_encode($request->email);
 
       $link = '<a href=' . url("organizers/email/verify?token=" . $token) . '>Click Here</a>';
 
@@ -778,7 +778,18 @@ class OrganizerController extends Controller
   public function confirm_email()
   {
     $email = request()->input('token');
+    if (empty($email)) {
+      return abort(404);
+    }
+
+    $email = base64_decode($email);
+
     $user = Organizer::where('email', $email)->first();
+    if (empty($user)) {
+      return abort(404);
+    }
+
+    dd($email, $user);
     $mytime = Carbon::now();
     $user->email_verified_at = $mytime;
     $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_admin_approval')->first();
