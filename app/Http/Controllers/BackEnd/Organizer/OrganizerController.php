@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Session;
 use PHPMailer\PHPMailer\PHPMailer;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class OrganizerController extends Controller
 {
@@ -535,6 +536,10 @@ class OrganizerController extends Controller
 
       Session::flash('success', 'A mail has been sent to your email address.');
     } catch (\Exception $e) {
+      Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/error-' . time() . '.log'),
+      ])->error($e);
       Session::flash('error', 'Mail could not be sent!');
     }
 

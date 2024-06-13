@@ -27,6 +27,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\InternationalCountries;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -356,6 +357,7 @@ class CustomerController extends Controller
   {
     return view('frontend.customer.forget-password');
   }
+
   //forget_mail
   public function forget_mail(Request $request)
   {
@@ -363,7 +365,7 @@ class CustomerController extends Controller
       'email' => [
         'required',
         'email:rfc,dns',
-        new MatchEmailRule('organizer')
+        new MatchEmailRule('customer')
       ]
     ];
 
@@ -373,7 +375,7 @@ class CustomerController extends Controller
       return redirect()->back()->withErrors($validator)->withInput();
     }
 
-    $user = Organizer::where('email', $request->email)->first();
+    $user = Customer::where('email', $request->email)->first();
 
     // first, get the mail template information from db
     $mailTemplate = MailTemplate::where('mail_type', 'reset_password')->first();
@@ -431,6 +433,10 @@ class CustomerController extends Controller
 
       Session::flash('success', 'A mail has been sent to your email address.');
     } catch (\Exception $e) {
+      Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/error-' . time() . '.log'),
+      ])->error($e);
       Session::flash('error', 'Mail could not be sent!');
     }
 

@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use App\Models\Admin;
 use App\Models\Organizer;
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -47,12 +48,18 @@ class MatchEmailRule implements Rule
       } else {
         return true;
       }
-    }
-    elseif($this->personType == 'organizer'){
+    } elseif ($this->personType == 'organizer') {
       $organizer = Organizer::where('email', $value)->first();
-      if(is_null($organizer)){
+      if (is_null($organizer)) {
         return false;
-      }else{
+      } else {
+        return true;
+      }
+    } elseif ($this->personType == 'customer') {
+      $customer = Customer::where('email', $value)->first();
+      if (is_null($customer)) {
+        return false;
+      } else {
         return true;
       }
     }
