@@ -26,6 +26,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class OrganizerController extends Controller
 {
@@ -778,7 +779,8 @@ class OrganizerController extends Controller
   {
     $email = request()->input('token');
     $user = Organizer::where('email', $email)->first();
-    $user->email_verified_at = now();
+    $mytime = Carbon::now();
+    $user->email_verified_at = $mytime;
     $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_admin_approval')->first();
     if ($setting->organizer_admin_approval != 1) {
       $user->status = 1;
