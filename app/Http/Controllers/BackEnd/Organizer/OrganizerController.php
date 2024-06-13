@@ -789,7 +789,6 @@ class OrganizerController extends Controller
       return abort(404);
     }
 
-    dd($email, $user);
     $mytime = Carbon::now();
     $user->email_verified_at = $mytime;
     $setting = DB::table('basic_settings')->where('uniqid', 12345)->select('organizer_admin_approval')->first();
