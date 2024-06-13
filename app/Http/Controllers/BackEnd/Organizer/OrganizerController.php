@@ -774,7 +774,8 @@ class OrganizerController extends Controller
       return redirect()->back();
     }
   }
-  //confirm_email'
+
+  //confirm_email
   public function confirm_email()
   {
     $email = request()->input('token');
