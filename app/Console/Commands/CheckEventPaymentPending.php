@@ -36,6 +36,10 @@ class CheckEventPaymentPending extends Command
         foreach($list as $row){
             // update paymentStatus = expired, ticket update, transaction update
             var_dump($row->id);
+            if ($ticket->ticket_available - $variation['quantity'] >= 0) {
+                $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
+                $ticket->save();
+            }
         }die;
     }
 }

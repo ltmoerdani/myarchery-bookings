@@ -18,9 +18,7 @@ class Participant extends Model
         'country',
         'city_id',
         'city',
-        'category',
-        'delegation_id',
-        'customer_id',
+        'username',
     ];
 
     protected $casts = [

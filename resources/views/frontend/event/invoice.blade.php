@@ -22,6 +22,7 @@
     $_12px = '12px';
     $b_color = '565656';
     $w_47 = '47%';
+    $w_90 = '90%';
     
   @endphp
   <style>
@@ -285,6 +286,64 @@
             </div>
           </div>
           {{-- billing details end --}}
+        </div>
+
+        <div class="clearfix">
+          @if ($bookingInfo->variation != null)
+            <div class="float-left px-1" style="width: {{ $w_90 }}">
+              <div class="p-3 border mt-3">
+                <h6>{{ __('List Participant') }}</h6>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>{{ __('No') }}</th>
+                      <th>{{ __('Participant') }}</th>
+                      <th>{{ __('Ticket Name') }}</th>
+                      <th>{{ __('Delegation Name') }}</th>
+                      <th>{{ __('Quantity') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @php
+                        $competitions = App\Models\ParticipantCompetitions::where('booking_id', $bookingInfo->id)
+                                        ->selectRaw('tickets.*, participant.*, participant_competitions.*, ticket_contents.title, 1 AS qty')
+                                        ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
+                                        ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
+                                        ->leftJoin('ticket_contents', 'tickets.id', '=', 'ticket_contents.ticket_id')
+                                        ->where('ticket_contents.language_id', $currentLanguageInfo->id)
+                                        ->where('participant_competitions.booking_id', $bookingInfo->id)->get();
+                        $no = 1;
+                      @endphp
+                      @foreach ($competitions as $c)
+                      <tr>
+                        <td>{{ $no }}</td>
+                        <td>
+                          {{ $c->fname }}
+                        </td>
+                        <td>
+                          {{ $c->title }}
+                        </td>
+                        <td>
+                          @php
+                          if(strtolower($c->category) == 'club'){
+                            $delegation = App\Models\Clubs::where('id', $c->delegation_id)->first();
+                          }
+                          @endphp
+                          {{ $delegation->name }}
+                        </td>
+                        <td>
+                          {{ $c->qty }}
+                        </td>
+                      </tr>
+                      @php
+                      $no++;
+                      @endphp
+                      @endforeach
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          @endif
         </div>
       </div>
     </div>

@@ -140,7 +140,7 @@ class XenditController extends Controller
             ]);
             $response = $data_request->object();
             $response = json_decode(json_encode($response), true);
-
+            
             $arrData['invoice_url_booking'] = $response['invoice_url'];
             $arrData['booking_id'] = $bookingInfo->booking_id;
             $bookingInfo['invoice_url_booking'] = $response['invoice_url'];

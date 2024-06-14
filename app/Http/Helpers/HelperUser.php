@@ -4,18 +4,35 @@ namespace App\Http\Helpers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Models\Participant;
 
 class HelperUser
 {
 
-    public static function AutoGenerateUsername($data){
+    public static function AutoGenerateUsernameParticipant($data){
         try {
-            $data['fname'] = 'gina dwitasari;';
-            $data['gender'] = 2;
-            $data['birthdate'] = '2000/12/12';
+            $checkUser = Participant::where('fname', $data['fname'])->where('lname', $data['lname'])
+                                ->where('gender', $data['gender'])->where('birthdate', $data['birthdate'])->first();
 
-            
+            if($checkUser){
+                if(!$checkUser->username){
+                    $parts = explode(" ", $data['fname']);
+                    $lastname = array_pop($parts);
+                    $random_str = rand(100,999);
+                    $username = strtolower($lastname.$random_str.'.'.$parts[0]);
 
+                    $checkUsername = Participant::where('username', $username)->first();
+                    if($checkUsername){
+                        $parts = explode(" ", $data['fname']);
+                        $lastname = array_pop($parts);
+                        $random_str = rand(100,999);
+                        $username = strtolower($lastname.$random_str.'.'.$parts[0]);
+                        return $username;
+                    }else{
+                        return $username;
+                    }
+                }
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }

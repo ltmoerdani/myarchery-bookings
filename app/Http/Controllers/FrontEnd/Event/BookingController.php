@@ -41,7 +41,9 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Participant;
 use App\Models\ParticipantCompetitions;
 use App\Models\IndonesianSubdistrict;
+use App\Models\IndonesianCities;
 use App\Models\InternationalCities;
+use App\Http\Helpers\HelperUser;
 
 class BookingController extends Controller
 {
@@ -571,7 +573,7 @@ class BookingController extends Controller
           foreach ($ticket_detail_order as $t) {
             if ($t->country_id == "102") { //Indonesia
               if ($t->city_id) {
-                $city_name = IndonesianSubdistrict::select('id', 'name')->where('province_id', $t->city_id)->first();
+                $city_name = IndonesianCities::select('id', 'name')->where('id', $t->city_id)->first();
               }
             } else {
               if ($t->city_id) {
@@ -579,24 +581,39 @@ class BookingController extends Controller
               }
             }
 
-            // Save to table participant
-            $input['fname'] = $t->user_full_name;
-            $input['lname'] = null;
-            $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
-            $input['birthdate'] = $t->birthdate;
-            $input['county_id'] = $t->country_id;
-            $input['country'] = $t->country_name;
-            $input['city_id'] = $t->city_id;
-            $input['city'] = empty($city_name) ? null : $city_name;;
-            $input['category'] = $t->delegation_type;
-            $input['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
-            $input['customer_id'] = Auth::guard('customer')->user()->id;
-            $peserta = Participant::create($input);
+            $data_participant['fname'] = $t->user_full_name;
+            $data_participant['lname'] = null;
+            $data_participant['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
+            $data_participant['birthdate'] = $t->birthdate;
+            $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
+
+            $checkParticipant = Participant::where('fname', $data_participant['fname'])->where('lname', $data_participant['lname'])
+                            ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
+            if(!$checkParticipant){ 
+              // Save to table participant
+              $input['fname'] = $t->user_full_name;
+              $input['lname'] = null;
+              $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
+              $input['birthdate'] = $t->birthdate;
+              $input['county_id'] = $t->country_id;
+              $input['country'] = $t->country_name;
+              $input['city_id'] = $t->city_id;
+              $input['city'] = empty($city_name->name) ? null : $city_name->name;
+              $input['username'] = $username;
+              $peserta = Participant::create($input);
+              $participant_id = $peserta->id;
+            }else{
+              $participant_id = $checkParticipant->id;
+            }
 
             $p['competition_name'] = $t->sub_category_ticket;
-            $p['participant_id'] = $peserta->id;
+            $p['event_id'] = $info['event_id'];
+            $p['participant_id'] = $participant_id;
             $p['ticket_id'] = $t->id;
             $p['booking_id'] = $booking->id;
+            $p['category'] = $t->delegation_type;
+            $p['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
+            $p['customer_id'] = Auth::guard('customer')->user()->id;
             $p['description'] = null;
             ParticipantCompetitions::create($p);
           }

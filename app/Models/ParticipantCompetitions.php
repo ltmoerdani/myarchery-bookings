@@ -11,10 +11,14 @@ class ParticipantCompetitions extends Model
     protected $table = 'participant_competitions';
     protected $fillable = [
         'competition_name',
+        'event_id',
         'participant_id',
         'ticket_id',
         'booking_id',
         'description',
+        'category',
+        'delegation_id',
+        'customer_id',
     ];
 
     protected $casts = [
