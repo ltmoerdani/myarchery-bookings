@@ -532,7 +532,7 @@ class OrganizerController extends Controller
       $mail->isHTML(true);
       $mail->Subject = $mailSubject;
       $mail->Body = $mailBody;
-
+      dd($mailBody);
       $mail->send();
 
       Session::flash('success', 'A mail has been sent to your email address.');
