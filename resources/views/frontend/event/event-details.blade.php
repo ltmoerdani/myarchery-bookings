@@ -22,27 +22,27 @@
 @section('hero-section')
     <!-- Page Banner Start -->
     <!-- Sementara <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
-        data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
-        <div class="container">
-            <div class="banner-inner">
-                <h2 class="page-title">
-                    {{ strlen($content->title) > 30 ? mb_substr($content->title, 0, 30, 'UTF-8') . '...' : $content->title }}
-                </h2>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active">
-                            @if (!empty($pageHeading))
-                                {{ $pageHeading->event_details_page_title ?? __('Event Details') }}
-                            @else
-                                {{ __('Event Details') }}
-                            @endif
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </section> -->
+                data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
+                <div class="container">
+                    <div class="banner-inner">
+                        <h2 class="page-title">
+                            {{ strlen($content->title) > 30 ? mb_substr($content->title, 0, 30, 'UTF-8') . '...' : $content->title }}
+                        </h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
+                                <li class="breadcrumb-item active">
+                                    @if (!empty($pageHeading))
+    {{ $pageHeading->event_details_page_title ?? __('Event Details') }}
+@else
+    {{ __('Event Details') }}
+    @endif
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </section> -->
     <!-- Page Banner End -->
 @endsection
 @section('content')
@@ -959,9 +959,11 @@
                                 @php
                                     $ticket = DB::table('tickets')
                                         ->where('event_id', $event->id)
+                                        ->whereNull('deleted_at')
                                         ->first();
                                     $event_count = DB::table('tickets')
                                         ->where('event_id', $event->id)
+                                        ->whereNull('deleted_at')
                                         ->get()
                                         ->count();
                                 @endphp

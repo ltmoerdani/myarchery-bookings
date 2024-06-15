@@ -37,7 +37,7 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
-      $basic = Basic::select('event_guest_checkout_status','percent_handling_fee')->first();
+      $basic = Basic::select('event_guest_checkout_status', 'percent_handling_fee')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
       $percent_handling_fee = $basic->percent_handling_fee;
 
@@ -203,17 +203,17 @@ class CheckOutController extends Controller
           $late_price_dicount = 0;
           $late_price_dicount_international = 0;
         }
-        
+
         if ($country[$k] == "102") { //Indonesia
           $ticketprice = $ticket->price;
           $tickettitle = $ticket->title;
           $ticketprice_first = $ticketprice;
 
-          if($early_bird_dicount > 0){
+          if ($early_bird_dicount > 0) {
             $ticketprice = $ticketprice - $early_bird_dicount;
           }
 
-          if($late_price_dicount > 0){
+          if ($late_price_dicount > 0) {
             $ticketprice = $ticketprice + $late_price_dicount;
           }
         } else {
@@ -221,13 +221,13 @@ class CheckOutController extends Controller
           $tickettitle = $ticket->title . ' (Internasional)';
           $ticketprice_first = $ticketprice;
 
-          if($early_bird_dicount_international > 0){
+          if ($early_bird_dicount_international > 0) {
             $ticketprice = $ticketprice - $early_bird_dicount_international;
           }
 
-          if($late_price_dicount_international > 0){
+          if ($late_price_dicount_international > 0) {
             $ticketprice = $ticketprice + $late_price_dicount_international;
-          }          
+          }
         }
 
         if ($categorytickets['title'] != $tickettitle) {
@@ -242,35 +242,35 @@ class CheckOutController extends Controller
 
         if ($club_delegation_individu) {
           $club_name = Clubs::where('id', $club[$k])->first();
-          if(!$club_name){
-            $cek_club_name = Clubs::where('name', 'like', '%'.$club_delegation_individu[$k].'%')->first();
-            if(!$cek_club_name){
+          if (!$club_name) {
+            $cek_club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
+            if (!$cek_club_name) {
               $club_new['name'] = $club_delegation_individu[$k];
               $new_club = Clubs::create($club_new);
               $club_name = Clubs::where('id', $new_club->id)->first();
-            }else{
-              $club_name = Clubs::where('name', 'like', '%'.$club_delegation_individu[$k].'%')->first();
+            } else {
+              $club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
               $club[$k] = $club_name->id;
             }
           }
         }
 
         if ($school_delegation_individu) {
-          $cek_school_name = School::where('name', 'like', '%'.$school_delegation_individu[$k].'%')->first();
-          if(!$cek_school_name){
+          $cek_school_name = School::where('name', 'like', '%' . $school_delegation_individu[$k] . '%')->first();
+          if (!$cek_school_name) {
             $school_new['name'] = $school_delegation_individu[$k];
             $new_school = School::create($school_new);
           }
         }
 
         if ($organization_delegation_individu) {
-          $cek_organization_name = Organization::where('name', 'like', '%'.$organization_delegation_individu[$k].'%')->first();
-          if(!$cek_organization_name){
+          $cek_organization_name = Organization::where('name', 'like', '%' . $organization_delegation_individu[$k] . '%')->first();
+          if (!$cek_organization_name) {
             $organization_new['name'] = $organization_delegation_individu[$k];
             $new_organization = Organization::create($organization_new);
           }
         }
-        
+
         $ticket_detail_order[] = [
           "id" => $v,
           "user_full_name" => $name[$k],
@@ -291,18 +291,18 @@ class CheckOutController extends Controller
           "sub_category_ticket" => $tickettitle
         ];
       }
-      
+
       $orders[] = [
         "title" => $v,
         "category" => 'individu',
         "ticket_detail_order" => $ticket_detail_order
       ];
-      
+
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $percent_handling_fee;
       $information['language_id'] = $language_id;
-      
+
       $information['request_ticket_infos'] = json_encode($category_ticket);
       $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
@@ -321,7 +321,7 @@ class CheckOutController extends Controller
         return $param;
       }
     });
-    
+
     if (empty($quantityTournament)) {
       return back()->with(['alert-type' => 'error', 'message' => __('Error Minimum Quantity Ticket Tournament')]);
     }
@@ -750,7 +750,7 @@ class CheckOutController extends Controller
     $stripe = OnlineGateway::where('keyword', 'stripe')->first();
     $stripe_info = json_decode($stripe->information, true);
     $information['stripe_key'] = $stripe_info['key'];
-    
+
     return view('frontend.check-out', $information);
   }
 }

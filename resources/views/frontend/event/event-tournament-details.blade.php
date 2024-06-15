@@ -427,8 +427,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                            <hr> -->
+                                                                                                    <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                    <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -461,12 +461,14 @@
                                         $tickets = DB::table('tickets')
                                             ->select(DB::raw('tickets.*'))
                                             ->where('event_id', $content->id)
+                                            ->whereNull('deleted_at')
                                             ->groupBy('title')
                                             ->get();
 
                                         $competitons = DB::select(
                                             "SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
-                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id) AS competition_type
+                                                (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id)
+AS competition_type
                                             FROM `competitions`, competition_categories
                                             WHERE competitions.event_id=" .
                                                 $content->id .
@@ -913,9 +915,11 @@
                                             @php
                                                 $ticket = DB::table('tickets')
                                                     ->where('event_id', $event->id)
+                                                    ->whereNull('deleted_at')
                                                     ->first();
                                                 $event_count = DB::table('tickets')
                                                     ->where('event_id', $event->id)
+                                                    ->whereNull('deleted_at')
                                                     ->get()
                                                     ->count();
                                             @endphp
@@ -1128,23 +1132,23 @@
                 const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                 const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                 content += `
-                  <div class="card">
-                      <div class="card-body p-2">
-                          <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                              ${val.ticket_title}
-                          </h5>
-                          <div class="text-center">
-                              <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
-                                  ${status}: ${val.available_qouta}/${val.max_qouta}
-                              </span>
-                          </div>
-                      </div>
-                  </div>
-                `
+                                          <div class="card">
+                                              <div class="card-body p-2">
+                                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                                                      ${val.ticket_title}
+                                                  </h5>
+                                                  <div class="text-center">
+                                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                                          ${status}: ${val.available_qouta}/${val.max_qouta}
+                                                      </span>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                        `
             })
 
             setTimeout(() => {
                 $("#content-qouta-ticket").append(content);
             }, 1000)
         });
-@endsection
+    @endsection

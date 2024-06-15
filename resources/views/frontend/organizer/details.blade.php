@@ -170,6 +170,7 @@
                                                         @php
                                                             $ticket = DB::table('tickets')
                                                                 ->where('event_id', $event->id)
+                                                                ->whereNull('deleted_at')
                                                                 ->first();
                                                         @endphp
                                                         <div class="price-remain">
@@ -415,6 +416,7 @@
                                                                 @php
                                                                     $ticket = DB::table('tickets')
                                                                         ->where('event_id', $event->id)
+                                                                        ->whereNull('deleted_at')
                                                                         ->first();
                                                                 @endphp
                                                                 <div class="price-remain">
@@ -639,6 +641,7 @@
                                                                     @php
                                                                         $ticket = DB::table('tickets')
                                                                             ->where('event_id', $event->id)
+                                                                            ->whereNull('deleted_at')
                                                                             ->first();
                                                                     @endphp
                                                                     <div class="price-remain">
