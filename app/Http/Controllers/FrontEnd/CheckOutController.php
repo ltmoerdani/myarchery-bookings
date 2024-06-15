@@ -307,7 +307,8 @@ class CheckOutController extends Controller
       $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
-      return abort(404);
+      dd($e->getMessage());
+      // return abort(404);
     }
   }
 

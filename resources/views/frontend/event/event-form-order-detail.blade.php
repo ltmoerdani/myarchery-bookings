@@ -235,6 +235,9 @@
                                                                                 </select>
                                                                             </div>
                                                                         @else
+                                                                            <input type="hidden"
+                                                                                name="delegation_individu[]"
+                                                                                value="{{ $delegation_event['select_type'] }}" />
                                                                             @if (strtolower($delegation_event['select_type']) == 'province')
                                                                                 <input type="hidden"
                                                                                     class="country_delegation_individu{{ $i }}"
