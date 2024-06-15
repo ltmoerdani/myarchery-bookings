@@ -44,6 +44,7 @@ class Booking extends Model
     'paymentMethod',
     'gatewayType',
     'paymentStatus',
+    'paymentStatusBooking',
     'invoice',
     'invoice_url_booking',
     'attachmentFile',

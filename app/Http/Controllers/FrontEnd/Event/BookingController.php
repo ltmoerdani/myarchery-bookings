@@ -44,6 +44,7 @@ use App\Models\IndonesianSubdistrict;
 use App\Models\IndonesianCities;
 use App\Models\InternationalCities;
 use App\Http\Helpers\HelperUser;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -365,7 +366,6 @@ class BookingController extends Controller
       return $xindit->makePayment($request, $id);
       $offline = new OfflineController();
       return $offline->bookingProcess($request, $id);
-      
     } else {
       try {
         $event = json_decode($request->event, true);
@@ -525,9 +525,11 @@ class BookingController extends Controller
 
       $basic  = Basic::where('uniqid', 12345)->select('tax', 'commission')->first();
 
+      $booking_unique_id = uniqid() . time();
+
       $booking = Booking::create([
         'customer_id' => Auth::guard('customer')->user() ? Auth::guard('customer')->user()->id : null,
-        'booking_id' => uniqid(),
+        'booking_id' => $booking_unique_id,
         'fname' => $info['fname'],
         'lname' => $info['lname'],
         'email' => $info['email'],
@@ -562,7 +564,44 @@ class BookingController extends Controller
         'event_date' => Session::get('event_date'),
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
-
+      // $booking = new Booking();
+      // $booking->customer_id = Auth::guard('customer')->user() ? Auth::guard('customer')->user()->id : null;
+      // $booking->booking_id = $booking_unique_id;
+      // $booking->fname = $info['fname'];
+      // $booking->lname = $info['lname'];
+      // $booking->email = $info['email'];
+      // $booking->phone = $info['phone'];
+      // $booking->country = $info['country'];
+      // $booking->state = $info['state'];
+      // $booking->city = $info['city'];
+      // $booking->zip_code = $info['zip_code'];
+      // $booking->address = $info['address'];
+      // $booking->event_id = $info['event_id'];
+      // $booking->organizer_id = $organizer_id;
+      // $booking->variation = $variations;
+      // $booking->price = round($info['price'], 2);
+      // $booking->tax = round($info['tax'], 2);
+      // $booking->commission = round($info['commission'], 2);
+      // $booking->handling_fee_amount = round($info['percent_handling_fee'], 2);
+      // $booking->tax_percentage = $basic->tax;
+      // $booking->commission_percentage = $basic->commission;
+      // $booking->quantity = $info['quantity'];
+      // $booking->discount = round($info['discount'], 2);
+      // $booking->early_bird_discount = round($info['total_early_bird_dicount'], 2);
+      // $booking->currencyText = $info['currencyText'];
+      // $booking->currencyTextPosition = $info['currencyTextPosition'];
+      // $booking->currencySymbol = $info['currencySymbol'];
+      // $booking->currencySymbolPosition = $info['currencySymbolPosition'];
+      // $booking->paymentMethod = $info['paymentMethod'];
+      // $booking->gatewayType = $info['gatewayType'];
+      // $booking->paymentStatus = $info['paymentStatus'];
+      // $booking->paymentStatusBooking = $info['paymentStatusBooking'];
+      // $booking->invoice = array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null;
+      // $booking->attachmentFile = array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null;
+      // $booking->event_date = Session::get('event_date');
+      // $booking->conversation_id = array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null;
+      // $booking->save();
+      // $booking = Booking::findBy('booking_id', $booking_unique_id);
       if ($info['form_type'] == "tournament") {
         $dataOrders = $info['dataOrders'];
         foreach ($dataOrders as $d) {
@@ -586,10 +625,9 @@ class BookingController extends Controller
             $data_participant['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
             $data_participant['birthdate'] = $t->birthdate;
             $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
-
             $checkParticipant = Participant::where('fname', $data_participant['fname'])->where('lname', $data_participant['lname'])
-                            ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
-            if(!$checkParticipant){ 
+              ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
+            if (!$checkParticipant) {
               // Save to table participant
               $input['fname'] = $t->user_full_name;
               $input['lname'] = null;
@@ -602,7 +640,7 @@ class BookingController extends Controller
               $input['username'] = $username;
               $peserta = Participant::create($input);
               $participant_id = $peserta->id;
-            }else{
+            } else {
               $participant_id = $checkParticipant->id;
             }
 
@@ -621,6 +659,10 @@ class BookingController extends Controller
       }
       return $booking;
     } catch (\Exception $th) {
+      Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/booking-generate-payment-' . time() . '.log'),
+      ])->error($th->getMessage());
     }
   }
 
@@ -663,12 +705,12 @@ class BookingController extends Controller
 
   public function sendMail($bookingInfo)
   {
-    if($bookingInfo->paymentStatusBooking == 'pending'){
+    if ($bookingInfo->paymentStatusBooking == 'pending') {
       // first get the mail template info from db
       $mailTemplate = MailTemplate::where('mail_type', 'event_booking_pending')->first();
       $mailSubject = $mailTemplate->mail_subject;
       $mailBody = $mailTemplate->mail_body;
-    }else{
+    } else {
       // first get the mail template info from db
       $mailTemplate = MailTemplate::where('mail_type', 'event_booking')->first();
       $mailSubject = $mailTemplate->mail_subject;
@@ -694,7 +736,7 @@ class BookingController extends Controller
     $mailBody = str_replace('{title}', '<a href="' . route('event.details', [$eventContent->slug, $eventContent->event_id]) . '">' . $eventTitle . '</a>', $mailBody);
     $mailBody = str_replace('{website_title}', $websiteTitle, $mailBody);
 
-    if($bookingInfo->paymentStatusBooking == 'pending'){
+    if ($bookingInfo->paymentStatusBooking == 'pending') {
       $mailBody = str_replace('{complete_your_payment}', '<a href="' . $bookingInfo->invoice_url_booking . '">Complete Your Payment</a>', $mailBody);
     }
 
