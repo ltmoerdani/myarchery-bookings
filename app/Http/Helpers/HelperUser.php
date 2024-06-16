@@ -31,6 +31,8 @@ class HelperUser
           } else {
             return $username;
           }
+        } else {
+          return $checkUser->username;
         }
       } else {
         $username = '';
