@@ -504,8 +504,9 @@ class XenditController extends Controller
 
   public function callback_tournament($request){
     $data = $request->all();
+    $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
+
     if ($data['status'] == 'PAID') {
-      $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
       $bookings_payment->callback = json_decode($data);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];
@@ -521,6 +522,19 @@ class XenditController extends Controller
       $bookings_payment->payment_channel = $data['payment_channel'];
       $bookings_payment->payment_destination = $data['payment_destination'];
       $bookings_payment->save();
+
+      // send a mail to the customer with the invoice
+      // $booking->sendMail($bookingInfo);
+    }elseif ($data['status'] == 'EXPIRED') {
+      // $bookings = Booking::where('id', $bookings_payment->)
+      
+      // booking status = EXPIRED
+      // transaction = 4
+
+      if ($ticket->ticket_available - $variation['quantity'] >= 0) {
+          $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
+          $ticket->save();
+      }
 
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
