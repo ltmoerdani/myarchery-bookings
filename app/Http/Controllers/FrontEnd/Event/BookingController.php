@@ -170,7 +170,7 @@ class BookingController extends Controller
           'paymentStatus' => 'free',
           'event_date' => Session::get('event_date')
         );
-
+        dd($arrData);
         $bookingInfo = $this->storeData($arrData);
 
         // generate an invoice in pdf format
@@ -193,7 +193,8 @@ class BookingController extends Controller
 
         return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
       } catch (\Throwable $th) {
-        return view('errors.404');
+        dd($th->getMessage());
+        // return view('errors.404');
       }
     }
   }
