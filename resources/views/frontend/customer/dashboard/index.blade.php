@@ -9,31 +9,31 @@
 @section('hero-section')
     <!-- Page Banner Start -->
     <!-- Sementara <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
-        data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
-        <div class="container">
-            <div class="banner-inner">
-                <h2 class="page-title">
-                    @if (!empty($pageHeading))
-                        {{ $pageHeading->customer_dashboard_page_title ?? __('Dashboard') }}
-                    @else
-                        {{ __('Dashboard') }}
-                    @endif
-                </h2>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active">
+                data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
+                <div class="container">
+                    <div class="banner-inner">
+                        <h2 class="page-title">
                             @if (!empty($pageHeading))
-                                {{ $pageHeading->customer_dashboard_page_title ?? __('Dashboard') }}
-                            @else
-                                {{ __('Dashboard') }}
-                            @endif
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </section> -->
+    {{ $pageHeading->customer_dashboard_page_title ?? __('Dashboard') }}
+@else
+    {{ __('Dashboard') }}
+    @endif
+                        </h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
+                                <li class="breadcrumb-item active">
+                                    @if (!empty($pageHeading))
+    {{ $pageHeading->customer_dashboard_page_title ?? __('Dashboard') }}
+@else
+    {{ __('Dashboard') }}
+    @endif
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </section> -->
     <!-- Page Banner End -->
 @endsection
 @section('content')
@@ -157,12 +157,16 @@
                                                                 <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('D, M d, Y h:i a') }}
                                                                 </td>
                                                                 <td>
-                                                                    <span class="badge badge-{{ $item->paymentStatus == 'completed' ? 'success' : 'danger' }}">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                    <span
+                                                                        class="badge badge-{{ $item->paymentStatus == 'completed' || $item->paymentStatus == 'free' ? 'success' : 'danger' }}">{{ ucfirst($item->paymentStatus) }}</span>
                                                                 </td>
                                                                 <td>
-                                                                    <a href="{{ route('customer.booking_details', $item->id) }}" class="btn">{{ __('Details') }}</a>
+                                                                    <a href="{{ route('customer.booking_details', $item->id) }}"
+                                                                        class="btn">{{ __('Details') }}</a>
                                                                     @if ($item->paymentStatus == 'pending')
-                                                                    <a href="{{ $item->invoice_url_booking }}" class="btn" target="_blank">{{ __('Pay') }}</a> 
+                                                                        <a href="{{ $item->invoice_url_booking }}"
+                                                                            class="btn"
+                                                                            target="_blank">{{ __('Pay') }}</a>
                                                                     @endif
                                                                 </td>
                                                             </tr>

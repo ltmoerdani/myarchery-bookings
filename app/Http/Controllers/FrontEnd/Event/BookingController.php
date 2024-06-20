@@ -143,12 +143,19 @@ class BookingController extends Controller
       }
     } else {
       try {
+        $total = $request->total;
+        //tax and commission end, handling fee
+        $basicSetting = Basic::select('commission', 'percent_handling_fee')->first();
+
+        $handling_fee_amount = ($total * $basicSetting->percent_handling_fee) / 100;
+
         $event = json_decode($request->event, true);
         $arrData = array(
           'event_id' => $event['id'],
           'price' => 0,
           'tax' => 0,
           'commission' => 0,
+          'percent_handling_fee' => $handling_fee_amount,
           'quantity' => $request->quantity,
           'discount' => 0,
           'total_early_bird_dicount' => 0,
@@ -168,11 +175,11 @@ class BookingController extends Controller
           'paymentMethod' => null,
           'gatewayType' => null,
           'paymentStatus' => 'free',
-          'event_date' => Session::get('event_date')
+          'paymentStatusBooking' => 'free',
+          'event_date' => Session::get('event_date'),
+          'form_type' => $request->form_type,
         );
-        dd($arrData);
         $bookingInfo = $this->storeData($arrData);
-
         // generate an invoice in pdf format
         $invoice = $this->generateInvoice($bookingInfo, $event['id']);
         //unlink qr code
@@ -190,11 +197,14 @@ class BookingController extends Controller
         $request->session()->forget('selTickets');
         $request->session()->forget('arrData');
         $request->session()->forget('discount');
-
-        return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
+        Session::flash('success', 'Booking successfully');
+        return redirect()->route('customer.booking_details', $bookingInfo->id);
       } catch (\Throwable $th) {
-        dd($th->getMessage());
-        // return view('errors.404');
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/booking-out-event-tournament-' . time() . '.log'),
+        ])->error($th->getMessage());
+        return view('errors.404');
       }
     }
   }
@@ -345,6 +355,10 @@ class BookingController extends Controller
 
         return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
       } catch (\Throwable $th) {
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/booking-tournament-' . time() . '.log'),
+        ])->error($th->getMessage());
         return view('errors.404');
       }
     }
@@ -419,6 +433,10 @@ class BookingController extends Controller
 
         return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
       } catch (\Throwable $th) {
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/booking-tournament-pending-' . time() . '.log'),
+        ])->error($th->getMessage());
         return view('errors.404');
       }
     }
@@ -441,7 +459,6 @@ class BookingController extends Controller
       } else {
         $variations = Session::get('selTickets');
       }
-
       if ($variations) {
         foreach ($variations as $variation) {
           if ($info['form_type'] == "tournament") {
@@ -745,6 +762,7 @@ class BookingController extends Controller
       return session()->flash('error', 'Mail could not be sent! Mailer Error: ' . $e);
     }
   }
+
   public function generateInvoice($bookingInfo, $eventId)
   {
     try {

@@ -761,7 +761,7 @@ class CheckOutController extends Controller
     Session::put('offline_gateways', $offline_gateways);
     $information['online_gateways'] = Session::get('online_gateways');
     $information['offline_gateways'] = Session::get('offline_gateways');
-
+    // dd($information);
     return view('frontend.check-out', $information);
   }
 }

@@ -9,19 +9,19 @@
 @section('hero-section')
     <!-- Page Banner Start -->
     <!-- Sementara <section class="page-banner overlay pt-120 pb-125 rpt-90 rpb-95 lazy"
-                    data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
-                    <div class="container">
-                        <div class="banner-inner">
-                            <h2 class="page-title">{{ __('Checkout') }}</h2>
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
-                                    <li class="breadcrumb-item active">{{ __('Checkout') }}</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </section> -->
+                                        data-bg="{{ asset('assets/admin/img/' . $basicInfo->breadcrumb) }}">
+                                        <div class="container">
+                                            <div class="banner-inner">
+                                                <h2 class="page-title">{{ __('Checkout') }}</h2>
+                                                <nav aria-label="breadcrumb">
+                                                    <ol class="breadcrumb">
+                                                        <li class="breadcrumb-item"><a href="{{ route('index') }}">{{ __('Home') }}</a></li>
+                                                        <li class="breadcrumb-item active">{{ __('Checkout') }}</li>
+                                                    </ol>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </section> -->
     <!-- Page Banner End -->
     @php
         $authUser = Auth::guard('customer')->user();
@@ -31,8 +31,9 @@
     <!-- CheckOut Area Start -->
     <section class="checkout-area pt-120 rpt-95 pb-90 rpb-70">
         <div class="container">
-            <form class="form" action="{{ route('ticket.booking', [$event->id, 'type' => 'guest']) }}" method="POST"
-                enctype="multipart/form-data" id="payment-form">
+            <form class="form"
+                action="{{ route('ticket.booking', [$event->id, 'type' => 'guest', 'form_type' => $event->event_type]) }}"
+                method="POST" enctype="multipart/form-data" id="payment-form">
                 @csrf
                 <div class="row">
                     <div class="col-lg-8">
@@ -326,11 +327,11 @@
                                             {{ $online_gateway->keyword == old('gateway') ? 'selected' : '' }}>
                                             {{ __("$online_gateway->name") }}</option>
                                     @endforeach
-                                    {{-- @foreach ($offline_gateways as $offline_gateway)
+                                    @foreach ($offline_gateways as $offline_gateway)
                                         <option value="{{ $offline_gateway->id }}"
                                             {{ $offline_gateway->id == old('gateway') ? 'selected' : '' }}>
                                             {{ __("$offline_gateway->name") }}</option>
-                                    @endforeach --}}
+                                    @endforeach
                                 </select>
                                 @error('gateway')
                                     <p class="text-danger">{{ $message }}</p>

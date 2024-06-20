@@ -484,11 +484,11 @@
                                                     {{ $online_gateway->keyword == old('gateway') ? 'selected' : '' }}>
                                                     {{ __("$online_gateway->name") }}</option>
                                             @endforeach
-                                            {{-- @foreach ($offline_gateways as $offline_gateway)
+                                            @foreach ($offline_gateways as $offline_gateway)
                                                 <option value="{{ $offline_gateway->id }}"
                                                     {{ $offline_gateway->id == old('gateway') ? 'selected' : '' }}>
                                                     {{ __("$offline_gateway->name") }}</option>
-                                            @endforeach --}}
+                                            @endforeach
                                         </select>
                                     </div>
 
