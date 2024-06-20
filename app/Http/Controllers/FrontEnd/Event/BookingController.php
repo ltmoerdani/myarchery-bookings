@@ -564,44 +564,7 @@ class BookingController extends Controller
         'event_date' => Session::get('event_date'),
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
-      // $booking = new Booking();
-      // $booking->customer_id = Auth::guard('customer')->user() ? Auth::guard('customer')->user()->id : null;
-      // $booking->booking_id = $booking_unique_id;
-      // $booking->fname = $info['fname'];
-      // $booking->lname = $info['lname'];
-      // $booking->email = $info['email'];
-      // $booking->phone = $info['phone'];
-      // $booking->country = $info['country'];
-      // $booking->state = $info['state'];
-      // $booking->city = $info['city'];
-      // $booking->zip_code = $info['zip_code'];
-      // $booking->address = $info['address'];
-      // $booking->event_id = $info['event_id'];
-      // $booking->organizer_id = $organizer_id;
-      // $booking->variation = $variations;
-      // $booking->price = round($info['price'], 2);
-      // $booking->tax = round($info['tax'], 2);
-      // $booking->commission = round($info['commission'], 2);
-      // $booking->handling_fee_amount = round($info['percent_handling_fee'], 2);
-      // $booking->tax_percentage = $basic->tax;
-      // $booking->commission_percentage = $basic->commission;
-      // $booking->quantity = $info['quantity'];
-      // $booking->discount = round($info['discount'], 2);
-      // $booking->early_bird_discount = round($info['total_early_bird_dicount'], 2);
-      // $booking->currencyText = $info['currencyText'];
-      // $booking->currencyTextPosition = $info['currencyTextPosition'];
-      // $booking->currencySymbol = $info['currencySymbol'];
-      // $booking->currencySymbolPosition = $info['currencySymbolPosition'];
-      // $booking->paymentMethod = $info['paymentMethod'];
-      // $booking->gatewayType = $info['gatewayType'];
-      // $booking->paymentStatus = $info['paymentStatus'];
-      // $booking->paymentStatusBooking = $info['paymentStatusBooking'];
-      // $booking->invoice = array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null;
-      // $booking->attachmentFile = array_key_exists('attachmentFile', $info) ? $info['attachmentFile'] : null;
-      // $booking->event_date = Session::get('event_date');
-      // $booking->conversation_id = array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null;
-      // $booking->save();
-      // $booking = Booking::findBy('booking_id', $booking_unique_id);
+
       if ($info['form_type'] == "tournament") {
         $dataOrders = $info['dataOrders'];
         foreach ($dataOrders as $d) {
