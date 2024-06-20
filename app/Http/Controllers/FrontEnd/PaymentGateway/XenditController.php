@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event\Booking;
+use App\Models\PaymentGateway\BookingsPayment;
 use App\Models\Transaction;
 use App\Models\Event\EventContent;
 use Illuminate\Support\Facades\DB;
@@ -158,12 +159,17 @@ class XenditController extends Controller
         $booking->sendMail($bookingInfo);
 
         if (!empty($response['success_redirect_url'])) {
+          $bookings_payment['booking_id'] = $bookingInfo->booking_id;
+          $bookings_payment['payment_type'] = 'Xendit';
+          $bookings_payment['external_id'] = $external_id;
+          $bookingsPayment = BookingsPayment::create($bookings_payment);
+
           $request->session()->put('booking_id', $bookingInfo->booking_id);
           $request->session()->put('event_id', $event_id);
           $request->session()->put('arrData', $arrData);
           $request->session()->put('xendit_id', $response['id']);
           $request->session()->put('secret_key', config('xendit.key_auth'));
-          $request->session()->put('xendit_payment_type', 'event');
+          $request->session()->put('xendit_payment_type', 'tournament');
           return redirect($response['invoice_url']);
         } else {
           return redirect()->route('check-out')->with(['alert-type' => 'error', 'message' => $response['message']]);
@@ -495,5 +501,30 @@ class XenditController extends Controller
   //         return $e;
   //     }
   // }
+
+  public function callback_tournament($request){
+    $data = $request->all();
+    if ($data['status'] == 'PAID') {
+      $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
+      $bookings_payment->callback = json_decode($data);
+      $bookings_payment->payment_method = $data['payment_method'];
+      $bookings_payment->status = $data['status'];
+      $bookings_payment->amount = $data['amount'];
+      $bookings_payment->paid_amount = $data['paid_amount'];
+      $bookings_payment->bank_code = $data['bank_code'];
+      $bookings_payment->paid_at = $data['paid_at'];
+      $bookings_payment->payer_email = $data['payer_email'];
+      $bookings_payment->description = $data['description'];
+      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
+      $bookings_payment->currency = $data['currency'];
+      $bookings_payment->payment_channel = $data['payment_channel'];
+      $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->save();
+
+      // send a mail to the customer with the invoice
+      // $booking->sendMail($bookingInfo);
+    } 
+  }
 
 }

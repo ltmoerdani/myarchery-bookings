@@ -159,6 +159,12 @@ class HomeController extends Controller
     } elseif (Session::get('xendit_payment_type') == 'shop') {
       $data = new ShopXenditController();
       $data->callback($request);
+    } elseif (Session::get('xendit_payment_type') == 'tournament') {
+      $data = new XenditController();
+      $data->callback_tournament($request);
+    }else{
+      $data = new XenditController();
+      $data->callback_tournament($request);
     }
   }
 
