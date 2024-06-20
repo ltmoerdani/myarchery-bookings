@@ -16,7 +16,9 @@ use App\Models\Event\Booking;
 use App\Models\PaymentGateway\BookingsPayment;
 use App\Models\Transaction;
 use App\Models\Event\EventContent;
+use App\Models\Event\Ticket;
 use Illuminate\Support\Facades\DB;
+use App\Models\ParticipantCompetitions;
 
 class XenditController extends Controller
 {
@@ -526,14 +528,36 @@ class XenditController extends Controller
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
     }elseif ($data['status'] == 'EXPIRED') {
-      // $bookings = Booking::where('id', $bookings_payment->)
-      
-      // booking status = EXPIRED
-      // transaction = 4
+      $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
+      $bookings->paymentStatus = 'expired';
+      $bookings->paymentStatusBooking = 'expired';
+      $bookings->save();
 
-      if ($ticket->ticket_available - $variation['quantity'] >= 0) {
-          $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
-          $ticket->save();
+      $transaction = Transaction::where('booking_id', $bookings->id)->first();
+      $transaction->payment_status = 4;
+      $transaction->save();
+
+      $bookings_payment->callback = json_decode($data);
+      $bookings_payment->payment_method = $data['payment_method'];
+      $bookings_payment->status = $data['status'];
+      $bookings_payment->amount = $data['amount'];
+      $bookings_payment->paid_amount = $data['paid_amount'];
+      $bookings_payment->bank_code = $data['bank_code'];
+      $bookings_payment->paid_at = $data['paid_at'];
+      $bookings_payment->payer_email = $data['payer_email'];
+      $bookings_payment->description = $data['description'];
+      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
+      $bookings_payment->currency = $data['currency'];
+      $bookings_payment->payment_channel = $data['payment_channel'];
+      $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->save();
+      
+      $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
+      foreach($participant_competitions as $c){
+        $ticket = Ticket::where('id', $c->ticket_id)->first();
+        $ticket->ticket_available = $ticket->ticket_available - 1;
+        $ticket->save();
       }
 
       // send a mail to the customer with the invoice
