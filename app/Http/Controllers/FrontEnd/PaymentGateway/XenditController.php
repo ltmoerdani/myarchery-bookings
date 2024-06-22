@@ -509,7 +509,7 @@ class XenditController extends Controller
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
 
     if ($data['status'] == 'PAID') {
-      $bookings_payment->callback = json_decode($data);
+      $bookings_payment->callback = json_encode($data);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
@@ -537,7 +537,7 @@ class XenditController extends Controller
       $transaction->payment_status = 4;
       $transaction->save();
 
-      $bookings_payment->callback = json_decode($data);
+      $bookings_payment->callback = json_encode($data);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
