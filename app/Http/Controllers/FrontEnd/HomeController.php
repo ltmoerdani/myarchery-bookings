@@ -153,7 +153,8 @@ class HomeController extends Controller
 
   public function xendit_callback(Request $request){
       $data = new XenditController();
-      $data->callback_tournament($request);
+      $data->callback_tournament($request->all());
+      
     // return $request->all();
     // if (Session::get('xendit_payment_type') == 'event') {
     //   $data = new XenditController();
