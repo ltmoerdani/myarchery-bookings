@@ -207,10 +207,10 @@ class BookingController extends Controller
         return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
       }
     }
-
+    
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
-
+      
       if (!$request->exists('gateway')) {
         Session::flash('error', 'Please select a payment method.');
 
@@ -295,11 +295,13 @@ class BookingController extends Controller
     } else {
       try {
         $event = json_decode($request->event, true);
+        $cust = Auth::guard('customer')->user();
         $arrData = array(
-          'event_id' => $event['id'],
+          'event_id' => $id,
           'price' => 0,
           'tax' => 0,
           'commission' => 0,
+          'percent_handling_fee' => 0,
           'quantity' => $request->quantity,
           'discount' => 0,
           'total_early_bird_dicount' => 0,
@@ -307,25 +309,30 @@ class BookingController extends Controller
           'currencyTextPosition' => null,
           'currencySymbol' => null,
           'currencySymbolPosition' => null,
-          'fname' => $request->fname,
-          'lname' => $request->lname,
-          'email' => $request->email,
-          'phone' => $request->phone,
-          'country' => $request->country,
-          'state' => $request->state,
-          'city' => $request->city,
-          'zip_code' => $request->city,
-          'address' => $request->address,
+          'fname' => $cust->fname,
+          'lname' => empty($cust->lname) ? $cust->fname : $cust->lname,
+          'email' => $cust->email,
+          'phone' => $cust->phone,
+          'country' => $cust->country,
+          'state' => $cust->state,
+          'city' => empty($cust->city) ? $cust->state : $cust->city,
+          'zip_code' => empty($cust->city) ? $cust->state : $cust->city,
+          'address' => empty($cust->city) ? $cust->state : $cust->city,
+          // 'paymentMethod' => 'Xendit',
+          // 'gatewayType' => 'online',
           'paymentMethod' => null,
           'gatewayType' => null,
           'paymentStatus' => 'free',
+          'paymentStatusBooking' => 'free',
+          'ticketInfos' => json_decode($request->request_ticket_infos),
+          'dataOrders' => json_decode($request->request_orders),
+          'form_type' => 'tournament',
           'event_date' => Session::get('event_date')
         );
-
+        
         $bookingInfo = $this->storeData($arrData);
-
         // generate an invoice in pdf format
-        $invoice = $this->generateInvoice($bookingInfo, $event['id']);
+        $invoice = $this->generateInvoice($bookingInfo, $id);
         //unlink qr code
         @mkdir(public_path('assets/admin/qrcodes/'), 0775, true);
         @unlink(public_path('assets/admin/qrcodes/') . $bookingInfo->booking_id . '.svg');
@@ -342,7 +349,7 @@ class BookingController extends Controller
         $request->session()->forget('arrData');
         $request->session()->forget('discount');
 
-        return redirect()->route('event_booking.complete', ['id' => $event['id'], 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
+        return redirect()->route('event_booking.complete', ['id' => $id, 'booking_id' => $bookingInfo->id, 'via' => 'offline']); //code...
       } catch (\Throwable $th) {
         return view('errors.404');
       }
@@ -358,7 +365,7 @@ class BookingController extends Controller
         return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
       }
     }
-
+    
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
 
@@ -495,9 +502,17 @@ class BookingController extends Controller
             $ticket->variations = json_encode($update_variation, true);
             $ticket->save();
           } elseif ($ticket->pricing_type == 'free' && $ticket->ticket_available_type == 'limited') {
-            if ($ticket->ticket_available - $variation['qty'] >= 0) {
-              $ticket->ticket_available = $ticket->ticket_available - $variation['qty'];
-              $ticket->save();
+
+            if ($info['form_type'] == "tournament") {
+              if ($ticket->ticket_available - $variation['quantity'] >= 0) {
+                $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
+                $ticket->save();
+              }
+            } else {
+              if ($ticket->ticket_available - $variation['qty'] >= 0) {
+                $ticket->ticket_available = $ticket->ticket_available - $variation['qty'];
+                $ticket->save();
+              }
             }
           }
 
@@ -511,7 +526,7 @@ class BookingController extends Controller
             ];
           }
         }
-
+        
         if ($info['form_type'] == "tournament") {
           $variations = json_encode($variations_ticket, true);
         } else {
@@ -524,9 +539,8 @@ class BookingController extends Controller
       }
 
       $basic  = Basic::where('uniqid', 12345)->select('tax', 'commission')->first();
-
       $booking_unique_id = uniqid() . time();
-
+      
       $booking = Booking::create([
         'customer_id' => Auth::guard('customer')->user() ? Auth::guard('customer')->user()->id : null,
         'booking_id' => $booking_unique_id,
@@ -564,7 +578,7 @@ class BookingController extends Controller
         'event_date' => Session::get('event_date'),
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
-
+      
       if ($info['form_type'] == "tournament") {
         $dataOrders = $info['dataOrders'];
         foreach ($dataOrders as $d) {

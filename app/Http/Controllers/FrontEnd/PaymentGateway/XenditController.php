@@ -35,7 +35,7 @@ class XenditController extends Controller
       if (!in_array($currencyInfo->base_currency_text, $allowed_currency)) {
         return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
       }
-
+      
       if ($request->form_type == "tournament") {
         $cust = Auth::guard('customer')->user();
         $event_content = EventContent::where('event_id', $event_id)->where('language_id', $request->language_id)->first();

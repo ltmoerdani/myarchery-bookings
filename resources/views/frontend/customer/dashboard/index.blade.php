@@ -157,7 +157,13 @@
                                                                 <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('D, M d, Y h:i a') }}
                                                                 </td>
                                                                 <td>
-                                                                    <span class="badge badge-{{ $item->paymentStatus == 'completed' ? 'success' : 'danger' }}">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                    @if ($item->paymentStatus == 'completed')
+                                                                        <span class="badge badge-success">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                    @elseif ($item->paymentStatus == 'free')
+                                                                        <span class="badge badge-primary">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                    @else
+                                                                        <span class="badge badge-danger">{{ ucfirst($item->paymentStatus) }}</span>
+                                                                    @endif
                                                                 </td>
                                                                 <td>
                                                                     <a href="{{ route('customer.booking_details', $item->id) }}" class="btn">{{ __('Details') }}</a>

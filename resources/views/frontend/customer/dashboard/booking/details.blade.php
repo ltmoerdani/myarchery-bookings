@@ -191,8 +191,14 @@
                               dir="ltr">{{ $booking->currencySymbol }}{{ $booking->price + $booking->tax + $booking->handling_fee_amount }}
                             </span></p>
 
-                          <p><b>{{ __('Payment Status') . ' : ' }} </b> <span
-                              class="badge {{ $booking->paymentStatus == 'completed' ? 'badge-success' : 'badge-danger' }} ">{{ __($booking->paymentStatus) }}</span>
+                          <p><b>{{ __('Payment Status') . ' : ' }} </b>
+                              @if ($booking->paymentStatus == 'completed')
+                                  <span class="badge badge-success">{{ __($booking->paymentStatus) }}</span>
+                              @elseif ($booking->paymentStatus == 'free')
+                                  <span class="badge badge-primary">{{ __($booking->paymentStatus) }}</span>
+                              @else
+                                  <span class="badge badge-danger">{{ __($booking->paymentStatus) }}</span>
+                              @endif
                           </p>
                           <p><b>{{ __('Payment Method') . ' : ' }}</b>
                             {{ __($booking->paymentMethod) }}</p>
