@@ -512,7 +512,7 @@
                                                 aria-label="Example text with button addon"
                                                 aria-describedby="button-addon1">
                                             <div class="input-group-prepend">
-                                                <button class="theme-btn w-100" onclick="handleCheckCodeEvent()"
+                                                <button class="theme-btn w-100" onclick="handleCheckCodeEvent({{ $event->id }})"
                                                     type="button" id="button-addon1">
                                                     {{ __('Apply') }}
                                                 </button>
@@ -707,3 +707,10 @@
                                     </div>
                                 </div>
                             </section> --}}
+
+
+<script>
+    function handleCheckCodeEvent($id){
+        alert($id);
+    }
+</script>

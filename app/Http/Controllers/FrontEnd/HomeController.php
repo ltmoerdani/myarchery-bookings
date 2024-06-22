@@ -150,22 +150,24 @@ class HomeController extends Controller
 
     return redirect()->route('index')->with(['alert-type' => 'error', 'message' => 'Payment Canceled.']);
   }
-  public function xendit_callback(Request $request)
-  {
-    return $request->all();
-    if (Session::get('xendit_payment_type') == 'event') {
-      $data = new XenditController();
-      $data->callback($request);
-    } elseif (Session::get('xendit_payment_type') == 'shop') {
-      $data = new ShopXenditController();
-      $data->callback($request);
-    } elseif (Session::get('xendit_payment_type') == 'tournament') {
+
+  public function xendit_callback(Request $request){
       $data = new XenditController();
       $data->callback_tournament($request);
-    }else{
-      $data = new XenditController();
-      $data->callback_tournament($request);
-    }
+    // return $request->all();
+    // if (Session::get('xendit_payment_type') == 'event') {
+    //   $data = new XenditController();
+    //   $data->callback($request);
+    // } elseif (Session::get('xendit_payment_type') == 'shop') {
+    //   $data = new ShopXenditController();
+    //   $data->callback($request);
+    // } elseif (Session::get('xendit_payment_type') == 'tournament') {
+    //   $data = new XenditController();
+    //   $data->callback_tournament($request);
+    // }else{
+    //   $data = new XenditController();
+    //   $data->callback_tournament($request);
+    // }
   }
 
   public function myfatoorah_callback(Request $request)
