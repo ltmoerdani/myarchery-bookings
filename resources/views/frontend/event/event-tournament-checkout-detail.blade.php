@@ -465,22 +465,43 @@
                                         Rp. {{ $fee_sub_total + $ppn_total }}
                                     </p>
                                 </div>
-                                <div class="col-12 mt-3 mb-2">
-                                    <h4 class="font-weight-bold">{{ __('Payment Methods') }}</h4>
-                                </div>
-                                <div class="col-12 mt-1">
-                                    <select class="form-select" name="gateway" id="payment">
-                                        <option value="xendit" selected>Xendit Payment Gateway</option>
-                                    </select>
-                                </div>
+                                @php
+                                    $total = $fee_sub_total + $ppn_total;
+                                @endphp
                                 <input type="hidden" name="total" value="{{ $fee_sub_total }}">
                                 <input type="hidden" name="quantity" value="{{ $total_tickets_quantity }}">
 
-                                <div class="col-12 mt-3">
-                                    <button class="theme-btn w-100" type="submit">
-                                        {{ __('Proceed To Pay') }}
-                                    </button>
-                                </div>
+                                @if ($total > 0)
+                                    <div class="col-12 mt-3 mb-2">
+                                        <h4 class="font-weight-bold">{{ __('Payment Methods') }}</h4>
+                                    </div>
+                                    <div class="col-12 mt-1">
+                                        <select class="form-select" name="gateway" id="payment">
+                                            {{-- <option value="xendit" selected>Xendit Payment Gateway</option> --}}
+                                            <option value="" disabled>{{ __('Select a payment method') }}</option>
+                                            @foreach ($online_gateways as $online_gateway)
+                                                <option value="{{ $online_gateway->keyword }}"
+                                                    {{ $online_gateway->keyword == old('gateway') ? 'selected' : '' }}>
+                                                    {{ __("$online_gateway->name") }}</option>
+                                            @endforeach
+                                            @foreach ($offline_gateways as $offline_gateway)
+                                                <option value="{{ $offline_gateway->id }}"
+                                                    {{ $offline_gateway->id == old('gateway') ? 'selected' : '' }}>
+                                                    {{ __("$offline_gateway->name") }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <button class="theme-btn w-100" type="submit">
+                                            {{ __('Proceed To Pay') }}
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="col-12 mt-3">
+                                        <button type="submit" class="theme-btn w-100">{{ __('Submit') }}</button>
+                                    </div>
+                                @endif
                                 <div class="col-12 mt-3">
                                     <a href="{{ route('event.details', [$event['slug'], $from_step_one['event_id']]) }}"
                                         class="theme-btn-outline-primary-1 w-100" type="button">

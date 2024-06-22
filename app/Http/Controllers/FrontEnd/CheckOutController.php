@@ -29,6 +29,7 @@ use App\Models\Clubs;
 use App\Models\School;
 use App\Models\Organization;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CheckOutController extends Controller
 {
@@ -67,6 +68,8 @@ class CheckOutController extends Controller
       Session::put('online_gateways', $online_gateways);
       Session::put('offline_gateways', $offline_gateways);
       Session::put('event_date', $request->event_date);
+      $information['online_gateways'] = Session::get('online_gateways');
+      $information['offline_gateways'] = Session::get('offline_gateways');
 
       //check customer logged in or not ?
       if (Auth::guard('customer')->check() == false) {
@@ -307,8 +310,11 @@ class CheckOutController extends Controller
       $information['request_orders'] = json_encode($orders);
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
-      dd($e->getMessage());
-      // return abort(404);
+      Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/checkout-event-tournament-' . time() . '.log'),
+      ])->error($e->getMessage());
+      return abort(404);
     }
   }
 
@@ -745,13 +751,17 @@ class CheckOutController extends Controller
     $information['quantity'] = Session::get('quantity');
     $information['total_early_bird_dicount'] = Session::get('total_early_bird_dicount');
     $information['event'] = Session::get('event');
-    $information['online_gateways'] = Session::get('online_gateways');
-    $information['offline_gateways'] = Session::get('offline_gateways');
     $information['basicData'] = Basic::select('tax')->first();
     $stripe = OnlineGateway::where('keyword', 'stripe')->first();
     $stripe_info = json_decode($stripe->information, true);
     $information['stripe_key'] = $stripe_info['key'];
-
+    $online_gateways = OnlineGateway::where('status', 1)->get();
+    $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+    Session::put('online_gateways', $online_gateways);
+    Session::put('offline_gateways', $offline_gateways);
+    $information['online_gateways'] = Session::get('online_gateways');
+    $information['offline_gateways'] = Session::get('offline_gateways');
+    // dd($information);
     return view('frontend.check-out', $information);
   }
 }
