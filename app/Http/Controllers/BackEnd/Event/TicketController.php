@@ -58,6 +58,7 @@ class TicketController extends Controller
       return view('backend.event.ticket.index', compact('information', 'languages'));
     }
   }
+
   //create
   public function create(Request $request)
   {
@@ -81,6 +82,7 @@ class TicketController extends Controller
       return view('backend.event.ticket.create', $information);
     }
   }
+
   //store
   public function store(TicketRequest $request)
   {
@@ -159,6 +161,7 @@ class TicketController extends Controller
 
     return response()->json(['status' => 'success'], 200);
   }
+
   //edit
   public function edit(Request $request)
   {
@@ -169,18 +172,19 @@ class TicketController extends Controller
     if (empty($event)) {
       $event = EventContent::where('event_id', $request->event_id)->first();
     }
+
+    if (empty($event)) {
+      return abort(404);
+    }
+
     $information['event'] = $event;
     $ticket = Ticket::where('id', $request->id)->firstOrFail();
     $information['ticket'] = $ticket;
     $information['variations'] = json_decode($ticket->variations, true);
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
-
-    if ($request->event_type == 'tournament') {
-      return view('backend.event.ticket.edit_tournament', $information);
-    } else {
-      return view('backend.event.ticket.edit', $information);
-    }
+    return view('backend.event.ticket.edit', $information);
   }
+
   //update
   public function update(TicketRequest $request)
   {
@@ -269,6 +273,33 @@ class TicketController extends Controller
 
     return response()->json(['status' => 'success'], 200);
   }
+
+  // edit tournament
+  public function editTournament(Request $request)
+  {
+    $languages = Language::get();
+    $information['languages'] = $languages;
+    $event = EventContent::where('event_id', $request->event_id)->first();
+
+    if (empty($event)) {
+      return abort(404);
+    }
+
+    $information['event'] = $event;
+    $ticket = Ticket::where('title', $request->title)->where('event_id', $request->event_id)->get();
+    $information['list_ticket'] = $ticket;
+
+
+    $information['ticket'] = Ticket::where('title', $request->title)
+      ->where('event_id', $request->event_id)
+      ->first();
+
+    $information['getCurrencyInfo']  = $this->getCurrencyInfo();
+    // dd($information['ticket']);
+    return view('backend.event.ticket.edit_tournament', $information);
+  }
+  // update tournament
+
   //destroy
   public function destroy(Request $request)
   {
@@ -288,6 +319,7 @@ class TicketController extends Controller
     $ticket->delete();
     return redirect()->back()->with('success', 'Ticket deleted successfully!');
   }
+
   //delete_variation
   public function delete_variation($id)
   {
@@ -295,6 +327,7 @@ class TicketController extends Controller
     $variation->delete();
     return 'success';
   }
+
   //bulk_delete
   public function bulk_delete(Request $request)
   {

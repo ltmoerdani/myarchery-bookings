@@ -485,6 +485,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
@@ -533,6 +534,7 @@ class EventController extends Controller
               $ticket['price'] = 300000;
               $ticket['f_price'] = 300000;
               $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+              $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
               $ticket['early_bird_discount'] = 'disable';
               $ticket['early_bird_discount_type'] = 'fixed';
               $ticket['late_price_discount'] = 'disable';
@@ -580,6 +582,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
@@ -610,6 +613,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
@@ -1086,6 +1090,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
@@ -1134,6 +1139,7 @@ class EventController extends Controller
               $ticket['price'] = 300000;
               $ticket['f_price'] = 300000;
               $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+              $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
               $ticket['early_bird_discount'] = 'disable';
               $ticket['early_bird_discount_type'] = 'fixed';
               $ticket['late_price_discount'] = 'disable';
@@ -1181,6 +1187,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
@@ -1211,6 +1218,7 @@ class EventController extends Controller
             $ticket['price'] = 300000;
             $ticket['f_price'] = 300000;
             $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
             $ticket['early_bird_discount'] = 'disable';
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';

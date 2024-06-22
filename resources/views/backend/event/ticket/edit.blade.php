@@ -381,7 +381,7 @@
                                                     <label class="selectgroup-item">
                                                         <input type="radio" name="early_bird_discount_type"
                                                             {{ $ticket->early_bird_discount == 'disable' ? 'checked' : '' }}
-                                                            value="disable" class="selectgroup-input" checked>
+                                                            value="disable" class="selectgroup-input">
                                                         <span class="selectgroup-button">{{ __('Disable') }}</span>
                                                     </label>
 
