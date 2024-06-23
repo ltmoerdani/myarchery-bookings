@@ -12,11 +12,11 @@ class GatewaySettings extends Model
   protected $table = 'gateway_settings';
   protected $fillable = [
     'payment_method',
-    'currency_id',
     'gateway_type',
-    'gateway_id',
-    'percentage_status',
-    'charge',
+    'currency',
+    'payment_channel',
+    'percentage_amount',
+    'fixed_amount',
     'fee',
     'min_limit',
     'max_limit',
@@ -24,6 +24,7 @@ class GatewaySettings extends Model
   ];
 
   protected $casts = [
+    'deleted_at' => 'datetime:Y-m-d H:m:s',
     'created_at' => 'datetime:Y-m-d H:m:s',
     'updated_at' => 'datetime:Y-m-d H:m:s'
   ];
