@@ -255,7 +255,7 @@
                                                             </button>
 
                                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                                <a href="{{ route('admin.event.edit.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type'), 'id' => $ticket->id]) }}"
+                                                                <a href="{{ route('admin.event.edit.ticket-tournament', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type'), 'title' => $ticket->title]) }}"
                                                                     class="dropdown-item">
                                                                     {{ __('Edit') }}
                                                                 </a>
