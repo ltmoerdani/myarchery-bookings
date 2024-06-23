@@ -152,7 +152,7 @@ class GatewaySettingsSeeder extends Seeder
                 'payment_method' => 'CREDIT_CARD',
                 'gateway_type' => 'Xendit',
                 'currency' => 'IDR',
-                'payment_channel' => 'Master Card, Visa, JCB, AE',
+                'payment_channel' => 'CREDIT_CARD',
                 'percentage_amount' => '2.90',
                 'fixed_amount' => '2000',
                 'fee' => 0,

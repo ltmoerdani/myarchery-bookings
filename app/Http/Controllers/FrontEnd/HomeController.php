@@ -28,6 +28,7 @@ use App\Models\HomePage\TestimonialSection;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use App\Http\Helpers\HelperPayment;
 
 class HomeController extends Controller
 {
@@ -155,20 +156,20 @@ class HomeController extends Controller
       $data = new XenditController();
       $data->callback_tournament($request);
       
-    // return $request->all();
-    // if (Session::get('xendit_payment_type') == 'event') {
-    //   $data = new XenditController();
-    //   $data->callback($request);
-    // } elseif (Session::get('xendit_payment_type') == 'shop') {
-    //   $data = new ShopXenditController();
-    //   $data->callback($request);
-    // } elseif (Session::get('xendit_payment_type') == 'tournament') {
-    //   $data = new XenditController();
-    //   $data->callback_tournament($request);
-    // }else{
-    //   $data = new XenditController();
-    //   $data->callback_tournament($request);
-    // }
+      // return $request->all();
+      // if (Session::get('xendit_payment_type') == 'event') {
+      //   $data = new XenditController();
+      //   $data->callback($request);
+      // } elseif (Session::get('xendit_payment_type') == 'shop') {
+      //   $data = new ShopXenditController();
+      //   $data->callback($request);
+      // } elseif (Session::get('xendit_payment_type') == 'tournament') {
+      //   $data = new XenditController();
+      //   $data->callback_tournament($request);
+      // }else{
+      //   $data = new XenditController();
+      //   $data->callback_tournament($request);
+      // }
   }
 
   public function myfatoorah_callback(Request $request)

@@ -508,6 +508,19 @@ class XenditController extends Controller
     $data = $request->all();
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
 
+    if($data['payment_method'] == "CREDIT_CARD"){
+      $payment_channel = "CREDIT_CARD";
+    }elseif($data['payment_method'] == "QR_CODE"){
+      $payment_channel = "QR_CODE";
+    }else{
+      $payment_channel = $data['payment_channel'];
+    }
+
+    $getPaymentFee['amount'] = $data['amount'];
+    $getPaymentFee['payment_method'] = $data['payment_method'];
+    $getPaymentFee['payment_channel'] = $payment_channel;
+    $fee = HelperPayment::getPaymentFee($getPaymentFee);
+
     if ($data['status'] == 'PAID') {
       $bookings_payment->callback = json_encode($data);
       $bookings_payment->payment_method = $data['payment_method'];
@@ -523,6 +536,7 @@ class XenditController extends Controller
       $bookings_payment->currency = $data['currency'];
       $bookings_payment->payment_channel = $data['payment_channel'];
       $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->payment_fee = $fee;
       $bookings_payment->save();
 
       // send a mail to the customer with the invoice
@@ -551,6 +565,7 @@ class XenditController extends Controller
       $bookings_payment->currency = $data['currency'];
       $bookings_payment->payment_channel = $data['payment_channel'];
       $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->payment_fee = $fee;
       $bookings_payment->save();
       
       $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
