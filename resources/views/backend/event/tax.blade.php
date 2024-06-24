@@ -48,8 +48,8 @@
               <div class="col-lg-6 offset-lg-3">
                 <div class="form-group">
                   <label>{{ __('Tax') . '* (%)' }}</label>
-                  <input type="number" step="0.01" class="form-control" name="tax"
-                    value="{{ $content->tax != null ? $content->tax : '' }}" placeholder="{{ __('Enter Tax Amount') }}">
+                  <input type="number" step="0.01" class="form-control" name="tax" 
+                    value="{{ $content->tax != null ? $content->tax : 0 }}" placeholder="{{ __('Enter Tax Amount') }}">
                   @error('tax')
                     <p class="mt-2 mb-0 text-danger">{{ $message }}</p>
                   @enderror
@@ -57,7 +57,11 @@
               </div>
               <div class="col-lg-6 offset-lg-3">
                 <div class="form-group">
-                  <label for="">{{ __('Commission') }} (%)</label>
+                  <label for="">{{ __('Commission') }}</label>
+                  <select name="commission_type" class="form-control">
+                    <option value="percentage" {{ $content->commission_type == 'percentage' ? 'selected' : '' }}>Percentage</option>
+                    <option value="fixed" {{ $content->commission_type == 'fixed' ? 'selected' : '' }}>Fixed</option>
+                  </select><br>
                   <input type="text" class="form-control" name="commission"
                     value="{{ $content ? $content->commission : '' }}" placeholder="{{ __('Enter Commission') }}">
                   @if ($errors->has('commission'))

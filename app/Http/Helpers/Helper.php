@@ -225,14 +225,24 @@ if (!function_exists('get_href')) {
 if (!function_exists('storeTranscation')) {
   function storeTranscation($booking)
   {
+    $basic = Basic::where('uniqid', 12345)->select('commission_type')->first();
     $organizer = Organizer::where('id', $booking->organizer_id)->first();
+
+    if($basic->commission_type == 'percentage'){
+      $commission = $booking->commission;
+    }else{
+      $commission = $basic->commission;
+    }
+
     if ($organizer != NULL) {
       $pre_balance = $organizer->amount;
-      $after_balance = $organizer->amount + ($booking->price - $booking->commission);
+      // $after_balance = $organizer->amount + ($booking->price - $booking->commission);
+      $after_balance = $organizer->amount + ($booking->price - $commission);
     } else {
       $pre_balance = NULL;
       $after_balance = NULL;
     }
+    
     //store data to transcation table
     $transcation = Transaction::create([
       'transcation_id' => time(),
@@ -245,7 +255,7 @@ if (!function_exists('storeTranscation')) {
       'payment_url' => $booking->invoice_url_booking,
       'grand_total' => $booking->price,
       'tax' => $booking->tax,
-      'commission' => $booking->commission,
+      'commission' => $commission,
       'pre_balance' => $pre_balance == null ? 0 : $pre_balance,
       'after_balance' => $after_balance,
       'gateway_type' => $booking->gatewayType,
