@@ -434,7 +434,6 @@
                                                             value="{{ $ticket->early_bird_discount_time }}"class="form-control">
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <!--=====--variationwise ticket & early bird discount--====== --->

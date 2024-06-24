@@ -375,6 +375,7 @@ $(document).ready(function () {
       $("#ticket_available").addClass("d-none");
     }
   });
+
   // course price type
   $('input:radio[name="max_ticket_buy_type"]').on("change", function () {
     let radioBtnVal = $(
@@ -412,6 +413,33 @@ $(document).ready(function () {
       $("#early_bird_dicount").addClass("d-none");
     }
   });
+
+  // event early bird price for tournament
+  $('input:radio[name="early_bird_discount"]').on("change", function () {
+    let radioBtnVal = $(
+      'input:radio[name="early_bird_discount"]:checked'
+    ).val();
+
+    if (radioBtnVal == "enable") {
+      $("#early_bird_dicount").removeClass("d-none");
+    } else {
+      $("#early_bird_dicount").addClass("d-none");
+    }
+  });
+
+  // event late price for tournament
+  $('input:radio[name="late_price_discount"]').on("change", function () {
+    let radioBtnVal = $(
+      'input:radio[name="late_price_discount"]:checked'
+    ).val();
+
+    if (radioBtnVal == "enable") {
+      $("#late_price_dicount").removeClass("d-none");
+    } else {
+      $("#late_price_dicount").addClass("d-none");
+    }
+  });
+
   // event price type
   $('input:radio[name="pricing_type_2"]').on("change", function () {
     let radioBtnVal = $('input:radio[name="pricing_type_2"]:checked').val();
@@ -639,6 +667,41 @@ $(document).ready(function () {
         location.reload();
       }
     });
+  });
+
+  changeStatusPrice = (id) => {
+    const statusPriceDefault = document.getElementById(
+      `default_price_status_${id}`
+    ).checked;
+
+    const formVariant = document.getElementById(`form_variant_price_${id}`);
+    if (statusPriceDefault) {
+      formVariant.classList.add("d-none");
+    } else {
+      formVariant.classList.remove("d-none");
+    }
+
+    // document.getElementById(`ticket_price_local_${id}`).value = 0;
+
+    // const defaultPriceInternational = document.getElementById(
+    //   `ticket_price_international_${id}`
+    // );
+
+    // if (defaultPriceInternational) {
+    //   defaultPriceInternational.value = 0;
+    // }
+  };
+
+  $('input:radio[name="max_ticket_buy_type"]').on("change", function () {
+    let radioBtnVal = $(
+      'input:radio[name="max_ticket_buy_type"]:checked'
+    ).val();
+
+    if (radioBtnVal == "limited") {
+      $("#form_input_each_customer").removeClass("d-none");
+    } else {
+      $("#form_input_each_customer").addClass("d-none");
+    }
   });
 });
 

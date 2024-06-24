@@ -286,16 +286,36 @@ class TicketController extends Controller
     }
 
     $information['event'] = $event;
-    $ticket = Ticket::where('title', $request->title)->where('event_id', $request->event_id)->get();
-    $information['list_ticket'] = $ticket;
+    $tickets = Ticket::where('title', $request->title)->where('event_id', $request->event_id)->get();
 
+    $ticket_info = [];
+    foreach ($tickets as $ticket) {
+      $ticket_contents = TicketContent::where('ticket_id', $ticket->id)->get();
+      $detail_ticket_content = [];
+      if (!empty($ticket_contents)) {
+        foreach ($ticket_contents as $ticket_content) {
+          $language = Language::find($ticket_content->language_id);
+          $ticket_content->language_code = $language->code;
+          array_push($detail_ticket_content, $ticket_content);
+        }
+      }
 
+      if ($ticket->pricing_scheme == 'dual_price') {
+        $ticket->use_default_price = $ticket->price != $ticket->f_price || $ticket->international_price != $ticket->f_international_price ? false : true;
+      } else {
+        $ticket->use_default_price = $ticket->price != $ticket->f_price ? false : true;
+      }
+
+      $ticket->ticket_content = $detail_ticket_content;
+      array_push($ticket_info, $ticket);
+    }
+
+    $information['list_ticket'] = $ticket_info;
     $information['ticket'] = Ticket::where('title', $request->title)
       ->where('event_id', $request->event_id)
       ->first();
 
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
-    // dd($information['ticket']);
     return view('backend.event.ticket.edit_tournament', $information);
   }
   // update tournament
