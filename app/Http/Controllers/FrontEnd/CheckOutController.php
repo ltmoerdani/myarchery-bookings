@@ -163,49 +163,70 @@ class CheckOutController extends Controller
 
         // ============================ early_bird_discount ====================================
         if ($ticket->early_bird_discount == 'enable') {
-          $start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-          $end = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+
+          $early_bird_start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+          $early_bird_end = Carbon::parse($ticket->early_bird_discount_end_date . $ticket->early_bird_discount_end_time);
           $today = Carbon::now();
-          if ($today <= ($end)) {
-            $early_bird_discount_international_ticket = empty($ticket->early_bird_discount_amount_international) ? 0 : $ticket->early_bird_discount_amount_international;
+          if (($today >= $early_bird_start) && ($today <= $early_bird_end)) {
             if ($ticket->early_bird_discount_type == 'fixed') {
               $early_bird_dicount = $ticket->early_bird_discount_amount;
-              $early_bird_dicount_international = $early_bird_discount_international_ticket;
             } else {
               $early_bird_dicount = ($ticket->early_bird_discount_amount * $ticket->price) / 100;
-              $early_bird_dicount_international = ($early_bird_discount_international_ticket * $ticket->international_price) / 100;
             }
           } else {
             $early_bird_dicount = 0;
+          }
+
+          $early_bird_int_start = Carbon::parse($ticket->early_bird_discount_international_date . $ticket->early_bird_discount_international_time);
+          $early_bird_int_end = Carbon::parse($ticket->early_bird_discount_international_end_date . $ticket->early_bird_discount_international_end_time);
+          if (($today >= $early_bird_int_start) && ($today <= $early_bird_int_end)) {
+            if ($ticket->early_bird_discount_international_type == 'fixed') {
+              $early_bird_dicount_international = $ticket->early_bird_discount_amount_international;
+            } else {
+              $early_bird_dicount_international = ($ticket->early_bird_discount_amount_international * $ticket->international_price) / 100;
+            }
+          } else {
             $early_bird_dicount_international = 0;
           }
+
         } else {
           $early_bird_dicount = 0;
           $early_bird_dicount_international = 0;
         }
 
+
         // ============================ late_price_discount ====================================
         if ($ticket->late_price_discount == 'enable') {
-          $start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
-          $end = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
-          $event_end_date_time = Carbon::parse($event->end_date_time);
-          if (($start) <= ($event_end_date_time)) {
-            $late_price_discount_international_ticket = empty($ticket->late_price_discount_amount_international) ? 0 : $ticket->late_price_discount_amount_international;
+          $late_start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
+          $late_end = Carbon::parse($ticket->late_price_discount_end_date . $ticket->late_price_discount_end_time);
+          $today = Carbon::now();
+          if (($today >= $late_start) && ($today <= $late_end)) {
             if ($ticket->late_price_discount_type == 'fixed') {
               $late_price_dicount = $ticket->late_price_discount_amount;
-              $late_price_dicount_international = $late_price_discount_international_ticket;
             } else {
               $late_price_dicount = ($ticket->late_price_discount_amount * $ticket->price) / 100;
-              $late_price_dicount_international = ($late_price_discount_international_ticket * $ticket->international_price) / 100;
             }
           } else {
             $late_price_dicount = 0;
-            $late_price_dicount_international = 0;
           }
+
+          $late_int_start = Carbon::parse($ticket->late_price_discount_international_date . $ticket->late_price_discount_international_time);
+          $late_int_end = Carbon::parse($ticket->late_price_discount_international_end_date . $ticket->late_price_discount_international_end_time);
+          if (($today >= $late_int_start) && ($today <= $late_int_end)) {
+            if ($ticket->late_price_discount_international_type == 'fixed') {
+              $late_price_dicount_international = $ticket->late_price_discount_amount_international;
+            } else {
+              $late_price_dicount_international = ($ticket->late_price_discount_amount_international * $ticket->international_price) / 100;
+            }
+          } else {
+            $late_price_dicount_international = 0;
+          } 
+
         } else {
           $late_price_dicount = 0;
           $late_price_dicount_international = 0;
         }
+
 
         if ($country[$k] == "102") { //Indonesia
           $ticketprice = $ticket->price;
