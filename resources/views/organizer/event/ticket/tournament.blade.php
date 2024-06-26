@@ -128,6 +128,12 @@
 
                                                     </td>
                                                     <td>
+                                                        {{ $ticket->local_price }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $ticket->international_price }}
+                                                    </td>
+                                                    {{-- <td>
                                                         @if ($ticket->pricing_type == 'normal')
                                                             @if ($ticket->early_bird_discount == 'enable')
                                                                 @php
@@ -211,7 +217,6 @@
 
                                                     </td>
                                                     <td>
-                                                        <!-- {{ symbolPrice($ticket->international_price) }} -->
                                                         @if ($ticket->pricing_type == 'normal')
                                                             @if ($ticket->early_bird_discount == 'enable')
                                                                 @php
@@ -245,7 +250,7 @@
                                                                 {{ symbolPrice($ticket->international_price) }}
                                                             @endif
                                                         @endif
-                                                    </td>
+                                                    </td> --}}
                                                     <td>
                                                         <div class="dropdown">
                                                             <button class="btn btn-secondary dropdown-toggle btn-sm"
@@ -256,7 +261,7 @@
                                                             </button>
 
                                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                                <a href="{{ route('admin.event.edit.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type'), 'id' => $ticket->id]) }}"
+                                                                <a href="{{ route('organizer.event.edit.ticket-tournament', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type'), 'title' => $ticket->title]) }}"
                                                                     class="dropdown-item">
                                                                     {{ __('Edit') }}
                                                                 </a>

@@ -4,19 +4,19 @@ namespace App\Http\Controllers\BackEnd\Organizer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Ticket\TicketTournamentRequest;
 use App\Models\Language;
 use App\Models\Event;
-use App\Models\Event\EventImage;
 use App\Models\Event\EventContent;
 use App\Models\Event\Ticket;
-use App\Models\Event\TicketVariation;
 use App\Http\Requests\Event\TicketRequest;
 use App\Models\Event\TicketContent;
 use App\Models\Event\VariationContent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Validator;
-use Purifier;
+use App\Models\Event\Booking;
+use Illuminate\Support\Facades\DB;
+
 
 class TicketController extends Controller
 {
@@ -45,18 +45,24 @@ class TicketController extends Controller
       $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
       foreach ($tickets as $key => $ticket) {
         $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
-        // $price_list = [];
         $ticket_available = [];
         $international_price = [];
+        $local_price = [];
 
         foreach ($detailTicket as $valDetailTicket) {
-          // array_push($price_list,  intval($valDetailTicket->price));
           array_push($ticket_available, intval($valDetailTicket->ticket_available));
-          array_push($international_price, intval($valDetailTicket->international_price));
+
+          if (!in_array($valDetailTicket->international_price, $international_price)) {
+            array_push($international_price, intval($valDetailTicket->international_price));
+          }
+
+          if (!in_array($valDetailTicket->price, $local_price)) {
+            array_push($local_price, intval($valDetailTicket->price));
+          }
         }
-        // $tickets[$key]->price = array_sum($price_list);
-        $tickets[$key]->ticket_available = array_sum($ticket_available);
-        $tickets[$key]->international_price = array_sum($international_price);
+        $tickets[$key]->ticket_available = empty($ticket_available) ? 0 : implode(", ", $ticket_available);
+        $tickets[$key]->international_price = empty($international_price) ? 0 : implode(", ", $international_price);
+        $tickets[$key]->local_price = empty($local_price) ? 0 : implode(", ", $local_price);
       };
       $information['tickets'] = $tickets;
       return view('organizer.event.ticket.tournament', compact('information', 'languages'));
@@ -65,13 +71,8 @@ class TicketController extends Controller
       $information['tickets'] = $tickets;
       return view('organizer.event.ticket.index', compact('information', 'languages'));
     }
-
-    // $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'desc')->get();
-    // $information['event'] = $event;
-
-    // $information['tickets'] = $tickets;
-    // return view('organizer.event.ticket.index', compact('information', 'languages'));
   }
+
   //create
   public function create(Request $request)
   {
@@ -93,6 +94,7 @@ class TicketController extends Controller
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
     return view('organizer.event.ticket.create', $information);
   }
+
   //store
   public function store(TicketRequest $request)
   {
@@ -166,6 +168,7 @@ class TicketController extends Controller
 
     return response()->json(['status' => 'success'], 200);
   }
+
   //edit
   public function edit(Request $request)
   {
@@ -190,6 +193,7 @@ class TicketController extends Controller
     $information['variations'] = $variations;
     return view('organizer.event.ticket.edit', $information);
   }
+
   //update
   public function update(TicketRequest $request)
   {
@@ -273,6 +277,213 @@ class TicketController extends Controller
 
     return response()->json(['status' => 'success'], 200);
   }
+
+  // edit tournament ticket
+  public function editTournament(Request $request)
+  {
+    $evnt = Event::where('id', $request->event_id)->select('organizer_id')->firstOrFail();
+    if (!($evnt) || $evnt->organizer_id != Auth::guard('organizer')->user()->id) {
+      return redirect()->route('organizer.dashboard');
+    }
+
+    $languages = Language::get();
+    $information['languages'] = $languages;
+
+    $event = EventContent::where('event_id', $request->event_id)->first();
+    if (empty($event)) {
+      return abort(404);
+    }
+    $information['event'] = $event;
+    $tickets = Ticket::where('title', $request->title)->where('event_id', $request->event_id)->get();
+
+    $ticket_info = [];
+    foreach ($tickets as $ticket) {
+      $ticket_contents = TicketContent::where('ticket_id', $ticket->id)->get();
+      $detail_ticket_content = [];
+      if (!empty($ticket_contents)) {
+        foreach ($ticket_contents as $ticket_content) {
+          $language = Language::find($ticket_content->language_id);
+          $ticket_content->language_code = $language->code;
+          array_push($detail_ticket_content, $ticket_content);
+        }
+      }
+
+      if ($ticket->pricing_scheme == 'dual_price') {
+        $ticket->use_default_price = $ticket->price != $ticket->f_price || $ticket->international_price != $ticket->f_international_price ? false : true;
+      } else {
+        $ticket->use_default_price = $ticket->price != $ticket->f_price ? false : true;
+      }
+
+      $ticket->ticket_content = $detail_ticket_content;
+      array_push($ticket_info, $ticket);
+    }
+
+    $information['list_ticket'] = $ticket_info;
+    $information['ticket'] = Ticket::where('title', $request->title)
+      ->where('event_id', $request->event_id)
+      ->first();
+
+    $information['getCurrencyInfo']  = $this->getCurrencyInfo();
+
+    return view('organizer.event.ticket.edit_tournament', $information);
+  }
+
+  // update tournament ticket
+  public function updateTournament(TicketTournamentRequest $request)
+  {
+    try {
+      if (empty(Auth::guard('organizer'))) {
+        return Response(
+          [
+            'errors' => [
+              'message' => [
+                'Update Error, because not have sessions login'
+              ]
+            ]
+          ],
+          401
+        );
+      }
+
+      $checkEvent = Event::where('id', $request->event_id)
+        ->where('organizer_id', Auth::guard('organizer')->user()->id)
+        ->first();
+
+      if (empty($checkEvent)) {
+        return Response([
+          'errors' => [
+            'message' => [
+              'Update Error, Because event not found!'
+            ]
+          ]
+        ], 404);
+      }
+
+      $check_have_a_bookings = Booking::where('event_id', $request->event_id)
+        ->whereIn('paymentStatus', ['completed', 'pending'])
+        ->get()
+        ->count();
+
+      if ($check_have_a_bookings > 0) {
+        return Response([
+          'errors' => [
+            'message' => [
+              'Update Error, Because the event already has participants who have booked'
+            ]
+          ]
+        ], 403);
+      }
+
+      $checkTicket = Ticket::where('event_id', $request->event_id)
+        ->whereIn('id', $request->ticket_id)
+        ->doesntExist();
+
+      if ($checkTicket) {
+        return Response([
+          'errors' => [
+            'message' => [
+              'Update Error, Because list category ticket not found!'
+            ]
+          ]
+        ], 404);
+        // if (empty($checkEvent)) {
+        //   return Response([
+        //     'errors' => [
+        //       'message' => [
+        //         'Update Error, Because list category ticket not found!'
+        //       ]
+        //     ]
+        //   ], 404);
+        // }
+      }
+
+      DB::transaction(function () use ($request) {
+        foreach ($request->ticket_id as $ticket_id) {
+          $price = 0;
+          $international_price = 0;
+
+          if (!empty($request->use_default_price)) {
+            if (!empty($request->use_default_price[$ticket_id])) {
+              $price = empty($request->f_price) ? 0 : $request->f_price;
+              $international_price = empty($request->f_international_price) ? 0 : $request->f_international_price;
+            } else {
+              $price = empty($request->ticket_price_local[$ticket_id]) ? 0 : $request->ticket_price_local[$ticket_id];
+              $international_price = empty($request->ticket_price_international[$ticket_id]) ? 0 : $request->ticket_price_international[$ticket_id];
+            }
+          } else {
+            $price = empty($request->ticket_price_local[$ticket_id]) ? 0 : $request->ticket_price_local[$ticket_id];
+            $international_price = empty($request->ticket_price_international[$ticket_id]) ? 0 : $request->ticket_price_international[$ticket_id];
+          }
+
+          $ticket = Ticket::find($ticket_id);
+          $ticket->f_price = empty($request->f_price) ? 0 : $request->f_price;
+          $ticket->f_international_price = empty($request->f_international_price) ? 0 : $request->f_international_price;
+          $ticket->ticket_available_type = 'limited';
+          $ticket->ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
+          $ticket->price = $price;
+          $ticket->international_price = $international_price;
+          $ticket->max_ticket_buy_type = $request->max_ticket_buy_type;
+          $ticket->max_buy_ticket = strtolower($request->max_ticket_buy_type) == 'unlimited' ? null : $request->max_buy_ticket;
+
+          // early bird local
+          $ticket->early_bird_discount = $request->early_bird_discount;
+          $ticket->early_bird_discount_amount = empty($request->early_bird_discount_amount) ? null : $request->early_bird_discount_amount;
+          $ticket->early_bird_discount_type = $request->early_bird_discount_local_type;
+          $ticket->early_bird_discount_date = $request->early_bird_discount_date;
+          $ticket->early_bird_discount_time = $request->early_bird_discount_time;
+          $ticket->early_bird_discount_end_date = $request->early_bird_discount_end_date;
+          $ticket->early_bird_discount_end_time = $request->early_bird_discount_end_time;
+
+          // late price local
+          $ticket->late_price_discount = $request->late_price_discount;
+          $ticket->late_price_discount_type = $request->late_price_discount_type;
+          $ticket->late_price_discount_amount = $request->late_price_discount_amount;
+          $ticket->late_price_discount_date = $request->late_price_discount_date;
+          $ticket->late_price_discount_time = $request->late_price_discount_time;
+          $ticket->late_price_discount_end_date = $request->late_price_discount_end_date;
+          $ticket->late_price_discount_end_time = $request->late_price_discount_end_time;
+
+          // for early bird and late price international
+          if ($request->pricing_scheme == 'dual_price') {
+            $ticket->early_bird_discount_amount_international = empty($request->early_bird_discount_amount_international) ? null : $request->early_bird_discount_amount_international;
+            $ticket->early_bird_discount_international_type = $request->early_bird_discount_international_type;
+            $ticket->early_bird_discount_international_date = $request->early_bird_discount_international_date;
+            $ticket->early_bird_discount_international_time = $request->early_bird_discount_international_time;
+            $ticket->early_bird_discount_international_end_date = $request->early_bird_discount_international_end_date;
+            $ticket->early_bird_discount_international_end_time = $request->early_bird_discount_international_end_time;
+
+            $ticket->late_price_discount_international_type = $request->late_price_discount_international_type;
+            $ticket->late_price_discount_amount_international = empty($request->late_price_discount_amount_international) ? 0 : $request->late_price_discount_amount_international;
+            $ticket->late_price_discount_international_date = $request->late_price_discount_international_date;
+            $ticket->late_price_discount_international_time = $request->late_price_discount_international_time;
+            $ticket->late_price_discount_international_end_date = $request->late_price_discount_international_end_date;
+            $ticket->late_price_discount_international_end_time = $request->late_price_discount_international_end_time;
+          } else {
+            $ticket->early_bird_discount_amount_international = null;
+            $ticket->early_bird_discount_international_type = null;
+            $ticket->early_bird_discount_international_date = null;
+            $ticket->early_bird_discount_international_time = null;
+            $ticket->early_bird_discount_international_end_date = null;
+            $ticket->early_bird_discount_international_end_time = null;
+
+            $ticket->late_price_discount_international_type = null;
+            $ticket->late_price_discount_amount_international = null;
+            $ticket->late_price_discount_international_date = null;
+            $ticket->late_price_discount_international_time = null;
+            $ticket->late_price_discount_international_end_date = null;
+            $ticket->late_price_discount_international_end_time = null;
+          }
+
+          $ticket->save();
+        }
+      });
+      Session::flash('success', 'Updated Successfully');
+      return response()->json(['status' => 'success'], 200);
+    } catch (\Exception $e) {
+      return $e->getMessage();
+    }
+  }
+
   //destroy
   public function destroy(Request $request)
   {
@@ -280,13 +491,15 @@ class TicketController extends Controller
     $ticket->delete();
     return redirect()->back()->with('success', 'Deleted Successfully');
   }
+
   //delete_variation
   public function delete_variation($id)
   {
-    $variation = TicketVariation::where('id', $id)->first();
-    $variation->delete();
+    // $variation = TicketVariation::where('id', $id)->first();
+    // $variation->delete();
     return 'success';
   }
+
   //bulk_delete
   public function bulk_delete(Request $request)
   {

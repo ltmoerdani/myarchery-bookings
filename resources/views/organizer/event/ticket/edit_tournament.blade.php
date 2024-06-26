@@ -1,11 +1,11 @@
-@extends('backend.layout')
+@extends('organizer.layout')
 
 @section('content')
     <div class="page-header">
         <h4 class="page-title">{{ __('Edit Ticket') }}</h4>
         <ul class="breadcrumbs">
             <li class="nav-home">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('organizer.dashboard') }}">
                     <i class="flaticon-home"></i>
                 </a>
             </li>
@@ -20,7 +20,7 @@
             </li>
             <li class="nav-item">
                 <a
-                    href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
+                    href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
             </li>
             <li class="separator">
                 <i class="flaticon-right-arrow"></i>
@@ -36,7 +36,9 @@
             </li>
             <li class="nav-item">
                 <a
-                    href="{{ route('admin.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">{{ __('Tickets') }}</a>
+                    href="{{ route('organizer.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">
+                    {{ __('Tickets') }}
+                </a>
             </li>
 
             <li class="separator">
@@ -66,7 +68,7 @@
                                 {{ __('Preview') }}
                             </a>
                             <a class="btn btn-info btn-sm float-right d-inline-block mr-2"
-                                href="{{ route('admin.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">
+                                href="{{ route('organizer.event.ticket', ['language' => $defaultLang->code, 'event_id' => request()->input('event_id'), 'event_type' => request()->input('event_type')]) }}">
                                 <span class="btn-label">
                                     <i class="fas fa-backward"></i>
                                 </span>
@@ -82,8 +84,9 @@
                                 <button type="button" class="close" data-dismiss="alert">×</button>
                                 <ul></ul>
                             </div>
-                            <form id="eventForm" method="POST" enctype="multipart/form-data"
-                                action="{{ route('admin.ticket_management.update_ticket_tournament') }}">
+                            <form id="eventForm"
+                                action="{{ route('organizer.ticket_management.update_ticket_tournament') }}" method="POST"
+                                enctype="multipart/form-data">
                                 <input type="hidden" name="event_type" value="{{ request()->input('event_type') }}">
                                 <input type="hidden" name="event_id" value="{{ request()->input('event_id') }}">
                                 <input type="hidden" name="pricing_scheme" value="{{ $ticket->pricing_scheme }}">

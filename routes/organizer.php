@@ -75,9 +75,11 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::get('event/add-ticket', 'BackEnd\Organizer\TicketController@create')->name('organizer.event.add.ticket');
   Route::post('event/ticket/store-ticket', 'BackEnd\Organizer\TicketController@store')->name('organizer.ticket_management.store_ticket');
   Route::get('event/edit/ticket', 'BackEnd\Organizer\TicketController@edit')->name('organizer.event.edit.ticket');
+  Route::get('event/edit/ticket-tournament', 'BackEnd\Organizer\TicketController@editTournament')->name('organizer.event.edit.ticket-tournament');
   Route::post('event/ticket/delete-ticket', 'BackEnd\Organizer\TicketController@destroy')->name('organizer.ticket_management.delete_ticket');
   Route::get('delete-variation/{id}', 'BackEnd\Organizer\TicketController@delete_variation')->name('organizer.delete.variation');
   Route::post('ticket_management/update/ticket', 'BackEnd\Organizer\TicketController@update')->name('organizer.ticket_management.update_ticket');
+  Route::post('ticket_management/update/ticket-tournament', 'BackEnd\Organizer\TicketController@updateTournament')->name('organizer.ticket_management.update_ticket_tournament');
   Route::post('bulk/delete/bulk/event/ticket', 'BackEnd\Organizer\TicketController@bulk_delete')->name('organizer.event_management.bulk_delete_event_ticket');
 
   Route::get('withdraw', 'BackEnd\Organizer\OrganizerWithdrawController@index')->name('organizer.withdraw');

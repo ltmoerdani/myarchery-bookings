@@ -90,8 +90,8 @@
                                             <tr>
                                                 <th scope="col">{{ __('Title') }}</th>
                                                 <th scope="col">{{ __('Tickets Available') }}</th>
-                                                <th scope="col">{{ __('Local Price*') }}</th>
-                                                <th scope="col">{{ __('International Price*') }}</th>
+                                                <th scope="col">{{ __('Local Price') . ' (IDR)' }}</th>
+                                                <th scope="col">{{ __('International Price') . ' (IDR)' }}</th>
                                                 <th scope="col">{{ __('Actions') }}</th>
                                             </tr>
                                         </thead>
@@ -127,6 +127,12 @@
 
                                                     </td>
                                                     <td>
+                                                        {{ $ticket->local_price }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $ticket->international_price }}
+                                                    </td>
+                                                    {{-- <td>
                                                         @if ($ticket->pricing_type == 'normal')
                                                             @if ($ticket->early_bird_discount == 'enable')
                                                                 @php
@@ -210,7 +216,6 @@
 
                                                     </td>
                                                     <td>
-                                                        <!-- {{ symbolPrice($ticket->international_price) }} -->
                                                         @if ($ticket->pricing_type == 'normal')
                                                             @if ($ticket->early_bird_discount == 'enable')
                                                                 @php
@@ -244,7 +249,7 @@
                                                                 {{ symbolPrice($ticket->international_price) }}
                                                             @endif
                                                         @endif
-                                                    </td>
+                                                    </td> --}}
                                                     <td>
                                                         <div class="dropdown">
                                                             <button class="btn btn-secondary dropdown-toggle btn-sm"
