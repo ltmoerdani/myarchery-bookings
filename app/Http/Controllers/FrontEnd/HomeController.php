@@ -69,9 +69,9 @@ class HomeController extends Controller
     if ($sectionInfo->about_us_section_status == 1) {
       $queryResult['aboutUsInfo'] = $language->aboutUsSec()->first();
     }
-    $queryResult['heroSection'] = HeroSection::where('language_id', $language->id)->first();
+    $queryResult['heroSection'] = HeroSection::where('language_id', $language->id)->get();
     $queryResult['eventCategories'] = EventCategory::where([['language_id', $language->id], ['status', 1], ['is_featured', 'yes']])->orderBy('serial_number', 'asc')->get();
-
+    // dd($queryResult);
     $queryResult['aboutUsSection'] = AboutUsSection::where('language_id', $language->id)->first();
 
     $queryResult['featureEventSection'] = EventFeatureSection::where('language_id', $language->id)->first();
@@ -152,24 +152,25 @@ class HomeController extends Controller
     return redirect()->route('index')->with(['alert-type' => 'error', 'message' => 'Payment Canceled.']);
   }
 
-  public function xendit_callback(Request $request){
-      $data = new XenditController();
-      $data->callback_tournament($request);
-      
-      // return $request->all();
-      // if (Session::get('xendit_payment_type') == 'event') {
-      //   $data = new XenditController();
-      //   $data->callback($request);
-      // } elseif (Session::get('xendit_payment_type') == 'shop') {
-      //   $data = new ShopXenditController();
-      //   $data->callback($request);
-      // } elseif (Session::get('xendit_payment_type') == 'tournament') {
-      //   $data = new XenditController();
-      //   $data->callback_tournament($request);
-      // }else{
-      //   $data = new XenditController();
-      //   $data->callback_tournament($request);
-      // }
+  public function xendit_callback(Request $request)
+  {
+    $data = new XenditController();
+    $data->callback_tournament($request);
+
+    // return $request->all();
+    // if (Session::get('xendit_payment_type') == 'event') {
+    //   $data = new XenditController();
+    //   $data->callback($request);
+    // } elseif (Session::get('xendit_payment_type') == 'shop') {
+    //   $data = new ShopXenditController();
+    //   $data->callback($request);
+    // } elseif (Session::get('xendit_payment_type') == 'tournament') {
+    //   $data = new XenditController();
+    //   $data->callback_tournament($request);
+    // }else{
+    //   $data = new XenditController();
+    //   $data->callback_tournament($request);
+    // }
   }
 
   public function myfatoorah_callback(Request $request)

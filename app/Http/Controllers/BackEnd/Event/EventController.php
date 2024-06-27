@@ -757,6 +757,7 @@ class EventController extends Controller
       return 'false';
     }
   }
+
   public function images($portid)
   {
     $images = EventImage::where('event_id', $portid)->get();

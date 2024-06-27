@@ -533,6 +533,20 @@ a.theme-btn-outline-primary-1:hover {
   position: relative;
 }
 
+.image-overlay-tournament {
+  display: inline-block !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  max-height: 15rem !important;
+}
+
+.image-overlay {
+  display: inline-block !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  max-height: 30rem !important;
+}
+
 .rel {
   position: relative;
 }

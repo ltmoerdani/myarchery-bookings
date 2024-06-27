@@ -37,10 +37,11 @@
                                 <div class="event-details-image mb-50">
                                     <div class="event-details-images">
                                         @foreach ($images as $item)
-                                            <a href="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}"><img
-                                                    class="lazy"
+                                            <a href="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}">
+                                                <img class="lazy image-overlay-tournament"
                                                     data-src="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}"
-                                                    alt="Event Details"></a>
+                                                    alt="Event Details">
+                                            </a>
                                         @endforeach
                                     </div>
 
@@ -427,8 +428,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                    <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                    <hr> -->
+                                                                                                                                    <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                    <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -1132,19 +1133,19 @@ AS competition_type
                 const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                 const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                 content += `
-                                          <div class="card">
-                                              <div class="card-body p-2">
-                                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                                                      ${val.ticket_title}
-                                                  </h5>
-                                                  <div class="text-center">
-                                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
-                                                          ${status}: ${val.available_qouta}/${val.max_qouta}
-                                                      </span>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                        `
+                                                                          <div class="card">
+                                                                              <div class="card-body p-2">
+                                                                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                                                                                      ${val.ticket_title}
+                                                                                  </h5>
+                                                                                  <div class="text-center">
+                                                                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                                                                          ${status}: ${val.available_qouta}/${val.max_qouta}
+                                                                                      </span>
+                                                                                  </div>
+                                                                              </div>
+                                                                          </div>
+                                                                        `
             })
 
             setTimeout(() => {

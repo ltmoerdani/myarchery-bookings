@@ -557,6 +557,13 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
 
     Route::post('/update-hero-section', 'BackEnd\HomePage\HeroController@update')->name('admin.home_page.update_hero_section');
 
+    Route::get('/hero-section/images/{id}', 'BackEnd\HomePage\HeroController@imagesHeroSection')->name('admin.home_page.images_hero_section');
+
+    Route::post('/hero-section/upload-images', 'BackEnd\HomePage\HeroController@storeImagesHeroSection')->name('admin.home_page.upload_image_hero_section');
+
+    Route::post('/hero-section/remove-images', 'BackEnd\HomePage\HeroController@rmvImageHeroSection')->name('admin.home_page.imagermvherosection');
+    Route::post('/hero-section/img-dbrmv', 'BackEnd\HomePage\HeroController@imagedbrmv')->name('admin.home_page.imgdbrmv');
+
     // section title
     Route::get('/section-titles', 'BackEnd\HomePage\SectionTitleController@index')->name('admin.home_page.section_titles');
 
