@@ -340,6 +340,12 @@ a.theme-btn-outline-primary-1:hover {
   background: var(--warning) !important;
 }
 
+.button-warning-custom.active {
+  color: #fff !important;
+  background-color: var(--warning) !important;
+  border: 1px solid var(--warning) !important;
+}
+
 /* Learn More Btn */
 .read-more {
   color: #333333;
