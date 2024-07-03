@@ -433,8 +433,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                        <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                        <hr> -->
+                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                            <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -1182,7 +1182,6 @@ AS competition_type
             $(`.button-sub-category-${categoryKeyID}-${categoryID}`).addClass("active")
             let content = ''
             dataTickets.map((val) => {
-                console.log("val:", val)
                 const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                 const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                 content += `
