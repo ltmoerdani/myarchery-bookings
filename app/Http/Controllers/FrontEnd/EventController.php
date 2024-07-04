@@ -235,13 +235,14 @@ class EventController extends Controller
 
             $language = $this->getLanguage();
             $ticket = Ticket::join('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')->where('ticket_contents.language_id', $language->id)
-              ->select(DB::raw('tickets.id, ticket_contents.title, tickets.ticket_available, tickets.max_ticket_buy_type, "' . $s->name . '" as name'))
+              ->select(DB::raw('tickets.id, ticket_contents.title, tickets.ticket_available,tickets.original_ticket_available, tickets.max_ticket_buy_type, "' . $s->name . '" as name'))
               ->where('event_id', $s->event_id)->where('competition_id', $s->id)->get();
             $tickets = $ticket->map(function ($t) {
               return [
                 'id' => $t->id,
                 'title' => $t->title,
                 'available_qouta' => $t->ticket_available,
+                'original_qouta' => $t->original_ticket_available,
                 'max_qouta' => $t->max_ticket_buy_type,
                 'ticket_title' => substr($t->title, strlen($t->name))
               ];
@@ -269,7 +270,6 @@ class EventController extends Controller
 
 
         $information['related_events'] = $related_events;
-
         return view('frontend.event.event-tournament-details', $information);
       } else {
         $related_events = EventContent::join('events', 'events.id', 'event_contents.event_id')

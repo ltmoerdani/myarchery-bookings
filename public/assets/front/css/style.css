@@ -340,6 +340,12 @@ a.theme-btn-outline-primary-1:hover {
   background: var(--warning) !important;
 }
 
+.button-warning-custom.active {
+  color: #fff !important;
+  background-color: var(--warning) !important;
+  border: 1px solid var(--warning) !important;
+}
+
 /* Learn More Btn */
 .read-more {
   color: #333333;
@@ -531,6 +537,20 @@ a.theme-btn-outline-primary-1:hover {
 .overlay {
   z-index: 1;
   position: relative;
+}
+
+.image-overlay-tournament {
+  display: inline-block !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  max-height: 15rem !important;
+}
+
+.image-overlay {
+  display: inline-block !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  max-height: 30rem !important;
 }
 
 .rel {

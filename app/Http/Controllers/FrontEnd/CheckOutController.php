@@ -188,7 +188,6 @@ class CheckOutController extends Controller
           } else {
             $early_bird_dicount_international = 0;
           }
-
         } else {
           $early_bird_dicount = 0;
           $early_bird_dicount_international = 0;
@@ -220,8 +219,7 @@ class CheckOutController extends Controller
             }
           } else {
             $late_price_dicount_international = 0;
-          } 
-
+          }
         } else {
           $late_price_dicount = 0;
           $late_price_dicount_international = 0;

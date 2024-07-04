@@ -413,10 +413,152 @@
                                                                 aria-labelledby="official{{ $i }}"
                                                                 data-parent="#accordionExampleOfficial">
                                                                 <div class="card-body">
-                                                                    Some placeholder content for the second accordion panel.
-                                                                    This
-                                                                    panel is
-                                                                    hidden by default.
+                                                                    <div class="row">
+                                                                        <div class="col-12 form-group">
+                                                                            <label
+                                                                                for="name_official{{ $i }}">
+                                                                                {{ __('Full Name') }}*
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                id="name_official{{ $i }}"
+                                                                                name="name_official[]"
+                                                                                placeholder="{{ __('Enter Your Full Name') }}"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-6 form-group">
+                                                                            <label
+                                                                                for="gender_official{{ $i }}">
+                                                                                {{ __('Gender') }}*
+                                                                            </label>
+                                                                            <select class="form-select"
+                                                                                id="gender_official{{ $i }}"
+                                                                                name="gender_official[]">
+                                                                                <option value="male" selected>
+                                                                                    {{ __('Male') }}</option>
+                                                                                <option value="female">
+                                                                                    {{ __('Female') }}
+                                                                                </option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-6 form-group">
+                                                                            <label
+                                                                                for="birth_date_official{{ $i }}">
+                                                                                {{ __('Birth Date') }}*
+                                                                            </label>
+                                                                            <input type="date" class="form-control"
+                                                                                id="birth_date_official{{ $i }}"
+                                                                                name="birth_date_official[]"
+                                                                                placeholder="{{ __('Select Date') }}"
+                                                                                max="{{ date('Y-m-d') }}" required>
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
+                                                                            <label
+                                                                                for="profile_country_official{{ $i }}">
+                                                                                {{ __('Country') }}*
+                                                                            </label>
+                                                                            <select
+                                                                                class="custom-select js-example-basic-single"
+                                                                                id="profile_country_official{{ $i }}"
+                                                                                name="profile_country_official[]"
+                                                                                onchange="handlerProfileCountry({{ $i }})"
+                                                                                required>
+                                                                                <option value="" selected disabled>
+                                                                                    {{ __('Select Country') }}
+                                                                                </option>
+                                                                                @foreach ($countries as $val_countries)
+                                                                                    <option
+                                                                                        value="{{ $val_countries['id'] }}">
+                                                                                        {{ $val_countries['name'] }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
+                                                                            <label
+                                                                                for="profile_city_official{{ $i }}">
+                                                                                {{ __('City/District') }}*
+                                                                            </label>
+                                                                            <select
+                                                                                class="form-select js-example-basic-single"
+                                                                                id="profile_city_official{{ $i }}"
+                                                                                name="profile_city_official[]" required>
+                                                                                <option value="" selected disabled>
+                                                                                    {{ __('Select City/District') }}
+                                                                                </option>
+                                                                            </select>
+                                                                        </div>
+                                                                        @if (strtolower($delegation_event['contingent_type']) == 'open')
+                                                                            <div
+                                                                                class="col-12 form-group d-flex flex-column gap-2 content-delegation-official-{{ $i }}">
+                                                                                <label
+                                                                                    for="delegation_official{{ $i }}">
+                                                                                    {{ __('Delegation Type') }}*
+                                                                                </label>
+                                                                                <select
+                                                                                    class="form-select js-example-basic-single"
+                                                                                    id="delegation_official{{ $i }}"
+                                                                                    name="delegation_official[]"
+                                                                                    onchange="handlerDelegationOfficial({{ $i }})"
+                                                                                    required>
+                                                                                    <option value="" selected
+                                                                                        disabled>
+                                                                                        {{ __('Select Delegation Type') }}
+                                                                                    </option>
+                                                                                    @foreach ($delegation_type as $val_delegation_type)
+                                                                                        <option
+                                                                                            value="{{ $val_delegation_type['name'] }}">
+                                                                                            {{ $val_delegation_type['name'] }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        @else
+                                                                            <input type="hidden"
+                                                                                name="delegation_official[]"
+                                                                                value="{{ $delegation_event['select_type'] }}" />
+                                                                            @if (strtolower($delegation_event['select_type']) == 'province')
+                                                                                <input type="hidden"
+                                                                                    class="country_delegation_official{{ $i }}"
+                                                                                    value="{{ $delegation_event['country_id'] }}"
+                                                                                    id="country_delegation_official{{ $i }}">
+                                                                            @endif
+
+                                                                            @if (strtolower($delegation_event['select_type']) == 'city/district')
+                                                                                <input type="hidden"
+                                                                                    class="country_delegation_official{{ $i }}"
+                                                                                    value="{{ $delegation_event['country_id'] }}"
+                                                                                    id="country_delegation_official{{ $i }}">
+                                                                                <input type="hidden"
+                                                                                    class="province_delegation_official{{ $i }}"
+                                                                                    value="{{ $delegation_event['province_id'] }}"
+                                                                                    id="province_delegation_official{{ $i }}">
+                                                                            @endif
+                                                                            <input type="hidden"
+                                                                                class="delegation_official_choosed{{ $i }}"
+                                                                                value="{{ $delegation_event['select_type'] }}"
+                                                                                id="delegation_official{{ $i }}">
+                                                                        @endif
+                                                                        <div
+                                                                            class="col-12 content-delegation-country-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 content-delegation-province-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 content-delegation-city-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 content-delegation-school-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 content-delegation-club-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div
+                                                                            class="col-12 content-delegation-organization-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -512,8 +654,9 @@
                                                 aria-label="Example text with button addon"
                                                 aria-describedby="button-addon1">
                                             <div class="input-group-prepend">
-                                                <button class="theme-btn w-100" onclick="handleCheckCodeEvent({{ $event->id }})"
-                                                    type="button" id="button-addon1">
+                                                <button class="theme-btn w-100"
+                                                    onclick="handleCheckCodeEvent({{ $event->id }})" type="button"
+                                                    id="button-addon1">
                                                     {{ __('Apply') }}
                                                 </button>
                                             </div>
@@ -543,174 +686,8 @@
     <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
 @endsection
 
-{{-- <section id="individu_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Individu Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Participant's name is exactly as written in the government
-                                        issued
-                                        ID/Passport/Driving License. Avoid any mistake, because some Organizer don't allow
-                                        name
-                                        corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionParticipant">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="participant_individu1" data-toggle="collapse"
-                                                data-target="#collapse_participant_1" aria-expanded="false"
-                                                aria-controls="collapse_participant_1">
-                                                Participant Details 1
-                                            </div>
-                                            <div id="collapse_participant_1" class="collapse show"
-                                                aria-labelledby="participant_individu1" data-parent="#accordionParticipant">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="participant_individu2" data-toggle="collapse"
-                                                data-target="#collapse_participant2" aria-expanded="false"
-                                                aria-controls="collapse_participant2">
-                                                Participant Details 2
-                                            </div>
-                                            <div id="collapse_participant2" class="collapse"
-                                                aria-labelledby="participant_individu2" data-parent="#accordionParticipant">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="team_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Team Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Team's name is exactly. Avoid any mistake, because some
-                                        Organizer don't allow name, category, delegation corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleTeam">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="team1" data-toggle="collapse" data-target="#collapse_team1"
-                                                aria-expanded="false" aria-controls="collapse_team1">
-                                                Team Details 1
-                                            </div>
-                                            <div id="collapse_team1" class="collapse show" aria-labelledby="team1"
-                                                data-parent="#accordionExampleTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="team2" data-toggle="collapse" data-target="#collapse_team2"
-                                                aria-expanded="false" aria-controls="collapse_team2">
-                                                Team Details 2
-                                            </div>
-                                            <div id="collapse_team2" class="collapse" aria-labelledby="team2"
-                                                data-parent="#accordionExampleTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="mix_team_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Mix Team Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Team's name is exactly. Avoid any mistake, because some
-                                        Organizer don't allow name, category, delegation corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleMixTeam">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="mix_team1" data-toggle="collapse" data-target="#collapse_mix_team1"
-                                                aria-expanded="false" aria-controls="collapse_mix_team1">
-                                                Mix Team Details 1
-                                            </div>
-                                            <div id="collapse_mix_team1" class="collapse show" aria-labelledby="mix_team1"
-                                                data-parent="#accordionExampleMixTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="mix_team2" data-toggle="collapse" data-target="#collapse_mix_team2"
-                                                aria-expanded="false" aria-controls="collapse_mix_team2">
-                                                Mix Team Details 2
-                                            </div>
-                                            <div id="collapse_mix_team2" class="collapse" aria-labelledby="mix_team2"
-                                                data-parent="#accordionExampleMixTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="official_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Official Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Official's name is exactly as written in the government issued
-                                        ID/Passport/Driving License. Avoid any mistake, because some Organizer don't allow
-                                        name corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleOfficial">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="official1" data-toggle="collapse" data-target="#collapse_official1"
-                                                aria-expanded="false" aria-controls="collapse_official1">
-                                                Official Details 1
-                                            </div>
-                                            <div id="collapse_official1" class="collapse show"
-                                                aria-labelledby="official1" data-parent="#accordionExampleOfficial">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section> --}}
-
-
 <script>
-    function handleCheckCodeEvent($id){
+    function handleCheckCodeEvent($id) {
         alert($id);
     }
 </script>

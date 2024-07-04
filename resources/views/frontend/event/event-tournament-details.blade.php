@@ -37,10 +37,11 @@
                                 <div class="event-details-image mb-50">
                                     <div class="event-details-images">
                                         @foreach ($images as $item)
-                                            <a href="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}"><img
-                                                    class="lazy"
+                                            <a href="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}">
+                                                <img class="lazy image-overlay-tournament"
                                                     data-src="{{ asset('assets/admin/img/event-gallery/' . $item->image) }}"
-                                                    alt="Event Details"></a>
+                                                    alt="Event Details">
+                                            </a>
                                         @endforeach
                                     </div>
 
@@ -192,14 +193,17 @@
                             <div class="col-12 my-2">
                                 <ul class="bg-light nav mb-3 d-flex justify-content-center flex-wrap" id="pills-tab"
                                     role="tablist">
+                                    <input type="hidden" id="category_tickets"
+                                        value="{{ json_encode($category_tickets) }}">
                                     @foreach ($category_tickets as $key_ct => $ct_value)
                                         <li class="nav-item" role="presentation">
                                             <a href="#"
-                                                class="nav-link nav-event-tournament {{ $key_ct == 0 ? 'active' : '' }}"
+                                                class="nav-link nav-event-tournament category-event-tournament-info {{ $key_ct == 0 ? 'active' : '' }}"
                                                 id="pills-category-{{ $ct_value['id'] }}-tab" data-toggle="pill"
                                                 data-target="#pills-category-{{ $ct_value['id'] }}" type="button"
                                                 role="tab" aria-controls="pills-category-{{ $ct_value['id'] }}"
-                                                aria-selected="false">
+                                                aria-selected="false" data-info="{{ json_encode($ct_value) }}"
+                                                data-category-id="{{ $ct_value['id'] }}">
                                                 {{ $ct_value['category_name'] }}
                                             </a>
                                         </li>
@@ -213,8 +217,9 @@
                                             <div class="d-flex justify-content-center flex-row flex-wrap gap-1">
                                                 @foreach ($ct_value['sub_category'] as $key_sub_category => $val_sub_category)
                                                     <button
-                                                        class="btn btn-warning button-warning-custom info-detail-qouta-ticket {{ $key_sub_category == 0 && $key_ct == 0 ? 'first-info-detail-quota-ticket' : '' }}"
-                                                        type="button"
+                                                        class="btn btn-warning button-warning-custom {{ 'button-sub-category-' . $key_sub_category . '-' . $ct_value['id'] }} info-detail-qouta-ticket {{ $key_sub_category == 0 && $key_ct == 0 ? 'first-info-detail-quota-ticket' : '' }}"
+                                                        type="button" data-category-key-id="{{ $key_sub_category }}"
+                                                        data-category-id="{{ $ct_value['id'] }}"
                                                         data-ticket-quota="{{ json_encode($val_sub_category['tickets']) }}">
                                                         {{ $val_sub_category['sub_category_name'] }} -
                                                         {{ $val_sub_category['distance'] }} M
@@ -261,7 +266,8 @@
                                         <div class="our-location mb-50">
                                             <iframe
                                                 src="//maps.google.com/maps?width=100%25&amp;height=385&amp;hl=en&amp;q={{ $map_address }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-                                                height="385" class="map-h" allowfullscreen="" loading="lazy"></iframe>
+                                                height="385" class="map-h" allowfullscreen=""
+                                                loading="lazy"></iframe>
                                         </div>
                                     @endif
 
@@ -427,8 +433,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                    <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                    <hr> -->
+                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                            <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -1123,32 +1129,81 @@ AS competition_type
         $(document).ready(function() {
             $(".first-info-detail-quota-ticket").trigger('click');
         });
+
+        $(".category-event-tournament-info").on("click", function() {
+            $("#content-qouta-ticket").empty();
+            $(".button-warning-custom").removeClass("active")
+
+            const categoryID = this.getAttribute("data-category-id");
+
+            if ($(`.button-sub-category-0-${categoryID}`)) {
+                $(`.button-sub-category-0-${categoryID}`).addClass("active")
+                const dataInfo = JSON.parse(this.getAttribute("data-info"));
+                if (dataInfo.sub_category) {
+                    if (dataInfo.sub_category[0].tickets) {
+                        const dataTickets = dataInfo.sub_category[0].tickets;
+                        let content = ''
+                        dataTickets.map((val) => {
+                            const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
+                            const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
+                            content += `
+                          <div class="card">
+                              <div class="card-body p-2">
+                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                                      ${val.ticket_title}
+                                  </h5>
+                                  <div class="text-center">
+                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                          ${status}: ${val.available_qouta}/${val.original_qouta}
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
+                        `
+                        })
+                        $("#content-qouta-ticket").append(content);
+
+                        // setTimeout(() => {
+                        //     $("#content-qouta-ticket").append(content);
+                        // }, 1000)
+                    }
+                }
+            }
+        })
+
         $(".info-detail-qouta-ticket").on("click", function() {
             $("#content-qouta-ticket").empty();
 
             const dataTickets = JSON.parse(this.getAttribute("data-ticket-quota"));
+            const categoryID = this.getAttribute("data-category-id");
+            const categoryKeyID = this.getAttribute("data-category-key-id");
+
+            $(".button-warning-custom").removeClass("active")
+            $(`.button-sub-category-${categoryKeyID}-${categoryID}`).addClass("active")
             let content = ''
             dataTickets.map((val) => {
                 const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                 const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                 content += `
-                                          <div class="card">
-                                              <div class="card-body p-2">
-                                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                                                      ${val.ticket_title}
-                                                  </h5>
-                                                  <div class="text-center">
-                                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
-                                                          ${status}: ${val.available_qouta}/${val.max_qouta}
-                                                      </span>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                        `
+                          <div class="card">
+                              <div class="card-body p-2">
+                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                                      ${val.ticket_title}
+                                  </h5>
+                                  <div class="text-center">
+                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                          ${status}: ${val.available_qouta}/${val.original_qouta}
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
+                        `
             })
+            $("#content-qouta-ticket").append(content);
 
-            setTimeout(() => {
-                $("#content-qouta-ticket").append(content);
-            }, 1000)
+            // setTimeout(() => {
+            //     $("#content-qouta-ticket").append(content);
+            // }, 1000)
         });
-    @endsection
+    </script>
+@endsection

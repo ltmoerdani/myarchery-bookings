@@ -125,7 +125,7 @@ class Language extends Model
 
   public function heroSec()
   {
-    return $this->hasOne(HeroSection::class, 'language_id', 'id');
+    return $this->hasMany(HeroSection::class, 'language_id', 'id');
   }
 
   public function sectionTitle()

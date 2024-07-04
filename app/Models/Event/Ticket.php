@@ -40,11 +40,12 @@ class Ticket extends Model
     'late_price_discount_time',
     'late_price_discount_type',
     'variations',
-    'trans_vars'
+    'trans_vars',
+    'original_ticket_available',
   ];
   //ticket_variations
   public function ticket_variations()
   {
-    return $this->hasMany(TicketVariation::class);
+    // return $this->hasMany(TicketVariation::class);
   }
 }
