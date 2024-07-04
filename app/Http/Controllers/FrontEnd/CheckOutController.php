@@ -38,6 +38,7 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
+      dd($request);
       $basic = Basic::select('event_guest_checkout_status', 'percent_handling_fee')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
       $percent_handling_fee = $basic->percent_handling_fee;
@@ -452,7 +453,9 @@ class CheckOutController extends Controller
       $tickets_list = Ticket::leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'tickets.id')
         ->select('tickets.*', 'ticket_contents.title as contents_title')
         ->where('ticket_contents.language_id', $language_id)
-        ->where('tickets.event_id', $request->event_id)->where('tickets.title', 'Individu')->get();
+        ->where('tickets.event_id', $request->event_id)
+        // ->where('tickets.title', 'Individu')
+        ->get();
 
       foreach ($tickets_list as $list) {
         $sub_category_tickets[] = [

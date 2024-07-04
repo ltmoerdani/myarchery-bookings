@@ -433,8 +433,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                            <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -1147,25 +1147,21 @@ AS competition_type
                             const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                             const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                             content += `
-                          <div class="card">
-                              <div class="card-body p-2">
-                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                                      ${val.ticket_title}
-                                  </h5>
-                                  <div class="text-center">
-                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
-                                          ${status}: ${val.available_qouta}/${val.original_qouta}
-                                      </span>
+                                <div class="card">
+                                  <div class="card-body p-2">
+                                      <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                                          ${val.ticket_title}
+                                      </h5>
+                                      <div class="text-center">
+                                          <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                              ${status}: ${val.available_qouta}/${val.original_qouta}
+                                          </span>
+                                      </div>
                                   </div>
                               </div>
-                          </div>
-                        `
+                            `
                         })
                         $("#content-qouta-ticket").append(content);
-
-                        // setTimeout(() => {
-                        //     $("#content-qouta-ticket").append(content);
-                        // }, 1000)
                     }
                 }
             }
@@ -1185,25 +1181,21 @@ AS competition_type
                 const status = val.available_qouta > 0 ? 'Tersedia' : 'Tidak Tersedia';
                 const badgeColor = val.available_qouta > 0 ? 'badge-success' : 'badge-danger';
                 content += `
-                          <div class="card">
-                              <div class="card-body p-2">
-                                  <h5 class="card-title text-primary text-center" style="font-weight:bold">
-                                      ${val.ticket_title}
-                                  </h5>
-                                  <div class="text-center">
-                                      <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
-                                          ${status}: ${val.available_qouta}/${val.original_qouta}
-                                      </span>
-                                  </div>
-                              </div>
+                  <div class="card">
+                      <div class="card-body p-2">
+                          <h5 class="card-title text-primary text-center" style="font-weight:bold">
+                              ${val.ticket_title}
+                          </h5>
+                          <div class="text-center">
+                              <span class="badge badge-pill ${badgeColor}" style="font-size:0.8rem">
+                                  ${status}: ${val.available_qouta}/${val.original_qouta}
+                              </span>
                           </div>
-                        `
+                      </div>
+                  </div>
+                `
             })
             $("#content-qouta-ticket").append(content);
-
-            // setTimeout(() => {
-            //     $("#content-qouta-ticket").append(content);
-            // }, 1000)
         });
     </script>
 @endsection

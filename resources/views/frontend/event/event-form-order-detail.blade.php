@@ -289,10 +289,12 @@
                                                                                 <option value="" selected>
                                                                                     {{ __('Select Category') }}</option>
                                                                                 @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                                    <option
-                                                                                        value="{{ $val_sub_cat_ticket['id'] }}">
-                                                                                        {{ $val_sub_cat_ticket['title'] }}
-                                                                                    </option>
+                                                                                    @if (strtolower($val_sub_cat_ticket['category_name']) == 'individu')
+                                                                                        <option
+                                                                                            value="{{ $val_sub_cat_ticket['id'] }}">
+                                                                                            {{ $val_sub_cat_ticket['title'] }}
+                                                                                        </option>
+                                                                                    @endif
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
@@ -461,7 +463,7 @@
                                                                                 class="custom-select js-example-basic-single"
                                                                                 id="profile_country_official{{ $i }}"
                                                                                 name="profile_country_official[]"
-                                                                                onchange="handlerProfileCountry({{ $i }})"
+                                                                                onchange="handlerOfficialCountry({{ $i }})"
                                                                                 required>
                                                                                 <option value="" selected disabled>
                                                                                     {{ __('Select Country') }}
@@ -557,6 +559,26 @@
                                                                         </div>
                                                                         <div
                                                                             class="col-12 content-delegation-organization-official-{{ $i }} d-none">
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <label
+                                                                                for="category_official{{ $i }}">
+                                                                                {{ __('Category') }}*
+                                                                            </label>
+                                                                            <select class="form-select"
+                                                                                id="category_official{{ $i }}"
+                                                                                name="category_official[]">
+                                                                                <option value="" selected>
+                                                                                    {{ __('Select Category') }}</option>
+                                                                                @foreach ($sub_category_tickets as $val_sub_cat_ticket)
+                                                                                    @if (strtolower($val_sub_cat_ticket['category_name']) == 'official')
+                                                                                        <option
+                                                                                            value="{{ $val_sub_cat_ticket['id'] }}">
+                                                                                            {{ $val_sub_cat_ticket['title'] }}
+                                                                                        </option>
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                 </div>

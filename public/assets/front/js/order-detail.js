@@ -546,6 +546,26 @@ const handlerSetContentDelegationClubOfficial = async (
   });
 };
 
+const handlerOfficialCountry = async (i) => {
+  $(`#profile_city_official${i}`).empty();
+  const getValueCountry = $(`#profile_country_official${i}`).val();
+
+  let cityOptions = `
+    <option value="" selected disabled>
+        Select City/District
+    </option>
+  `;
+  const getDataCity = await getCity(getValueCountry);
+  getDataCity?.data?.map((val) => {
+    cityOptions += `
+        <option value="${val.id}">
+            ${val.name}
+        </option>
+    `;
+  });
+  $(`#profile_city_official${i}`).append(cityOptions);
+};
+
 const getClubs = async () => {
   return await $.ajax({
     url: `${base_url}/api/get-clubs`,
