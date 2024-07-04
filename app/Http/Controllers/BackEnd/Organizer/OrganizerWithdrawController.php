@@ -109,7 +109,7 @@ class OrganizerWithdrawController extends Controller
       'withdraw_method' => 'required',
       'withdraw_amount' => 'required'
     ];
-
+    
     $inputs = WithdrawMethodInput::where('withdraw_payment_method_id', $request->withdraw_method)->orderBy('order_number', 'asc')->get();
 
     foreach ($inputs as $input) {
@@ -137,7 +137,6 @@ class OrganizerWithdrawController extends Controller
     }
 
     //calculation
-
     $fixed_charge = $method->fixed_charge;
     $percentage = $method->percentage_charge;
 
@@ -146,12 +145,10 @@ class OrganizerWithdrawController extends Controller
     $receive_balance = $request->withdraw_amount - $total_charge;
     //calculation end
 
-
     $save = new Withdraw;
     $save->withdraw_id = uniqid();
     $save->organizer_id = Auth::guard('organizer')->user()->id;
     $save->method_id = $request->withdraw_method;
-
 
     $organizer = Organizer::where('id', Auth::guard('organizer')->user()->id)->first();
     $pre_balance = $organizer->amount;

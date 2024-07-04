@@ -212,6 +212,7 @@ return array(
     'App\\Http\\Requests\\SocialMediaRequest' => $baseDir . '/app/Http/Requests/SocialMediaRequest.php',
     'App\\Http\\Requests\\Testimonial\\StoreRequest' => $baseDir . '/app/Http/Requests/Testimonial/StoreRequest.php',
     'App\\Http\\Requests\\Testimonial\\UpdateRequest' => $baseDir . '/app/Http/Requests/Testimonial/UpdateRequest.php',
+    'App\\Http\\Requests\\Ticket\\TicketTournamentRequest' => $baseDir . '/app/Http/Requests/Ticket/TicketTournamentRequest.php',
     'App\\Http\\Requests\\UserProfileRequest' => $baseDir . '/app/Http/Requests/UserProfileRequest.php',
     'App\\Http\\Requests\\WithdrawPaymentMethodRequest' => $baseDir . '/app/Http/Requests/WithdrawPaymentMethodRequest.php',
     'App\\Http\\Requests\\WithdrawRequest' => $baseDir . '/app/Http/Requests/WithdrawRequest.php',

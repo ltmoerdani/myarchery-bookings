@@ -196,6 +196,7 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
     Route::get('withdraw/withdraw-request', 'BackEnd\WithdrawController@index')->name('admin.withdraw.withdraw_request');
     Route::post('withdraw/withdraw-request/delete', 'BackEnd\WithdrawController@delete')->name('admin.witdraw.delete_withdraw');
     Route::get('withdraw/withdraw-request/approve/{id}', 'BackEnd\WithdrawController@approve')->name('admin.witdraw.approve_withdraw');
+    Route::get('withdraw/withdraw-request/approve-disbursement/{id}', 'BackEnd\WithdrawController@approve_disbursement')->name('admin.witdraw.approve_withdraw_disbursement');
     Route::get('withdraw/withdraw-request/decline/{id}', 'BackEnd\WithdrawController@decline')->name('admin.witdraw.decline_withdraw');
   });
 

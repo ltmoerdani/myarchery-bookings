@@ -522,6 +522,12 @@ class XenditController extends Controller
     $fee = HelperPayment::getPaymentFee($getPaymentFee);
 
     if ($data['status'] == 'PAID') {
+      $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
+      $transaction = Transaction::where('booking_id', $bookings->id)->first();
+      $transaction->payment_fee = $fee;
+      $transaction->after_balance = $transaction->after_balance - $fee;
+      $transaction->save();
+
       $bookings_payment->callback = json_encode($data);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];

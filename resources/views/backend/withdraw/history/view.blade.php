@@ -21,7 +21,15 @@
               {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
             </p>
             @foreach ($d_feilds as $key => $d_feild)
-              <p><strong>{{ str_replace('_', ' ', $key) }} : {{ $d_feild }}</strong></p>
+              @if($key == 'Bank_Account')
+                @php
+                  $method_input = App\Models\WithdrawMethodInput::where('withdraw_payment_method_id', $item->method_id)->where('name', $key)->first();
+                  $method_option = App\Models\WithdrawMethodOption::where('withdraw_method_input_id', $method_input->id)->where('id', $d_feild)->first();
+                @endphp
+                <p><strong>{{ str_replace('_', ' ', $key) }} : {{ $method_option->name }}</strong></p>
+              @else
+                <p><strong>{{ str_replace('_', ' ', $key) }} : {{ $d_feild }}</strong></p>
+              @endif
             @endforeach
           </div>
         </div>

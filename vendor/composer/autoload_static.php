@@ -1038,6 +1038,7 @@ class ComposerStaticInit32b4ee758e644905b349d052a565780c
         'App\\Http\\Requests\\SocialMediaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/SocialMediaRequest.php',
         'App\\Http\\Requests\\Testimonial\\StoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Testimonial/StoreRequest.php',
         'App\\Http\\Requests\\Testimonial\\UpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Testimonial/UpdateRequest.php',
+        'App\\Http\\Requests\\Ticket\\TicketTournamentRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Ticket/TicketTournamentRequest.php',
         'App\\Http\\Requests\\UserProfileRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UserProfileRequest.php',
         'App\\Http\\Requests\\WithdrawPaymentMethodRequest' => __DIR__ . '/../..' . '/app/Http/Requests/WithdrawPaymentMethodRequest.php',
         'App\\Http\\Requests\\WithdrawRequest' => __DIR__ . '/../..' . '/app/Http/Requests/WithdrawRequest.php',
