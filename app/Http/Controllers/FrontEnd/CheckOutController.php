@@ -38,7 +38,7 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
-      dd($request);
+      // dd($request);
       $basic = Basic::select('event_guest_checkout_status', 'percent_handling_fee')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
       $percent_handling_fee = $basic->percent_handling_fee;
@@ -315,12 +315,34 @@ class CheckOutController extends Controller
         ];
       }
 
+      $name_official = $request->name_official;
+      if ($name_official) {
+        foreach ($name_official as $key => $value) {
+          $name[$key] = $value;
+        }
+      }
+
+
+      $gender_official = $request->gender_official;
+      if ($gender_official) {
+        foreach ($gender_official as $key => $value) {
+          $gender[$key] = $value;
+        }
+      }
+
+      $birth_date_official = $request->birth_date_official;
+      if ($birth_date_official) {
+        foreach ($birth_date_official as $key => $value) {
+          $birthdate[$key] = $value;
+        }
+      }
+
       $orders[] = [
         "title" => $v,
         "category" => 'individu',
         "ticket_detail_order" => $ticket_detail_order
       ];
-
+      // dd($orders);
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $percent_handling_fee;
