@@ -26,6 +26,9 @@ use App\Models\InternationalCities;
 use App\Models\DelegationType;
 use App\Models\ContingentType;
 use App\Models\Clubs;
+use App\Models\IndonesianCities;
+use App\Models\IndonesianProvince;
+use App\Models\InternationalStates;
 use App\Models\School;
 use App\Models\Organization;
 use Carbon\Carbon;
@@ -38,7 +41,6 @@ class CheckOutController extends Controller
   public function detailCheckout2Tournament(Request $request)
   {
     try {
-      // dd($request);
       $basic = Basic::select('event_guest_checkout_status', 'percent_handling_fee')->first();
       $event_guest_checkout_status = $basic->event_guest_checkout_status;
       $percent_handling_fee = $basic->percent_handling_fee;
@@ -51,8 +53,6 @@ class CheckOutController extends Controller
           return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
         }
       }
-      $select = false;
-      $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
 
       $information = [];
       $information['selTickets'] = '';
@@ -93,33 +93,66 @@ class CheckOutController extends Controller
       $information['from_step_one'] = $request->all();
 
       $name_individu = $request->name_individu;
-      foreach ($name_individu as $key => $value) {
-        $name[$key] = $value;
+      if ($name_individu) {
+        foreach ($name_individu as $key => $value) {
+          $name[$key] = $value;
+        }
       }
 
       $gender_individu = $request->gender_individu;
-      foreach ($gender_individu as $key => $value) {
-        $gender[$key] = $value;
+      if ($gender_individu) {
+        foreach ($gender_individu as $key => $value) {
+          $gender[$key] = $value;
+        }
       }
 
       $birth_date_individu = $request->birth_date_individu;
-      foreach ($birth_date_individu as $key => $value) {
-        $birthdate[$key] = $value;
+      if ($birth_date_individu) {
+        foreach ($birth_date_individu as $key => $value) {
+          $birthdate[$key] = $value;
+        }
       }
 
       $profile_country_individu = $request->profile_country_individu;
-      foreach ($profile_country_individu as $key => $value) {
-        $country[$key] = $value;
+      if ($profile_country_individu) {
+        foreach ($profile_country_individu as $key => $value) {
+          $country[$key] = $value;
+        }
       }
 
       $profile_city_individu = $request->profile_city_individu;
-      foreach ($profile_city_individu as $key => $value) {
-        $city[$key] = $value;
+      if ($profile_city_individu) {
+        foreach ($profile_city_individu as $key => $value) {
+          $city[$key] = $value;
+        }
       }
 
       $delegation_individu = $request->delegation_individu;
-      foreach ($delegation_individu as $key => $value) {
-        $delegation[$key] = $value;
+      if ($delegation_individu) {
+        foreach ($delegation_individu as $key => $value) {
+          $delegation[$key] = $value;
+        }
+      }
+
+      $country_delegation_individu = $request->country_delegation_individu;
+      if ($country_delegation_individu) {
+        foreach ($country_delegation_individu as $key => $value) {
+          $country_delegation[$key] = $value;
+        }
+      }
+
+      $province_delegation_individu = $request->province_delegation_individu;
+      if ($province_delegation_individu) {
+        foreach ($province_delegation_individu as $key => $value) {
+          $province_delegation[$key] = $value;
+        }
+      }
+
+      $city_delegation_individu = $request->city_delegation_individu;
+      if ($city_delegation_individu) {
+        foreach ($city_delegation_individu as $key => $value) {
+          $city_delegation[$key] = $value;
+        }
       }
 
       $club_delegation_individu = $request->club_delegation_individu;
@@ -143,206 +176,448 @@ class CheckOutController extends Controller
         }
       }
 
+      $ticket_detail_individu_order = [];
       $category_individu = $request->category_individu;
       $code_access = $request->code_access;
 
       $category_ticket = array();
       $categorytickets = array('ticket_id' => null, 'title' => null, 'quantity' => null, 'price_first' => null, 'price_early' => null, 'price' => null);
-      foreach ($category_individu as $k => $v) {
-        //Get country
-        $country_name = InternationalCountries::where('id', $country[$k])->first();
+      if ($category_individu) {
+        foreach ($category_individu as $k => $v) {
+          //Get country
+          $country_name = InternationalCountries::where('id', $country[$k])->first();
 
-        //Get city
-        if ($country[$k] == "102") { //Indonesia
-          $city_name = IndonesianSubdistrict::select('id', 'name')->where('province_id', $city[$k])->first();
-        } else {
-          $city_name = InternationalCities::select('id', 'name')->where('country_id', $country[$k])->where('state_id', $city[$k])->first();
-        }
+          //Get city
+          if ($country[$k] == "102") { //Indonesia
+            $city_name = IndonesianSubdistrict::find($city[$k]);
+          } else {
+            $city_name = InternationalCities::find($city[$k]);
+          }
 
-        $ticket = Ticket::where('id', $v)->first();
-        $tickets = TicketContent::where('ticket_id', $v)->where('language_id', $language_id)->first();
+          $ticket = Ticket::where('id', $v)->first();
+          $ticketContent = TicketContent::where('ticket_id', $v)->where('language_id', $language_id)->first();
 
-        // ============================ early_bird_discount ====================================
-        if ($ticket->early_bird_discount == 'enable') {
+          // ============================ early_bird_discount ====================================
+          if ($ticket->early_bird_discount == 'enable') {
 
-          $early_bird_start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-          $early_bird_end = Carbon::parse($ticket->early_bird_discount_end_date . $ticket->early_bird_discount_end_time);
-          $today = Carbon::now();
-          if (($today >= $early_bird_start) && ($today <= $early_bird_end)) {
-            if ($ticket->early_bird_discount_type == 'fixed') {
-              $early_bird_dicount = $ticket->early_bird_discount_amount;
+            $early_bird_start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+            $early_bird_end = Carbon::parse($ticket->early_bird_discount_end_date . $ticket->early_bird_discount_end_time);
+            $today = Carbon::now();
+            if (($today >= $early_bird_start) && ($today <= $early_bird_end)) {
+              if ($ticket->early_bird_discount_type == 'fixed') {
+                $early_bird_dicount = $ticket->early_bird_discount_amount;
+              } else {
+                $early_bird_dicount = ($ticket->early_bird_discount_amount * $ticket->price) / 100;
+              }
             } else {
-              $early_bird_dicount = ($ticket->early_bird_discount_amount * $ticket->price) / 100;
+              $early_bird_dicount = 0;
+            }
+
+            $early_bird_int_start = Carbon::parse($ticket->early_bird_discount_international_date . $ticket->early_bird_discount_international_time);
+            $early_bird_int_end = Carbon::parse($ticket->early_bird_discount_international_end_date . $ticket->early_bird_discount_international_end_time);
+            if (($today >= $early_bird_int_start) && ($today <= $early_bird_int_end)) {
+              if ($ticket->early_bird_discount_international_type == 'fixed') {
+                $early_bird_dicount_international = $ticket->early_bird_discount_amount_international;
+              } else {
+                $early_bird_dicount_international = ($ticket->early_bird_discount_amount_international * $ticket->international_price) / 100;
+              }
+            } else {
+              $early_bird_dicount_international = 0;
             }
           } else {
             $early_bird_dicount = 0;
-          }
-
-          $early_bird_int_start = Carbon::parse($ticket->early_bird_discount_international_date . $ticket->early_bird_discount_international_time);
-          $early_bird_int_end = Carbon::parse($ticket->early_bird_discount_international_end_date . $ticket->early_bird_discount_international_end_time);
-          if (($today >= $early_bird_int_start) && ($today <= $early_bird_int_end)) {
-            if ($ticket->early_bird_discount_international_type == 'fixed') {
-              $early_bird_dicount_international = $ticket->early_bird_discount_amount_international;
-            } else {
-              $early_bird_dicount_international = ($ticket->early_bird_discount_amount_international * $ticket->international_price) / 100;
-            }
-          } else {
             $early_bird_dicount_international = 0;
           }
-        } else {
-          $early_bird_dicount = 0;
-          $early_bird_dicount_international = 0;
-        }
 
 
-        // ============================ late_price_discount ====================================
-        if ($ticket->late_price_discount == 'enable') {
-          $late_start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
-          $late_end = Carbon::parse($ticket->late_price_discount_end_date . $ticket->late_price_discount_end_time);
-          $today = Carbon::now();
-          if (($today >= $late_start) && ($today <= $late_end)) {
-            if ($ticket->late_price_discount_type == 'fixed') {
-              $late_price_dicount = $ticket->late_price_discount_amount;
+          // ============================ late_price_discount ====================================
+          if ($ticket->late_price_discount == 'enable') {
+            $late_start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
+            $late_end = Carbon::parse($ticket->late_price_discount_end_date . $ticket->late_price_discount_end_time);
+            $today = Carbon::now();
+            if (($today >= $late_start) && ($today <= $late_end)) {
+              if ($ticket->late_price_discount_type == 'fixed') {
+                $late_price_dicount = $ticket->late_price_discount_amount;
+              } else {
+                $late_price_dicount = ($ticket->late_price_discount_amount * $ticket->price) / 100;
+              }
             } else {
-              $late_price_dicount = ($ticket->late_price_discount_amount * $ticket->price) / 100;
+              $late_price_dicount = 0;
+            }
+
+            $late_int_start = Carbon::parse($ticket->late_price_discount_international_date . $ticket->late_price_discount_international_time);
+            $late_int_end = Carbon::parse($ticket->late_price_discount_international_end_date . $ticket->late_price_discount_international_end_time);
+            if (($today >= $late_int_start) && ($today <= $late_int_end)) {
+              if ($ticket->late_price_discount_international_type == 'fixed') {
+                $late_price_dicount_international = $ticket->late_price_discount_amount_international;
+              } else {
+                $late_price_dicount_international = ($ticket->late_price_discount_amount_international * $ticket->international_price) / 100;
+              }
+            } else {
+              $late_price_dicount_international = 0;
             }
           } else {
             $late_price_dicount = 0;
-          }
-
-          $late_int_start = Carbon::parse($ticket->late_price_discount_international_date . $ticket->late_price_discount_international_time);
-          $late_int_end = Carbon::parse($ticket->late_price_discount_international_end_date . $ticket->late_price_discount_international_end_time);
-          if (($today >= $late_int_start) && ($today <= $late_int_end)) {
-            if ($ticket->late_price_discount_international_type == 'fixed') {
-              $late_price_dicount_international = $ticket->late_price_discount_amount_international;
-            } else {
-              $late_price_dicount_international = ($ticket->late_price_discount_amount_international * $ticket->international_price) / 100;
-            }
-          } else {
             $late_price_dicount_international = 0;
           }
-        } else {
-          $late_price_dicount = 0;
-          $late_price_dicount_international = 0;
-        }
 
 
-        if ($country[$k] == "102") { //Indonesia
-          $ticketprice = $ticket->price;
-          $tickettitle = $ticket->title;
-          $ticketprice_first = $ticketprice;
+          if ($country[$k] == "102") { //Indonesia
+            $ticketprice = $ticket->price;
+            $tickettitle = $ticketContent->title;
+            $ticketprice_first = $ticketprice;
 
-          if ($early_bird_dicount > 0) {
-            $ticketprice = $ticketprice - $early_bird_dicount;
-          }
+            if ($early_bird_dicount > 0) {
+              $ticketprice = $ticketprice - $early_bird_dicount;
+            }
 
-          if ($late_price_dicount > 0) {
-            $ticketprice = $ticketprice + $late_price_dicount;
-          }
-        } else {
-          $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
-          $tickettitle = $ticket->title . ' (Internasional)';
-          $ticketprice_first = $ticketprice;
+            if ($late_price_dicount > 0) {
+              $ticketprice = $ticketprice + $late_price_dicount;
+            }
+          } else {
+            $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
+            $tickettitle = $ticketContent->title . ' (Internasional)';
+            $ticketprice_first = $ticketprice;
 
-          if ($early_bird_dicount_international > 0) {
-            $ticketprice = $ticketprice - $early_bird_dicount_international;
-          }
+            if ($early_bird_dicount_international > 0) {
+              $ticketprice = $ticketprice - $early_bird_dicount_international;
+            }
 
-          if ($late_price_dicount_international > 0) {
-            $ticketprice = $ticketprice + $late_price_dicount_international;
-          }
-        }
-
-        if ($categorytickets['title'] != $tickettitle) {
-          unset($categorytickets);
-          $categorytickets = array('ticket_id' => $v, 'title' => $tickettitle, 'quantity' => 0, 'price_first' => 0, 'price_early' => 0, 'price' => 0);
-          $category_ticket[] = &$categorytickets;
-        }
-        $categorytickets['price_first'] = $categorytickets['price'] + $ticketprice_first;
-        $categorytickets['price_early'] = $early_bird_dicount;
-        $categorytickets['price'] = $categorytickets['price'] + $ticketprice;
-        $categorytickets['quantity']++;
-
-        if ($club_delegation_individu) {
-          $club_name = Clubs::where('id', $club[$k])->first();
-          if (!$club_name) {
-            $cek_club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
-            if (!$cek_club_name) {
-              $club_new['name'] = $club_delegation_individu[$k];
-              $new_club = Clubs::create($club_new);
-              $club_name = Clubs::where('id', $new_club->id)->first();
-            } else {
-              $club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
-              $club[$k] = $club_name->id;
+            if ($late_price_dicount_international > 0) {
+              $ticketprice = $ticketprice + $late_price_dicount_international;
             }
           }
-        }
 
-        if ($school_delegation_individu) {
-          $cek_school_name = School::where('name', 'like', '%' . $school_delegation_individu[$k] . '%')->first();
-          if (!$cek_school_name) {
-            $school_new['name'] = $school_delegation_individu[$k];
-            $new_school = School::create($school_new);
+          if ($categorytickets['title'] != $tickettitle) {
+            unset($categorytickets);
+            $categorytickets = array('ticket_id' => $v, 'title' => $tickettitle, 'quantity' => 0, 'price_first' => 0, 'price_early' => 0, 'price' => 0);
+            $category_ticket[] = &$categorytickets;
           }
-        }
 
-        if ($organization_delegation_individu) {
-          $cek_organization_name = Organization::where('name', 'like', '%' . $organization_delegation_individu[$k] . '%')->first();
-          if (!$cek_organization_name) {
-            $organization_new['name'] = $organization_delegation_individu[$k];
-            $new_organization = Organization::create($organization_new);
+          $categorytickets['price_first'] = $categorytickets['price'] + $ticketprice_first;
+          $categorytickets['price_early'] = $early_bird_dicount;
+          $categorytickets['price'] = $categorytickets['price'] + $ticketprice;
+          $categorytickets['quantity']++;
+
+          $country_delegation_name = '';
+          if ($country_delegation_individu) {
+            $country_delegation_name = InternationalCountries::find($country_delegation_individu[$k]);
           }
-        }
 
-        $ticket_detail_order[] = [
-          "id" => $v,
-          "user_full_name" => $name[$k],
-          "user_gender" => $gender[$k],
-          "birthdate" => $birthdate[$k],
-          "delegation_type" => $delegation[$k],
-          "country_id" => empty($country[$k]) ? null : $country[$k],
-          "country_name" => empty($country_name->name) ? null : $country_name->name,
-          "province_id" => empty($state[$k]) ? null : $state[$k],
-          "province_name" => empty($state_name->name) ? null : $state_name->name,
-          "city_id" => empty($city[$k]) ? null : $city[$k],
-          "city_name" => empty($city_name->name) ? null : $city_name->name,
-          "club_id" => empty($club[$k]) ? null : $club[$k],
-          "club_name" => empty($club_name->name) ? null : $club_name->name,
-          "school_name" => empty($school_delegation_individu[$k]) ? null : $school_delegation_individu[$k],
-          "organization_name" => empty($organization_delegation_individu[$k]) ? null : $organization_delegation_individu[$k],
-          "sub_category_ticket_id" => $v,
-          "sub_category_ticket" => $tickettitle
-        ];
+          $province_delegation_name = '';
+          if ($province_delegation_individu) {
+            if ($country_delegation_individu[$k] == "102") {
+              // indonesia
+              $province_delegation_name = IndonesianProvince::find($province_delegation_individu[$k]);
+            } else {
+              $province_delegation_name = InternationalStates::find($province_delegation_individu[$k]);
+            }
+          }
+
+          $city_delegation_name = '';
+          if ($city_delegation_individu) {
+            if ($country_delegation_individu[$k] == "102") {
+              // indonesia
+              $city_delegation_name = IndonesianCities::find($city_delegation_individu[$k]);
+            } else {
+              $city_delegation_name = InternationalCities::find($city_delegation_individu[$k]);
+            }
+          }
+
+          if ($club_delegation_individu) {
+            $club_name = Clubs::where('id', $club[$k])->first();
+            if (!$club_name) {
+              $cek_club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
+              if (!$cek_club_name) {
+                $club_new['name'] = $club_delegation_individu[$k];
+                $new_club = Clubs::create($club_new);
+                $club_name = Clubs::where('id', $new_club->id)->first();
+              } else {
+                $club_name = Clubs::where('name', 'like', '%' . $club_delegation_individu[$k] . '%')->first();
+                $club[$k] = $club_name->id;
+              }
+            }
+          }
+
+          if ($school_delegation_individu) {
+            $cek_school_name = School::where('name', 'like', '%' . $school_delegation_individu[$k] . '%')->first();
+            if (!$cek_school_name) {
+              $school_new['name'] = $school_delegation_individu[$k];
+              $new_school = School::create($school_new);
+              $school_id = $new_school->id;
+            } else {
+              $school_id = $cek_school_name->id;
+            }
+          }
+
+          if ($organization_delegation_individu) {
+            $cek_organization_name = Organization::where('name', 'like', '%' . $organization_delegation_individu[$k] . '%')->first();
+            if (!$cek_organization_name) {
+              $organization_new['name'] = $organization_delegation_individu[$k];
+              $new_organization = Organization::create($organization_new);
+              $organization_id = $new_organization->id;
+            } else {
+              $organization_id = $cek_organization_name->id;
+            }
+          }
+
+          $ticket_detail_individu_order[] = [
+            "id" => $v,
+            "user_full_name" => $name[$k],
+            "user_gender" => $gender[$k],
+            "birthdate" => $birthdate[$k],
+            "delegation_type" => $delegation[$k],
+            "country_id" => empty($country[$k]) ? null : $country[$k],
+            "country_name" => empty($country_name->name) ? null : $country_name->name,
+            "city_id" => empty($city[$k]) ? null : $city[$k],
+            "city_name" => empty($city_name->name) ? null : $city_name->name,
+            'country' => empty($country) ? null : $country,
+            'country_delegation_individu' => empty($country_delegation_individu[$k]) ? null : $country_delegation_individu[$k],
+            'country_delegation_individu_name' => empty($country_delegation_name->name) ? null : $country_delegation_name->name,
+            'province_delegation_individu' => empty($province_delegation_individu[$k]) ? null : $province_delegation_individu[$k],
+            'province_delegation_individu_name' => empty($province_delegation_name->name) ? null : $province_delegation_name->name,
+            'city_delegation_individu' => empty($city_delegation_individu[$k]) ? null : $city_delegation_individu[$k],
+            'city_delegation_individu_name' => empty($city_delegation_name->name) ? null : $city_delegation_name->name,
+            "club_id" => empty($club[$k]) ? null : $club[$k],
+            "club_name" => empty($club_name->name) ? null : $club_name->name,
+            "school_id" => empty($school_id) ? null : $school_id,
+            "school_name" => empty($school_delegation_individu[$k]) ? null : $school_delegation_individu[$k],
+            "organization_id" => empty($organization_id) ? null : $organization_id,
+            "organization_name" => empty($organization_delegation_individu[$k]) ? null : $organization_delegation_individu[$k],
+            "sub_category_ticket_id" => $v,
+            "sub_category_ticket" => $tickettitle
+          ];
+        }
       }
 
       $name_official = $request->name_official;
-      if ($name_official) {
-        foreach ($name_official as $key => $value) {
-          $name[$key] = $value;
-        }
-      }
-
-
       $gender_official = $request->gender_official;
-      if ($gender_official) {
-        foreach ($gender_official as $key => $value) {
-          $gender[$key] = $value;
-        }
-      }
-
       $birth_date_official = $request->birth_date_official;
-      if ($birth_date_official) {
-        foreach ($birth_date_official as $key => $value) {
-          $birthdate[$key] = $value;
+      $profile_country_official = $request->profile_country_official;
+      $profile_city_official = $request->profile_city_official;
+      $delegation_official = $request->delegation_official;
+      $country_delegation_official = $request->country_delegation_official;
+      $province_delegation_official = $request->province_delegation_official;
+      $city_delegation_official = $request->city_delegation_official;
+      $club_delegation_official = $request->club_delegation_official;
+      $school_delegation_official = $request->school_delegation_official;
+      $organization_delegation_official = $request->organization_delegation_official;
+      $category_official = $request->category_official;
+      $ticket_detail_official_order = [];
+
+      if ($category_official) {
+        foreach ($category_official as $key => $value) {
+          $country_name = InternationalCountries::where('id', $profile_country_official[$key])->first();
+
+          if ($profile_country_official[$key] == "102") {
+            //Indonesia
+            $city_name = IndonesianSubdistrict::find($profile_city_official[$key]);
+          } else {
+            $city_name = InternationalCities::find($profile_city_official[$key]);
+          }
+
+          $ticket = Ticket::where('id', $value)->first();
+          $ticketContent = TicketContent::where('ticket_id', $value)->where('language_id', $language_id)->first();
+          // ============================ early_bird_discount ====================================
+          if ($ticket->early_bird_discount == 'enable') {
+
+            $early_bird_start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+            $early_bird_end = Carbon::parse($ticket->early_bird_discount_end_date . $ticket->early_bird_discount_end_time);
+            $today = Carbon::now();
+            if (($today >= $early_bird_start) && ($today <= $early_bird_end)) {
+              if ($ticket->early_bird_discount_type == 'fixed') {
+                $early_bird_dicount = $ticket->early_bird_discount_amount;
+              } else {
+                $early_bird_dicount = ($ticket->early_bird_discount_amount * $ticket->price) / 100;
+              }
+            } else {
+              $early_bird_dicount = 0;
+            }
+
+            $early_bird_int_start = Carbon::parse($ticket->early_bird_discount_international_date . $ticket->early_bird_discount_international_time);
+            $early_bird_int_end = Carbon::parse($ticket->early_bird_discount_international_end_date . $ticket->early_bird_discount_international_end_time);
+            if (($today >= $early_bird_int_start) && ($today <= $early_bird_int_end)) {
+              if ($ticket->early_bird_discount_international_type == 'fixed') {
+                $early_bird_dicount_international = $ticket->early_bird_discount_amount_international;
+              } else {
+                $early_bird_dicount_international = ($ticket->early_bird_discount_amount_international * $ticket->international_price) / 100;
+              }
+            } else {
+              $early_bird_dicount_international = 0;
+            }
+          } else {
+            $early_bird_dicount = 0;
+            $early_bird_dicount_international = 0;
+          }
+
+          // ============================ late_price_discount ====================================
+          if ($ticket->late_price_discount == 'enable') {
+            $late_start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
+            $late_end = Carbon::parse($ticket->late_price_discount_end_date . $ticket->late_price_discount_end_time);
+            $today = Carbon::now();
+            if (($today >= $late_start) && ($today <= $late_end)) {
+              if ($ticket->late_price_discount_type == 'fixed') {
+                $late_price_dicount = $ticket->late_price_discount_amount;
+              } else {
+                $late_price_dicount = ($ticket->late_price_discount_amount * $ticket->price) / 100;
+              }
+            } else {
+              $late_price_dicount = 0;
+            }
+
+            $late_int_start = Carbon::parse($ticket->late_price_discount_international_date . $ticket->late_price_discount_international_time);
+            $late_int_end = Carbon::parse($ticket->late_price_discount_international_end_date . $ticket->late_price_discount_international_end_time);
+            if (($today >= $late_int_start) && ($today <= $late_int_end)) {
+              if ($ticket->late_price_discount_international_type == 'fixed') {
+                $late_price_dicount_international = $ticket->late_price_discount_amount_international;
+              } else {
+                $late_price_dicount_international = ($ticket->late_price_discount_amount_international * $ticket->international_price) / 100;
+              }
+            } else {
+              $late_price_dicount_international = 0;
+            }
+          } else {
+            $late_price_dicount = 0;
+            $late_price_dicount_international = 0;
+          }
+
+          if ($country[$key] == "102") {
+            //Indonesia
+            $ticketprice = $ticket->price;
+            $tickettitle = $ticketContent->title;
+            $ticketprice_first = $ticketprice;
+
+            if ($early_bird_dicount > 0) {
+              $ticketprice = $ticketprice - $early_bird_dicount;
+            }
+
+            if ($late_price_dicount > 0) {
+              $ticketprice = $ticketprice + $late_price_dicount;
+            }
+          } else {
+            $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
+            $tickettitle = $ticketContent->title . ' (Internasional)';
+            $ticketprice_first = $ticketprice;
+
+            if ($early_bird_dicount_international > 0) {
+              $ticketprice = $ticketprice - $early_bird_dicount_international;
+            }
+
+            if ($late_price_dicount_international > 0) {
+              $ticketprice = $ticketprice + $late_price_dicount_international;
+            }
+          }
+
+          if ($categorytickets['title'] != $tickettitle) {
+            unset($categorytickets);
+            $categorytickets = array('ticket_id' => $value, 'title' => $tickettitle, 'quantity' => 0, 'price_first' => 0, 'price_early' => 0, 'price' => 0);
+            $category_ticket[] = &$categorytickets;
+          }
+          $categorytickets['price_first'] = $categorytickets['price'] + $ticketprice_first;
+          $categorytickets['price_early'] = $early_bird_dicount;
+          $categorytickets['price'] = $categorytickets['price'] + $ticketprice;
+          $categorytickets['quantity']++;
+
+          $country_delegation_name = '';
+          if ($country_delegation_individu) {
+            $country_delegation_name = InternationalCountries::find($country_delegation_official[$key]);
+          }
+
+          $province_delegation_name = '';
+          if ($province_delegation_official) {
+            if ($country_delegation_official[$key] == "102") {
+              // indonesia
+              $province_delegation_name = IndonesianProvince::find($province_delegation_official[$key]);
+            } else {
+              $province_delegation_name = InternationalStates::find($province_delegation_official[$key]);
+            }
+          }
+
+          $city_delegation_name = '';
+          if ($city_delegation_official) {
+            if ($country_delegation_official[$key] == "102") {
+              // indonesia
+              $city_delegation_name = IndonesianCities::find($city_delegation_official[$key]);
+            } else {
+              $city_delegation_name = InternationalCities::find($city_delegation_official[$key]);
+            }
+          }
+
+          if ($club_delegation_official) {
+            $club_name = Clubs::where('id', $club_delegation_official[$key])->first();
+            if (!$club_name) {
+              $cek_club_name = Clubs::where('name', 'like', '%' . $club_delegation_official[$key] . '%')->first();
+              if (!$cek_club_name) {
+                $club_new['name'] = $club_delegation_official[$key];
+                $new_club = Clubs::create($club_new);
+                $club_name = Clubs::where('id', $new_club->id)->first();
+              } else {
+                $club_name = Clubs::where('name', 'like', '%' . $club_delegation_official[$key] . '%')->first();
+                $club[$key] = $club_name->id;
+              }
+            }
+          }
+
+          if ($school_delegation_official) {
+            $cek_school_name = School::where('name', 'like', '%' . $school_delegation_official[$key] . '%')->first();
+            if (!$cek_school_name) {
+              $school_new['name'] = $school_delegation_official[$key];
+              $new_school = School::create($school_new);
+              $school_id = $new_school->id;
+            } else {
+              $school_id = $cek_school_name->id;
+            }
+          }
+
+          if ($organization_delegation_official) {
+            $cek_organization_name = Organization::where('name', 'like', '%' . $organization_delegation_official[$key] . '%')->first();
+            if (!$cek_organization_name) {
+              $organization_new['name'] = $organization_delegation_official[$key];
+              $new_organization = Organization::create($organization_new);
+              $organization_id = $new_organization->id;
+            } else {
+              $organization_id = $cek_organization_name->id;
+            }
+          }
+
+          $ticket_detail_official_order[] = [
+            "id" => $value,
+            "user_full_name" => $name_official[$key],
+            "user_gender" => $gender_official[$key],
+            "birthdate" => $birth_date_official[$key],
+            "delegation_type" => $delegation_official[$key],
+            "country_id" => empty($profile_country_official[$key]) ? null : $profile_country_official[$key],
+            "country_name" => empty($country_name->name) ? null : $country_name->name,
+            "city_id" => empty($profile_city_official[$key]) ? null : $profile_city_official[$key],
+            "city_name" => empty($city_name->name) ? null : $city_name->name,
+            'country_delegation_official' => empty($country_delegation_official[$key]) ? null : $country_delegation_official[$key],
+            'country_delegation_official_name' => empty($country_delegation_name->name) ? null : $country_delegation_name->name,
+            'province_delegation_official' => empty($province_delegation_official[$key]) ? null : $province_delegation_official[$key],
+            'province_delegation_official_name' => empty($province_delegation_name->name) ? null : $province_delegation_name->name,
+            'city_delegation_official' => empty($city_delegation_official[$key]) ? null : $city_delegation_official[$key],
+            'city_delegation_official_name' => empty($city_delegation_name->name) ? null : $city_delegation_name->name,
+            "club_id" => empty($club_delegation_official[$key]) ? null : $club_delegation_official[$key],
+            "club_name" => empty($club_name->name) ? null : $club_name->name,
+            "school_id" => empty($school_id) ? null : $school_id,
+            "school_name" => empty($school_delegation_official[$key]) ? null : $school_delegation_official[$key],
+            "organization_id" => empty($organization_id) ? null : $organization_id,
+            "organization_name" => empty($organization_delegation_official[$key]) ? null : $organization_delegation_official[$key],
+            "sub_category_ticket_id" => $value,
+            "sub_category_ticket" => $tickettitle
+          ];
         }
       }
 
       $orders[] = [
         "title" => $v,
         "category" => 'individu',
-        "ticket_detail_order" => $ticket_detail_order
+        "ticket_detail_individu_order" => $ticket_detail_individu_order,
+        "ticket_detail_official_order" => $ticket_detail_official_order,
+        "ticket_detail_team_order" => [],
+        "ticket_detail_mix_team_order" => [],
       ];
       // dd($orders);
+
       $information['ticket_infos'] = $category_ticket;
       $information['orders'] = $orders;
       $information['ppn_value'] = $percent_handling_fee;
@@ -350,6 +625,9 @@ class CheckOutController extends Controller
 
       $information['request_ticket_infos'] = json_encode($category_ticket);
       $information['request_orders'] = json_encode($orders);
+
+      // dd($information);
+
       return view('frontend.event.event-tournament-checkout-detail', $information);
     } catch (\Exception $e) {
       Log::build([
@@ -494,7 +772,6 @@ class CheckOutController extends Controller
 
       $information['delegation_type'] = DelegationType::get()->toArray();
       $information['countries'] = InternationalCountries::get()->toArray();
-      // dd($information);
       return view('frontend.event.event-form-order-detail', $information);
     }
     return redirect()->route('check-out');

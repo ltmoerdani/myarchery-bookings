@@ -35,7 +35,7 @@ class XenditController extends Controller
       if (!in_array($currencyInfo->base_currency_text, $allowed_currency)) {
         return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
       }
-      
+
       if ($request->form_type == "tournament") {
         $cust = Auth::guard('customer')->user();
         $event_content = EventContent::where('event_id', $event_id)->where('language_id', $request->language_id)->first();
@@ -85,10 +85,12 @@ class XenditController extends Controller
           'form_type' => 'tournament',
         );
 
+
         //============== create booking and invoice =============================
         $booking = new BookingController();
         // store the course enrolment information in database
         $bookingInfo = $booking->storeData($arrData);
+
         // generate an invoice in pdf format
         $invoice = $booking->generateInvoice($bookingInfo, $event_id);
         //unlink qr code
@@ -504,15 +506,16 @@ class XenditController extends Controller
   //     }
   // }
 
-  public function callback_tournament($request){
+  public function callback_tournament($request)
+  {
     $data = $request->all();
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
 
-    if($data['payment_method'] == "CREDIT_CARD"){
+    if ($data['payment_method'] == "CREDIT_CARD") {
       $payment_channel = "CREDIT_CARD";
-    }elseif($data['payment_method'] == "QR_CODE"){
+    } elseif ($data['payment_method'] == "QR_CODE") {
       $payment_channel = "QR_CODE";
-    }else{
+    } else {
       $payment_channel = $data['payment_channel'];
     }
 
@@ -547,7 +550,7 @@ class XenditController extends Controller
 
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
-    }elseif ($data['status'] == 'EXPIRED') {
+    } elseif ($data['status'] == 'EXPIRED') {
       $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
       $bookings->paymentStatus = 'expired';
       $bookings->paymentStatusBooking = 'expired';
@@ -573,9 +576,9 @@ class XenditController extends Controller
       $bookings_payment->payment_destination = $data['payment_destination'];
       $bookings_payment->payment_fee = $fee;
       $bookings_payment->save();
-      
+
       $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
-      foreach($participant_competitions as $c){
+      foreach ($participant_competitions as $c) {
         $ticket = Ticket::where('id', $c->ticket_id)->first();
         $ticket->ticket_available = $ticket->ticket_available - 1;
         $ticket->save();
@@ -583,7 +586,6 @@ class XenditController extends Controller
 
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
-    } 
+    }
   }
-
 }

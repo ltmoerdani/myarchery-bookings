@@ -128,6 +128,7 @@ class TicketController extends Controller
                 'price' => $request->variation_price[$key],
                 'ticket_available_type' => $request->v_ticket_available_type[$key],
                 'ticket_available' => $request->v_ticket_available[$key],
+                'original_ticket_available' => $request->v_ticket_available[$key],
                 'max_ticket_buy_type' => $request->v_max_ticket_buy_type[$key],
                 'v_max_ticket_buy' => $request->v_max_ticket_buy[$key]
               ];
@@ -417,6 +418,7 @@ class TicketController extends Controller
           $ticket->f_international_price = empty($request->f_international_price) ? 0 : $request->f_international_price;
           $ticket->ticket_available_type = 'limited';
           $ticket->ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
+          $ticket->original_ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
           $ticket->price = $price;
           $ticket->international_price = $international_price;
           $ticket->max_ticket_buy_type = $request->max_ticket_buy_type;

@@ -45,6 +45,8 @@ const handlerDelegationIndividu = (i) => {
   $(`.content-delegation-city-individu-${i}`).empty();
   $(`.content-delegation-school-individu-${i}`).addClass("d-none");
   $(`.content-delegation-school-individu-${i}`).empty();
+  $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
+  $(`.content-delegation-organization-individu-${i}`).empty();
   $(`.content-delegation-club-individu-${i}`).addClass("d-none");
   $(`.content-delegation-club-individu-${i}`).empty();
   const contingentType = $("#contingent_type").val();
@@ -312,6 +314,8 @@ const handlerDelegationOfficial = (i) => {
   $(`.content-delegation-city-official-${i}`).empty();
   $(`.content-delegation-school-official-${i}`).addClass("d-none");
   $(`.content-delegation-school-official-${i}`).empty();
+  $(`.content-delegation-organization-official-${i}`).addClass("d-none");
+  $(`.content-delegation-organization-official-${i}`).empty();
   $(`.content-delegation-club-official-${i}`).addClass("d-none");
   $(`.content-delegation-club-official-${i}`).empty();
 

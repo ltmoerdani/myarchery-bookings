@@ -480,6 +480,7 @@ class EventController extends Controller
             $ticket['title'] = 'Individu';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
@@ -529,6 +530,7 @@ class EventController extends Controller
               $ticket['title'] = 'Team';
               $ticket['ticket_available_type'] = 'limited';
               $ticket['ticket_available'] = 100;
+              $ticket['original_ticket_available'] = 100;
               $ticket['max_ticket_buy_type'] = 'limited';
               $ticket['max_buy_ticket'] = 10;
               $ticket['pricing_type'] = 'normal';
@@ -577,6 +579,7 @@ class EventController extends Controller
             $ticket['title'] = 'Mix Team';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
@@ -608,6 +611,7 @@ class EventController extends Controller
             $ticket['title'] = 'Official';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
@@ -1078,6 +1082,7 @@ class EventController extends Controller
             $ticket['title'] = 'Individu';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
@@ -1127,6 +1132,7 @@ class EventController extends Controller
               $ticket['title'] = 'Team';
               $ticket['ticket_available_type'] = 'limited';
               $ticket['ticket_available'] = 100;
+              $ticket['original_ticket_available'] = 100;
               $ticket['max_ticket_buy_type'] = 'limited';
               $ticket['max_buy_ticket'] = 10;
               $ticket['pricing_type'] = 'normal';
@@ -1175,6 +1181,7 @@ class EventController extends Controller
             $ticket['title'] = 'Mix Team';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';
@@ -1206,6 +1213,7 @@ class EventController extends Controller
             $ticket['title'] = 'Official';
             $ticket['ticket_available_type'] = 'limited';
             $ticket['ticket_available'] = 100;
+            $ticket['original_ticket_available'] = 100;
             $ticket['max_ticket_buy_type'] = 'limited';
             $ticket['max_buy_ticket'] = 10;
             $ticket['pricing_type'] = 'normal';

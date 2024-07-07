@@ -763,7 +763,7 @@
                                                                     name="{{ $language->code }}_address"
                                                                     class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
                                                                     placeholder="{{ __('Enter Address') }}"
-                                                                    value="{{ $event_content->address }}">
+                                                                    value="{{ empty($event_content->address) ? '' : $event_content->address }}">
                                                                 <p class="font-weight-bold">
                                                                     *Enter a full address or location name to display
                                                                     the location on Google Maps on the event page.
@@ -777,18 +777,25 @@
                                                                     name="{{ $language->code }}_country"
                                                                     onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
                                                                     id="{{ $language->code }}_country"
-                                                                    value="{{ $event_content->country_id }}">
+                                                                    value="{{ empty($event_content->country_id) ? '' : $event_content->country_id }}">
                                                                     <option disable
                                                                         {{ empty($event_content->country_id) ? 'selected' : '' }}
                                                                         value="">
                                                                         Choose Country
                                                                     </option>
                                                                     @foreach ($international_countries as $value_international_country)
-                                                                        <option
-                                                                            value="{{ $value_international_country->id }}"
-                                                                            {{ $event_content->country_id == $value_international_country->id ? 'selected' : '' }}>
-                                                                            {{ $value_international_country->name }}
-                                                                        </option>
+                                                                        @if (empty($event_content->country_id))
+                                                                            <option
+                                                                                value="{{ $value_international_country->id }}">
+                                                                                {{ $value_international_country->name }}
+                                                                            </option>
+                                                                        @else
+                                                                            <option
+                                                                                value="{{ $value_international_country->id }}"
+                                                                                {{ $event_content->country_id == $value_international_country->id ? 'selected' : '' }}>
+                                                                                {{ $value_international_country->name }}
+                                                                            </option>
+                                                                        @endif
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -823,10 +830,16 @@
                                                                     </option>
                                                                     @if (!empty($state_list))
                                                                         @foreach ($state_list as $value_state)
-                                                                            <option value="{{ $value_state->id }}"
-                                                                                {{ $event_content->state_id == $value_state->id ? 'selected' : '' }}>
-                                                                                {{ $value_state->name }}
-                                                                            </option>
+                                                                            @if (empty($event_content->state_id))
+                                                                                <option value="{{ $value_state->id }}">
+                                                                                    {{ $value_state->name }}
+                                                                                </option>
+                                                                            @else
+                                                                                <option value="{{ $value_state->id }}"
+                                                                                    {{ $event_content->state_id == $value_state->id ? 'selected' : '' }}>
+                                                                                    {{ $value_state->name }}
+                                                                                </option>
+                                                                            @endif
                                                                         @endforeach
                                                                     @endif
 
@@ -863,10 +876,16 @@
                                                                     </option>
                                                                     @if (!empty($city_list))
                                                                         @foreach ($city_list as $value_city)
-                                                                            <option value="{{ $value_city->id }}"
-                                                                                {{ $event_content->city_id == $value_city->id ? 'selected' : '' }}>
-                                                                                {{ $value_city->name }}
-                                                                            </option>
+                                                                            @if (empty($event_content->city_id))
+                                                                                <option value="{{ $value_city->id }}">
+                                                                                    {{ $value_city->name }}
+                                                                                </option>
+                                                                            @else
+                                                                                <option value="{{ $value_city->id }}"
+                                                                                    {{ $event_content->city_id == $value_city->id ? 'selected' : '' }}>
+                                                                                    {{ $value_city->name }}
+                                                                                </option>
+                                                                            @endif
                                                                         @endforeach
                                                                     @endif
                                                                 </select>
@@ -879,7 +898,7 @@
                                                                     placeholder="{{ __('Enter Zip/Post Code') }}"
                                                                     name="{{ $language->code }}_zip_code"
                                                                     class="form-control {{ $language->direction == 1 ? 'rtl text-right' : '' }}"
-                                                                    value="{{ $event_content->zip_code }}">
+                                                                    value="{{ empty($event_content->zip_code) ? '' : $event_content->zip_code }}">
                                                             </div>
                                                         </div>
                                                     </div>

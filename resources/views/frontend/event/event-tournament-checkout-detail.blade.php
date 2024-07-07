@@ -67,45 +67,6 @@
                     <div class="row">
                         <div class="col-12 col-lg-8 order-1 order-lg-0 my-1">
                             <div class="row">
-                                {{-- <div class="col-12">
-                                    <h4 style="font-weight: bold">
-                                        Order Details
-                                    </h4>
-                                    <small>
-                                        *These contact details will be used for sending e-tickets and refund purposes.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                                <tr>
-                                                    <td rows="2">{{ __('Info Name Customer On Order Detail') }}</td>
-                                                    <td rows="1">:</td>
-                                                    <td rows="1">
-                                                        {{ empty($customer->fname) ? '' : $customer->fname }}
-                                                        {{ empty($customer->lname) ? '' : $customer->lname }}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td rows="2">
-                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
-                                                    <td rows="1">:</td>
-                                                    <td rows="1">
-                                                        {{ empty($customer->phone) ? '' : $customer->phone }}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td rows="2">{{ __('Info Email Customer On Order Detail') }}</td>
-                                                    <td rows="1">:</td>
-                                                    <td rows="1">
-                                                        {{ empty($customer->email) ? '' : $customer->email }}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div> --}}
                                 <div class="col-12">
                                     <h4 style="font-weight: bold">
                                         {{ __('Order Details') }}
@@ -146,7 +107,7 @@
                                     </div>
                                 </div>
                                 @foreach ($orders as $val_order)
-                                    @if (strtolower($val_order['category']) == 'individu' && count($val_order['ticket_detail_order']) > 0)
+                                    @if (count($val_order['ticket_detail_individu_order']) > 0)
                                         <section id="individu_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
@@ -169,21 +130,24 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach ($val_order['ticket_detail_order'] as $key => $val_order_ticket)
+                                                            @foreach ($val_order['ticket_detail_individu_order'] as $key => $val_order_ticket)
                                                                 @php
                                                                     $delegation_from = '';
                                                                     switch (strtolower($val_order_ticket['delegation_type'])) {
                                                                         case 'country':
-                                                                            $delegation_from = $val_order_ticket['country_name'];
+                                                                            $delegation_from = $val_order_ticket['country_delegation_individu_name'];
                                                                             break;
                                                                         case 'province':
-                                                                            $delegation_from = $val_order_ticket['province_name'];
+                                                                            $delegation_from = $val_order_ticket['province_delegation_individu_name'];
                                                                             break;
                                                                         case 'state':
-                                                                            $delegation_from = $val_order_ticket['province_name'];
+                                                                            $delegation_from = $val_order_ticket['province_delegation_individu_name'];
                                                                             break;
                                                                         case 'city':
-                                                                            $delegation_from = $val_order_ticket['city_name'];
+                                                                            $delegation_from = $val_order_ticket['city_delegation_individu_name'];
+                                                                            break;
+                                                                        case 'city/district':
+                                                                            $delegation_from = $val_order_ticket['city_delegation_individu_name'];
                                                                             break;
                                                                         case 'school/universities':
                                                                             $delegation_from = $val_order_ticket['school_name'];
@@ -214,7 +178,7 @@
                                             </div>
                                         </section>
                                     @endif
-                                    @if (strtolower($val_order['category']) == 'team' && count($val_order['ticket_detail_order']) > 0)
+                                    @if (count($val_order['ticket_detail_team_order']) > 0)
                                         <section id="team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
@@ -260,7 +224,7 @@
                                             </div>
                                         </section>
                                     @endif
-                                    @if (strtolower($val_order['category']) == 'mix team' && count($val_order['ticket_detail_order']) > 0)
+                                    @if (count($val_order['ticket_detail_mix_team_order']) > 0)
                                         <section id="mix_team_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
@@ -306,7 +270,7 @@
                                             </div>
                                         </section>
                                     @endif
-                                    @if (strtolower($val_order['category']) == 'official' && count($val_order['ticket_detail_order']) > 0)
+                                    @if (count($val_order['ticket_detail_official_order']) > 0)
                                         <section id="official_section">
                                             <div class="col-12 mt-3">
                                                 <h4 style="font-weight: bold">
@@ -321,31 +285,55 @@
                                                     <table class="table">
                                                         <thead class="table-secondary">
                                                             <tr>
-                                                                <th scope="col">#</th>
-                                                                <th scope="col">First</th>
-                                                                <th scope="col">Last</th>
-                                                                <th scope="col">Handle</th>
+                                                                <th scope="col">No</th>
+                                                                <th scope="col">Full Name</th>
+                                                                <th scope="col">Gender</th>
+                                                                <th scope="col">Delegation</th>
+                                                                <th scope="col">Category</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <th scope="row">1</th>
-                                                                <td>Mark</td>
-                                                                <td>Otto</td>
-                                                                <td>@mdo</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row">2</th>
-                                                                <td>Jacob</td>
-                                                                <td>Thornton</td>
-                                                                <td>@fat</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row">3</th>
-                                                                <td>Larry</td>
-                                                                <td>the Bird</td>
-                                                                <td>@twitter</td>
-                                                            </tr>
+                                                            @foreach ($val_order['ticket_detail_official_order'] as $key => $val_order_ticket)
+                                                                @php
+                                                                    $delegation_from = '';
+                                                                    switch (strtolower($val_order_ticket['delegation_type'])) {
+                                                                        case 'country':
+                                                                            $delegation_from = $val_order_ticket['country_delegation_official_name'];
+                                                                            break;
+                                                                        case 'province':
+                                                                            $delegation_from = $val_order_ticket['province_delegation_official_name'];
+                                                                            break;
+                                                                        case 'state':
+                                                                            $delegation_from = $val_order_ticket['province_delegation_official_name'];
+                                                                            break;
+                                                                        case 'city':
+                                                                            $delegation_from = $val_order_ticket['city_delegation_official_name'];
+                                                                            break;
+                                                                        case 'city/district':
+                                                                            $delegation_from = $val_order_ticket['city_delegation_official_name'];
+                                                                            break;
+                                                                        case 'school/universities':
+                                                                            $delegation_from = $val_order_ticket['school_name'];
+                                                                            break;
+                                                                        case 'organization':
+                                                                            $delegation_from = $val_order_ticket['organization_name'];
+                                                                            break;
+                                                                        default:
+                                                                            $delegation_from = $val_order_ticket['club_name'];
+                                                                            break;
+                                                                    }
+                                                                @endphp
+                                                                <tr>
+                                                                    <th scope="row">{{ $key + 1 }}</th>
+                                                                    <td>{{ ucfirst($val_order_ticket['user_full_name']) }}
+                                                                    </td>
+                                                                    <td>{{ ucfirst($val_order_ticket['user_gender']) }}
+                                                                    </td>
+                                                                    <td>{{ !empty($delegation_from) ? $delegation_from : '-' }}
+                                                                    </td>
+                                                                    <td>{{ $val_order_ticket['sub_category_ticket'] }}</td>
+                                                                </tr>
+                                                            @endforeach
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -519,168 +507,3 @@
 @section('custom-script')
     <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
 @endsection
-
-{{-- <section id="individu_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Individu Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Participant's name is exactly as written in the government
-                                        issued
-                                        ID/Passport/Driving License. Avoid any mistake, because some Organizer don't allow
-                                        name
-                                        corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionParticipant">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="participant_individu1" data-toggle="collapse"
-                                                data-target="#collapse_participant_1" aria-expanded="false"
-                                                aria-controls="collapse_participant_1">
-                                                Participant Details 1
-                                            </div>
-                                            <div id="collapse_participant_1" class="collapse show"
-                                                aria-labelledby="participant_individu1" data-parent="#accordionParticipant">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="participant_individu2" data-toggle="collapse"
-                                                data-target="#collapse_participant2" aria-expanded="false"
-                                                aria-controls="collapse_participant2">
-                                                Participant Details 2
-                                            </div>
-                                            <div id="collapse_participant2" class="collapse"
-                                                aria-labelledby="participant_individu2" data-parent="#accordionParticipant">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="team_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Team Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Team's name is exactly. Avoid any mistake, because some
-                                        Organizer don't allow name, category, delegation corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleTeam">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="team1" data-toggle="collapse" data-target="#collapse_team1"
-                                                aria-expanded="false" aria-controls="collapse_team1">
-                                                Team Details 1
-                                            </div>
-                                            <div id="collapse_team1" class="collapse show" aria-labelledby="team1"
-                                                data-parent="#accordionExampleTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="team2" data-toggle="collapse" data-target="#collapse_team2"
-                                                aria-expanded="false" aria-controls="collapse_team2">
-                                                Team Details 2
-                                            </div>
-                                            <div id="collapse_team2" class="collapse" aria-labelledby="team2"
-                                                data-parent="#accordionExampleTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="mix_team_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Mix Team Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Team's name is exactly. Avoid any mistake, because some
-                                        Organizer don't allow name, category, delegation corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleMixTeam">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="mix_team1" data-toggle="collapse" data-target="#collapse_mix_team1"
-                                                aria-expanded="false" aria-controls="collapse_mix_team1">
-                                                Mix Team Details 1
-                                            </div>
-                                            <div id="collapse_mix_team1" class="collapse show" aria-labelledby="mix_team1"
-                                                data-parent="#accordionExampleMixTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="mix_team2" data-toggle="collapse" data-target="#collapse_mix_team2"
-                                                aria-expanded="false" aria-controls="collapse_mix_team2">
-                                                Mix Team Details 2
-                                            </div>
-                                            <div id="collapse_mix_team2" class="collapse" aria-labelledby="mix_team2"
-                                                data-parent="#accordionExampleMixTeam">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="official_section">
-                                <div class="col-12 mt-3">
-                                    <h4 style="font-weight: bold">
-                                        Official Category
-                                    </h4>
-                                    <small>
-                                        *Make sure that the Official's name is exactly as written in the government issued
-                                        ID/Passport/Driving License. Avoid any mistake, because some Organizer don't allow
-                                        name corrections after booking.
-                                    </small>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <div class="accordion" id="accordionExampleOfficial">
-                                        <div class="card">
-                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                id="official1" data-toggle="collapse" data-target="#collapse_official1"
-                                                aria-expanded="false" aria-controls="collapse_official1">
-                                                Official Details 1
-                                            </div>
-                                            <div id="collapse_official1" class="collapse show"
-                                                aria-labelledby="official1" data-parent="#accordionExampleOfficial">
-                                                <div class="card-body">
-                                                    Some placeholder content for the second accordion panel. This panel is
-                                                    hidden by default.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section> --}}

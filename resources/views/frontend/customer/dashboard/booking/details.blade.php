@@ -307,12 +307,12 @@
                                                         <th>{{ __('No') }}</th>
                                                         <th>{{ __('Participant Name') }}</th>
                                                         <th>{{ __('Ticket Name') }}</th>
+                                                        <th>{{ __('Delegation Type') }}</th>
                                                         <th>{{ __('Delegation Name') }}</th>
                                                         <th>{{ __('Quantity') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
                                                     @php
                                                         $competitions = App\Models\ParticipantCompetitions::where('booking_id', $booking->id)
                                                             ->selectRaw('tickets.*, participant.*, participant_competitions.*, ticket_contents.title, 1 AS qty')
@@ -325,6 +325,19 @@
                                                         $no = 1;
                                                     @endphp
                                                     @foreach ($competitions as $c)
+                                                        @php
+                                                            if (strtolower($c->category) == 'club') {
+                                                                $delegation = App\Models\Clubs::where('id', $c->delegation_id)->first();
+                                                            }
+
+                                                            if (strtolower($c->category) == 'school/universities') {
+                                                                $delegation = App\Models\School::where('id', $c->delegation_id)->first();
+                                                            }
+
+                                                            if (strtolower($c->category) == 'organization') {
+                                                                $delegation = App\Models\Organization::where('id', $c->delegation_id)->first();
+                                                            }
+                                                        @endphp
                                                         <tr>
                                                             <td>{{ $no }}</td>
                                                             <td>
@@ -334,14 +347,10 @@
                                                                 {{ $c->title }}
                                                             </td>
                                                             <td>
-                                                                @php
-                                                                    if (strtolower($c->category) == 'club') {
-                                                                        $delegation = App\Models\Clubs::where('id', $c->delegation_id)->first();
-                                                                        print_r($delegation);
-                                                                    }
-                                                                @endphp
                                                                 {{ $c->category }}
-                                                                {{-- {{ $delegation->name }} --}}
+                                                            </td>
+                                                            <td>
+                                                                {{ empty($delegation->name) ? '' : $delegation->name }}
                                                             </td>
                                                             <td>
                                                                 {{ $c->qty }}
@@ -574,6 +583,7 @@
                                     <th>{{ __('No') }}</th>
                                     <th>{{ __('Participant Name') }}</th>
                                     <th>{{ __('Ticket Name') }}</th>
+                                    <th>{{ __('Delegation Type') }}</th>
                                     <th>{{ __('Delegation Name') }}</th>
                                     <th>{{ __('Quantity') }}</th>
                                 </tr>
@@ -592,6 +602,23 @@
                                     $no = 1;
                                 @endphp
                                 @foreach ($competitions as $c)
+                                    @php
+                                        if (strtolower($c->category) == 'club') {
+                                            $delegation = App\Models\Clubs::where('id', $c->delegation_id)->first();
+                                        }
+
+                                        if (strtolower($c->category) == 'school/universities') {
+                                            $delegation = App\Models\School::where('id', $c->delegation_id)->first();
+                                        }
+
+                                        if (strtolower($c->category) == 'organization') {
+                                            $delegation = App\Models\Organization::where('id', $c->delegation_id)->first();
+                                        }
+
+                                        if (strtolower($c->category) == 'organization') {
+                                            $delegation = App\Models\Organization::where('id', $c->delegation_id)->first();
+                                        }
+                                    @endphp
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>
@@ -601,12 +628,10 @@
                                             {{ $c->title }}
                                         </td>
                                         <td>
-                                            @php
-                                                if (strtolower($c->category) == 'club') {
-                                                    $delegation = App\Models\Clubs::where('id', $c->delegation_id)->first();
-                                                }
-                                            @endphp
-                                            {{-- {{ $delegation->name }} --}}
+                                            {{ $c->category }}
+                                        </td>
+                                        <td>
+                                            {{ empty($delegation->name) ? '' : $delegation->name }}
                                         </td>
                                         <td>
                                             {{ $c->qty }}

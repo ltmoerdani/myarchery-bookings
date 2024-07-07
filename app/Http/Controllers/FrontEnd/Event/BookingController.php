@@ -218,10 +218,10 @@ class BookingController extends Controller
         return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
       }
     }
-    
+
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
-      
+
       if (!$request->exists('gateway')) {
         Session::flash('error', 'Please select a payment method.');
 
@@ -340,7 +340,7 @@ class BookingController extends Controller
           'form_type' => 'tournament',
           'event_date' => Session::get('event_date')
         );
-        
+
         $bookingInfo = $this->storeData($arrData);
         // generate an invoice in pdf format
         $invoice = $this->generateInvoice($bookingInfo, $id);
@@ -380,7 +380,7 @@ class BookingController extends Controller
         return redirect()->route('customer.login', ['redirectPath' => 'course_details']);
       }
     }
-    
+
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
 
@@ -466,6 +466,7 @@ class BookingController extends Controller
       } else {
         $variations = Session::get('selTickets');
       }
+
       if ($variations) {
         foreach ($variations as $variation) {
           if ($info['form_type'] == "tournament") {
@@ -544,7 +545,7 @@ class BookingController extends Controller
             ];
           }
         }
-        
+
         if ($info['form_type'] == "tournament") {
           $variations = json_encode($variations_ticket, true);
         } else {
@@ -558,7 +559,7 @@ class BookingController extends Controller
 
       $basic  = Basic::where('uniqid', 12345)->select('tax', 'commission')->first();
       $booking_unique_id = uniqid() . time();
-      
+
       $booking = Booking::create([
         'customer_id' => Auth::guard('customer')->user() ? Auth::guard('customer')->user()->id : null,
         'booking_id' => $booking_unique_id,
@@ -596,59 +597,218 @@ class BookingController extends Controller
         'event_date' => Session::get('event_date'),
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
-      
+
       if ($info['form_type'] == "tournament") {
         $dataOrders = $info['dataOrders'];
+        // foreach ($dataOrders as $d) {
+        //   $ticket_id = $d->title;
+        //   $category = $d->category;
+        //   $ticket_detail_order = $d->ticket_detail_order;
+
+        //   foreach ($ticket_detail_order as $t) {
+        //     if ($t->country_id == "102") { //Indonesia
+        //       if ($t->city_id) {
+        //         $city_name = IndonesianCities::select('id', 'name')->where('id', $t->city_id)->first();
+        //       }
+        //     } else {
+        //       if ($t->city_id) {
+        //         $city_name = InternationalCities::select('id', 'name')->where('country_id', $t->country_id)->where('id', $t->city_id)->first();
+        //       }
+        //     }
+
+        //     $data_participant['fname'] = $t->user_full_name;
+        //     $data_participant['lname'] = null;
+        //     $data_participant['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
+        //     $data_participant['birthdate'] = $t->birthdate;
+        //     $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
+        //     $checkParticipant = Participant::where('fname', $data_participant['fname'])->where('lname', $data_participant['lname'])
+        //       ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
+        //     if (!$checkParticipant) {
+        //       // Save to table participant
+        //       $input['fname'] = $t->user_full_name;
+        //       $input['lname'] = null;
+        //       $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
+        //       $input['birthdate'] = $t->birthdate;
+        //       $input['county_id'] = $t->country_id;
+        //       $input['country'] = $t->country_name;
+        //       $input['city_id'] = $t->city_id;
+        //       $input['city'] = empty($city_name->name) ? null : $city_name->name;
+        //       $input['username'] = $username;
+        //       $peserta = Participant::create($input);
+        //       $participant_id = $peserta->id;
+        //     } else {
+        //       $participant_id = $checkParticipant->id;
+        //     }
+
+        //     $p['competition_name'] = $t->sub_category_ticket;
+        //     $p['event_id'] = $info['event_id'];
+        //     $p['participant_id'] = $participant_id;
+        //     $p['ticket_id'] = $t->id;
+        //     $p['booking_id'] = $booking->id;
+        //     $p['category'] = $t->delegation_type;
+        //     $p['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
+        //     $p['customer_id'] = Auth::guard('customer')->user()->id;
+        //     $p['description'] = null;
+        //     ParticipantCompetitions::create($p);
+        //   }
+        // }
+
         foreach ($dataOrders as $d) {
-          $ticket_id = $d->title;
-          $category = $d->category;
-          $ticket_detail_order = $d->ticket_detail_order;
+          // $ticket_id = $d->title;
+          // $category = $d->category;
+          $ticket_detail_individu_order = $d->ticket_detail_individu_order;
+          $ticket_detail_official_order = $d->ticket_detail_official_order;
 
-          foreach ($ticket_detail_order as $t) {
-            if ($t->country_id == "102") { //Indonesia
-              if ($t->city_id) {
-                $city_name = IndonesianCities::select('id', 'name')->where('id', $t->city_id)->first();
+          if ($ticket_detail_individu_order) {
+            foreach ($ticket_detail_individu_order as $valueDataOrderIndividu) {
+              if ($valueDataOrderIndividu->country_id == "102") { //Indonesia
+                if ($valueDataOrderIndividu->city_id) {
+                  $city_name = IndonesianCities::select('id', 'name')->where('id', $valueDataOrderIndividu->city_id)->first();
+                }
+              } else {
+                if ($valueDataOrderIndividu->city_id) {
+                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderIndividu->country_id)->where('id', $valueDataOrderIndividu->city_id)->first();
+                }
               }
-            } else {
-              if ($t->city_id) {
-                $city_name = InternationalCities::select('id', 'name')->where('country_id', $t->country_id)->where('id', $t->city_id)->first();
+
+              $data_participant['fname'] = $valueDataOrderIndividu->user_full_name;
+              $data_participant['lname'] = null;
+              $data_participant['gender'] = ($valueDataOrderIndividu->user_gender == 'male') ? 'M' : 'F';
+              $data_participant['birthdate'] = $valueDataOrderIndividu->birthdate;
+              $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
+
+              $checkParticipant = Participant::where('fname', $data_participant['fname'])
+                ->where('lname', $data_participant['lname'])
+                ->where('gender', $data_participant['gender'])
+                ->where('birthdate', $data_participant['birthdate'])
+                ->first();
+
+              if (!$checkParticipant) {
+                // Save to table participant
+                $input['fname'] = $valueDataOrderIndividu->user_full_name;
+                $input['lname'] = null;
+                $input['gender'] = ($valueDataOrderIndividu->user_gender == 'male') ? 'M' : 'F';
+                $input['birthdate'] = $valueDataOrderIndividu->birthdate;
+                $input['county_id'] = $valueDataOrderIndividu->country_id;
+                $input['country'] = $valueDataOrderIndividu->country_name;
+                $input['city_id'] = $valueDataOrderIndividu->city_id;
+                $input['city'] = empty($city_name->name) ? null : $city_name->name;
+                $input['username'] = $username;
+                $peserta = Participant::create($input);
+                $participant_id = $peserta->id;
+              } else {
+                $participant_id = $checkParticipant->id;
               }
-            }
 
-            $data_participant['fname'] = $t->user_full_name;
-            $data_participant['lname'] = null;
-            $data_participant['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
-            $data_participant['birthdate'] = $t->birthdate;
-            $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
-            $checkParticipant = Participant::where('fname', $data_participant['fname'])->where('lname', $data_participant['lname'])
-              ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
-            if (!$checkParticipant) {
-              // Save to table participant
-              $input['fname'] = $t->user_full_name;
-              $input['lname'] = null;
-              $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
-              $input['birthdate'] = $t->birthdate;
-              $input['county_id'] = $t->country_id;
-              $input['country'] = $t->country_name;
-              $input['city_id'] = $t->city_id;
-              $input['city'] = empty($city_name->name) ? null : $city_name->name;
-              $input['username'] = $username;
-              $peserta = Participant::create($input);
-              $participant_id = $peserta->id;
-            } else {
-              $participant_id = $checkParticipant->id;
-            }
+              $delegation_id = null;
+              switch (strtolower($valueDataOrderIndividu->delegation_type)) {
+                case 'country':
+                  $delegation_id = empty($valueDataOrderIndividu->country_delegation_individu) ? null : $valueDataOrderIndividu->country_delegation_individu;
+                  break;
+                case 'province':
+                  $delegation_id = empty($valueDataOrderIndividu->province_delegation_individu) ? null : $valueDataOrderIndividu->province_delegation_individu;
+                  break;
+                case 'city/district':
+                  $delegation_id = empty($valueDataOrderIndividu->city_delegation_individu) ? null : $valueDataOrderIndividu->city_delegation_individu;
+                  break;
+                case 'school/universities':
+                  $delegation_id = empty($valueDataOrderIndividu->school_id) ? null : $valueDataOrderIndividu->school_id;
+                  break;
+                case 'organization':
+                  $delegation_id = empty($valueDataOrderIndividu->organization_id) ? null : $valueDataOrderIndividu->organization_id;
+                  break;
+                default:
+                  $delegation_id = empty($valueDataOrderIndividu->club_id) ? null : $valueDataOrderIndividu->club_id;
+                  break;
+              }
 
-            $p['competition_name'] = $t->sub_category_ticket;
-            $p['event_id'] = $info['event_id'];
-            $p['participant_id'] = $participant_id;
-            $p['ticket_id'] = $t->id;
-            $p['booking_id'] = $booking->id;
-            $p['category'] = $t->delegation_type;
-            $p['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
-            $p['customer_id'] = Auth::guard('customer')->user()->id;
-            $p['description'] = null;
-            ParticipantCompetitions::create($p);
+              $p['competition_name'] = $valueDataOrderIndividu->sub_category_ticket;
+              $p['event_id'] = $info['event_id'];
+              $p['participant_id'] = $participant_id;
+              $p['ticket_id'] = $valueDataOrderIndividu->id;
+              $p['booking_id'] = $booking->id;
+              $p['category'] = $valueDataOrderIndividu->delegation_type;
+              $p['delegation_id'] = $delegation_id;
+              $p['customer_id'] = Auth::guard('customer')->user()->id;
+              $p['description'] = null;
+              ParticipantCompetitions::create($p);
+            }
+          }
+
+          if ($ticket_detail_official_order) {
+            foreach ($ticket_detail_official_order as $valueDataOrderOfficial) {
+              if ($valueDataOrderOfficial->country_id == "102") { //Indonesia
+                if ($valueDataOrderOfficial->city_id) {
+                  $city_name = IndonesianCities::select('id', 'name')->where('id', $valueDataOrderOfficial->city_id)->first();
+                }
+              } else {
+                if ($valueDataOrderOfficial->city_id) {
+                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderOfficial->country_id)->where('id', $valueDataOrderOfficial->city_id)->first();
+                }
+              }
+
+              $data_participant['fname'] = $valueDataOrderOfficial->user_full_name;
+              $data_participant['lname'] = null;
+              $data_participant['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+              $data_participant['birthdate'] = $valueDataOrderOfficial->birthdate;
+              $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
+
+              $checkParticipant = Participant::where('fname', $data_participant['fname'])
+                ->where('lname', $data_participant['lname'])
+                ->where('gender', $data_participant['gender'])
+                ->where('birthdate', $data_participant['birthdate'])
+                ->first();
+
+              if (!$checkParticipant) {
+                // Save to table participant
+                $input['fname'] = $valueDataOrderOfficial->user_full_name;
+                $input['lname'] = null;
+                $input['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+                $input['birthdate'] = $valueDataOrderOfficial->birthdate;
+                $input['county_id'] = $valueDataOrderOfficial->country_id;
+                $input['country'] = $valueDataOrderOfficial->country_name;
+                $input['city_id'] = $valueDataOrderOfficial->city_id;
+                $input['city'] = empty($city_name->name) ? null : $city_name->name;
+                $input['username'] = $username;
+                $peserta = Participant::create($input);
+                $participant_id = $peserta->id;
+              } else {
+                $participant_id = $checkParticipant->id;
+              }
+
+              $delegation_id = null;
+              switch (strtolower($valueDataOrderOfficial->delegation_type)) {
+                case 'country':
+                  $delegation_id = empty($valueDataOrderOfficial->country_delegation_official) ? null : $valueDataOrderOfficial->country_delegation_official;
+                  break;
+                case 'province':
+                  $delegation_id = empty($valueDataOrderOfficial->province_delegation_official) ? null : $valueDataOrderOfficial->province_delegation_official;
+                  break;
+                case 'city/district':
+                  $delegation_id = empty($valueDataOrderOfficial->city_delegation_official) ? null : $valueDataOrderOfficial->city_delegation_official;
+                  break;
+                case 'school/universities':
+                  $delegation_id = empty($valueDataOrderOfficial->school_id) ? null : $valueDataOrderOfficial->school_id;
+                  break;
+                case 'organization':
+                  $delegation_id = empty($valueDataOrderOfficial->organization_id) ? null : $valueDataOrderOfficial->organization_id;
+                  break;
+                default:
+                  $delegation_id = empty($valueDataOrderOfficial->club_id) ? null : $valueDataOrderOfficial->club_id;
+                  break;
+              }
+
+              $p['competition_name'] = $valueDataOrderOfficial->sub_category_ticket;
+              $p['event_id'] = $info['event_id'];
+              $p['participant_id'] = $participant_id;
+              $p['ticket_id'] = $valueDataOrderOfficial->id;
+              $p['booking_id'] = $booking->id;
+              $p['category'] = $valueDataOrderOfficial->delegation_type;
+              $p['delegation_id'] = $delegation_id;
+              $p['customer_id'] = Auth::guard('customer')->user()->id;
+              $p['description'] = null;
+              ParticipantCompetitions::create($p);
+            }
           }
         }
       }
