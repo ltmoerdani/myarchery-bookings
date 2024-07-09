@@ -218,6 +218,7 @@ class EventController extends Controller
           ->where('competitions.event_id', $event_id)
           ->orderBy('competitions.competition_category_id', 'ASC')->groupBy('competition_categories.id')->get();
 
+        $competition = [];
         $competition = $competition_categories->map(function ($c) {
           $competition_categories = [
             'id' => $c->id,
@@ -253,6 +254,34 @@ class EventController extends Controller
 
           return array_merge($competition_categories, ['sub_category' => $sub_category]);
         });
+
+        $ticketForOfficial = Ticket::where('event_id', $id)->where('title', 'official')->first();
+
+        if ($ticketForOfficial) {
+          $competition[]
+            = [
+              "id" => $ticketForOfficial->id,
+              "event_id" => 16,
+              "category_name" => $ticketForOfficial->title,
+              "sub_category" => [
+                [
+                  "id" => $ticketForOfficial->id,
+                  "sub_category_name" => "For all official",
+                  "distance" => null,
+                  "tickets" => [
+                    [
+                      "id" => $ticketForOfficial->id,
+                      "title" => $ticketForOfficial->title,
+                      "available_qouta" => $ticketForOfficial->ticket_available,
+                      "original_qouta" => $ticketForOfficial->original_ticket_available,
+                      "max_qouta" => "limited",
+                      "ticket_title" => $ticketForOfficial->title,
+                    ]
+                  ]
+                ]
+              ]
+            ];
+        }
 
         $information['category_tickets'] = $competition;
         $information['tickets'] = $tickets;

@@ -27,6 +27,7 @@
             user-select: none !important;
             -webkit-user-select: none !important;
             padding: 15px 25px !important;
+            min-width: 100% !important;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -560,26 +561,13 @@
                                                                         <div
                                                                             class="col-12 content-delegation-organization-official-{{ $i }} d-none">
                                                                         </div>
-                                                                        <div class="col-12">
-                                                                            <label
-                                                                                for="category_official{{ $i }}">
-                                                                                {{ __('Category') }}*
-                                                                            </label>
-                                                                            <select class="form-select"
-                                                                                id="category_official{{ $i }}"
-                                                                                name="category_official[]">
-                                                                                <option value="" selected>
-                                                                                    {{ __('Select Category') }}</option>
-                                                                                @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                                    @if (strtolower($val_sub_cat_ticket['category_name']) == 'official')
-                                                                                        <option
-                                                                                            value="{{ $val_sub_cat_ticket['id'] }}">
-                                                                                            {{ $val_sub_cat_ticket['title'] }}
-                                                                                        </option>
-                                                                                    @endif
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
+                                                                        @foreach ($sub_category_tickets as $val_sub_cat_ticket)
+                                                                            @if (strtolower($val_sub_cat_ticket['category_name']) == 'official')
+                                                                                <input
+                                                                                    type="hidden"name="category_official[]"
+                                                                                    value="{{ $val_sub_cat_ticket['id'] }}">
+                                                                            @endif
+                                                                        @endforeach
                                                                     </div>
                                                                 </div>
                                                             </div>

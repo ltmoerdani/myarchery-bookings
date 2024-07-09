@@ -405,6 +405,7 @@ class CheckOutController extends Controller
       $category_official = $request->category_official;
       $ticket_detail_official_order = [];
 
+
       if ($category_official) {
         foreach ($category_official as $key => $value) {
           $country_name = InternationalCountries::where('id', $profile_country_official[$key])->first();
@@ -418,6 +419,7 @@ class CheckOutController extends Controller
 
           $ticket = Ticket::where('id', $value)->first();
           $ticketContent = TicketContent::where('ticket_id', $value)->where('language_id', $language_id)->first();
+
           // ============================ early_bird_discount ====================================
           if ($ticket->early_bird_discount == 'enable') {
 
@@ -481,7 +483,7 @@ class CheckOutController extends Controller
             $late_price_dicount_international = 0;
           }
 
-          if ($country[$key] == "102") {
+          if ($profile_country_official[$key] == "102") {
             //Indonesia
             $ticketprice = $ticket->price;
             $tickettitle = $ticketContent->title;
@@ -609,7 +611,8 @@ class CheckOutController extends Controller
       }
 
       $orders[] = [
-        "title" => $v,
+        // "title" => $v,
+        "title" => 'order_ticket' . time(),
         "category" => 'individu',
         "ticket_detail_individu_order" => $ticket_detail_individu_order,
         "ticket_detail_official_order" => $ticket_detail_official_order,

@@ -221,8 +221,13 @@
                                                         type="button" data-category-key-id="{{ $key_sub_category }}"
                                                         data-category-id="{{ $ct_value['id'] }}"
                                                         data-ticket-quota="{{ json_encode($val_sub_category['tickets']) }}">
-                                                        {{ $val_sub_category['sub_category_name'] }} -
-                                                        {{ $val_sub_category['distance'] }} M
+                                                        @if (strtolower($ct_value['category_name']) == 'official')
+                                                            {{ $val_sub_category['sub_category_name'] }}
+                                                        @else
+                                                            {{ $val_sub_category['sub_category_name'] }} -
+                                                            {{ $val_sub_category['distance'] }} M
+                                                        @endif
+
                                                     </button>
                                                 @endforeach
                                             </div>
@@ -433,8 +438,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                                                <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                                                <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                                <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                                <hr> -->
                                     @endif
                                     {{-- end location --}}
 
