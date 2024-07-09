@@ -384,15 +384,6 @@ class TicketController extends Controller
             ]
           ]
         ], 404);
-        // if (empty($checkEvent)) {
-        //   return Response([
-        //     'errors' => [
-        //       'message' => [
-        //         'Update Error, Because list category ticket not found!'
-        //       ]
-        //     ]
-        //   ], 404);
-        // }
       }
 
       DB::transaction(function () use ($request) {

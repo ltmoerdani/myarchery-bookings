@@ -604,39 +604,72 @@ class EventController extends Controller
             }
           }
 
-          // Official
-          if ($request->official == "active") {
-            $ticket['event_id'] = $event->id;
-            $ticket['event_type'] = 'tournament';
-            $ticket['title'] = 'Official';
-            $ticket['ticket_available_type'] = 'limited';
-            $ticket['ticket_available'] = 100;
-            $ticket['original_ticket_available'] = 100;
-            $ticket['max_ticket_buy_type'] = 'limited';
-            $ticket['max_buy_ticket'] = 10;
-            $ticket['pricing_type'] = 'normal';
-            $ticket['pricing_scheme'] = $request['pricing_scheme'];
-            $ticket['price'] = 300000;
-            $ticket['f_price'] = 300000;
-            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
-            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
-            $ticket['early_bird_discount'] = 'disable';
-            $ticket['early_bird_discount_type'] = 'fixed';
-            $ticket['late_price_discount'] = 'disable';
-            $ticket['late_price_discount_type'] = 'fixed';
-            $t = Ticket::create($ticket);
+          // // Official
+          // if ($request->official == "active") {
+          //   $ticket['event_id'] = $event->id;
+          //   $ticket['event_type'] = 'tournament';
+          //   $ticket['title'] = 'Official';
+          //   $ticket['ticket_available_type'] = 'limited';
+          //   $ticket['ticket_available'] = 100;
+          //   $ticket['original_ticket_available'] = 100;
+          //   $ticket['max_ticket_buy_type'] = 'limited';
+          //   $ticket['max_buy_ticket'] = 10;
+          //   $ticket['pricing_type'] = 'normal';
+          //   $ticket['pricing_scheme'] = $request['pricing_scheme'];
+          //   $ticket['price'] = 300000;
+          //   $ticket['f_price'] = 300000;
+          //   $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          //   $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          //   $ticket['early_bird_discount'] = 'disable';
+          //   $ticket['early_bird_discount_type'] = 'fixed';
+          //   $ticket['late_price_discount'] = 'disable';
+          //   $ticket['late_price_discount_type'] = 'fixed';
+          //   $t = Ticket::create($ticket);
 
-            $languages = Language::all();
-            foreach ($languages as $language) {
-              $data['language_id'] = $language->id;
-              $data['ticket_id'] = $t->id;
-              $data['title'] = $name_competition . ' Official';
-              $data['description'] = null;
-              TicketContent::create($data);
-            }
-          }
+          //   $languages = Language::all();
+          //   foreach ($languages as $language) {
+          //     $data['language_id'] = $language->id;
+          //     $data['ticket_id'] = $t->id;
+          //     $data['title'] = $name_competition . ' Official';
+          //     $data['description'] = null;
+          //     TicketContent::create($data);
+          //   }
+          // }
 
           $i++;
+        }
+
+        // Official
+        if ($request->official == "active") {
+          $ticket['event_id'] = $event->id;
+          $ticket['competition_id'] = null;
+          $ticket['event_type'] = 'tournament';
+          $ticket['title'] = 'Official';
+          $ticket['ticket_available_type'] = 'limited';
+          $ticket['ticket_available'] = 100;
+          $ticket['original_ticket_available'] = 100;
+          $ticket['max_ticket_buy_type'] = 'limited';
+          $ticket['max_buy_ticket'] = 10;
+          $ticket['pricing_type'] = 'normal';
+          $ticket['pricing_scheme'] = $request['pricing_scheme'];
+          $ticket['price'] = 300000;
+          $ticket['f_price'] = 300000;
+          $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          $ticket['early_bird_discount'] = 'disable';
+          $ticket['early_bird_discount_type'] = 'fixed';
+          $ticket['late_price_discount'] = 'disable';
+          $ticket['late_price_discount_type'] = 'fixed';
+          $t = Ticket::create($ticket);
+
+          $languages = Language::all();
+          foreach ($languages as $language) {
+            $data['language_id'] = $language->id;
+            $data['ticket_id'] = $t->id;
+            $data['title'] = 'Official';
+            $data['description'] = 'For Officials Only';
+            TicketContent::create($data);
+          }
         }
       });
 
@@ -1206,39 +1239,72 @@ class EventController extends Controller
             }
           }
 
-          // Official
-          if ($request->official == "active") {
-            $ticket['event_id'] = $event->id;
-            $ticket['event_type'] = 'tournament';
-            $ticket['title'] = 'Official';
-            $ticket['ticket_available_type'] = 'limited';
-            $ticket['ticket_available'] = 100;
-            $ticket['original_ticket_available'] = 100;
-            $ticket['max_ticket_buy_type'] = 'limited';
-            $ticket['max_buy_ticket'] = 10;
-            $ticket['pricing_type'] = 'normal';
-            $ticket['pricing_scheme'] = $request['pricing_scheme'];
-            $ticket['price'] = 300000;
-            $ticket['f_price'] = 300000;
-            $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
-            $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
-            $ticket['early_bird_discount'] = 'disable';
-            $ticket['early_bird_discount_type'] = 'fixed';
-            $ticket['late_price_discount'] = 'disable';
-            $ticket['late_price_discount_type'] = 'fixed';
-            $t = Ticket::create($ticket);
+          // // Official
+          // if ($request->official == "active") {
+          //   $ticket['event_id'] = $event->id;
+          //   $ticket['event_type'] = 'tournament';
+          //   $ticket['title'] = 'Official';
+          //   $ticket['ticket_available_type'] = 'limited';
+          //   $ticket['ticket_available'] = 100;
+          //   $ticket['original_ticket_available'] = 100;
+          //   $ticket['max_ticket_buy_type'] = 'limited';
+          //   $ticket['max_buy_ticket'] = 10;
+          //   $ticket['pricing_type'] = 'normal';
+          //   $ticket['pricing_scheme'] = $request['pricing_scheme'];
+          //   $ticket['price'] = 300000;
+          //   $ticket['f_price'] = 300000;
+          //   $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          //   $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          //   $ticket['early_bird_discount'] = 'disable';
+          //   $ticket['early_bird_discount_type'] = 'fixed';
+          //   $ticket['late_price_discount'] = 'disable';
+          //   $ticket['late_price_discount_type'] = 'fixed';
+          //   $t = Ticket::create($ticket);
 
-            $languages = Language::all();
-            foreach ($languages as $language) {
-              $data['language_id'] = $language->id;
-              $data['ticket_id'] = $t->id;
-              $data['title'] = $name_competition . ' Official';
-              $data['description'] = null;
-              TicketContent::create($data);
-            }
-          }
+          //   $languages = Language::all();
+          //   foreach ($languages as $language) {
+          //     $data['language_id'] = $language->id;
+          //     $data['ticket_id'] = $t->id;
+          //     $data['title'] = $name_competition . ' Official';
+          //     $data['description'] = null;
+          //     TicketContent::create($data);
+          //   }
+          // }
 
           $i++;
+        }
+
+        // Official
+        if ($request->official == "active") {
+          $ticket['event_id'] = $event->id;
+          $ticket['competition_id'] = null;
+          $ticket['event_type'] = 'tournament';
+          $ticket['title'] = 'Official';
+          $ticket['ticket_available_type'] = 'limited';
+          $ticket['ticket_available'] = 100;
+          $ticket['original_ticket_available'] = 100;
+          $ticket['max_ticket_buy_type'] = 'limited';
+          $ticket['max_buy_ticket'] = 10;
+          $ticket['pricing_type'] = 'normal';
+          $ticket['pricing_scheme'] = $request['pricing_scheme'];
+          $ticket['price'] = 300000;
+          $ticket['f_price'] = 300000;
+          $ticket['international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          $ticket['f_international_price'] = $request['pricing_scheme'] != 'single_price' ? 500000 : null;
+          $ticket['early_bird_discount'] = 'disable';
+          $ticket['early_bird_discount_type'] = 'fixed';
+          $ticket['late_price_discount'] = 'disable';
+          $ticket['late_price_discount_type'] = 'fixed';
+          $t = Ticket::create($ticket);
+
+          $languages = Language::all();
+          foreach ($languages as $language) {
+            $data['language_id'] = $language->id;
+            $data['ticket_id'] = $t->id;
+            $data['title'] = 'Official';
+            $data['description'] = 'For Officials Only';
+            TicketContent::create($data);
+          }
         }
 
         $event->update($in);
