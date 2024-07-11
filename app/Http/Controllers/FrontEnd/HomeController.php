@@ -173,6 +173,11 @@ class HomeController extends Controller
     // }
   }
 
+  public function xendit_callback_disbursement(Request $request){
+    $data = new XenditController();
+    $data->callback_disbursement($request);
+  }
+
   public function myfatoorah_callback(Request $request)
   {
     $type = Session::get('myfatoorah_payment_type');

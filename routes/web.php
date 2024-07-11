@@ -20,6 +20,7 @@ Route::get('/check-payment', 'CronJobController@checkIyzicoPendingPayment')->nam
 
 Route::get('midtrans/cancel', 'FrontEnd\HomeController@midtrans_cancel')->name('midtrans_cancel'); // banking er IPN
 Route::post('xendit/callback', 'FrontEnd\HomeController@xendit_callback')->name('xendit_cancel');
+Route::post('xendit/callback-disbursement', 'FrontEnd\HomeController@xendit_callback_disbursement')->name('xendit_callback_disbursement');
 Route::get('myfatoorah/callback', 'FrontEnd\HomeController@myfatoorah_callback')->name('myfatoorah_callback');
 
 Route::get('myfatoorah/cancel', 'FrontEnd\HomeController@myfatoorah_cancel')->name('myfatoorah_cancel');

@@ -8,6 +8,8 @@ use App\Models\BasicSettings\MailTemplate;
 use App\Models\Organizer;
 use App\Models\Transaction;
 use App\Models\Withdraw;
+use App\Models\WithdrawMethodOption;
+use App\Models\Disbursement;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -225,31 +227,45 @@ class WithdrawController extends Controller
   }
 
   //approve and send disbursement
-  public function approve_disbursement($id){
+  public function approve_disbursement(Request $request, $id){
+    $data = $request->all();
+    $header = $request->header();
+    
     $withdraw = Withdraw::where('id', $id)->first();
+    if($withdraw->method_id == 6){
+      $feilds = json_decode($withdraw->feilds);
 
-    $external_id = Str::random(10);
-    $secret_key = 'Basic ' . config('xendit.key_auth');
-    $data_request = Http::withHeaders([
-        'Authorization' => $secret_key
-    ])->post('https://api.xendit.co/disbursements', [
-        'external_id' => $external_id,
-        'amount' => 30000,
-        'bank_code' => 'BCA',
-        'account_holder_name' => "Testing Name",
-        'account_number' => "2801339851",
-        'description' => "Reimbursement for shoes",
-        // 'success_redirect_url' => route('event_booking.xindit.notify')
-    ]);
-    $response = $data_request->object();
-    $response = json_decode(json_encode($response), true);
+      $withdraw_method_options = WithdrawMethodOption::where('id', $feilds->Bank_Account)->first();
+      $external_id = Str::random(10);
+      $secret_key = 'Basic ' . config('xendit.key_auth');
+      $data_request = Http::withHeaders([
+          'Authorization' => $secret_key
+      ])->post('https://api.xendit.co/disbursements', [
+          'external_id' => $external_id,
+          'amount' => $withdraw->payable_amount,
+          'bank_code' => $withdraw_method_options->bank_code,
+          'account_holder_name' => $feilds->Account_Name,
+          'account_number' => $feilds->Account_No,
+          'description' => "Reimbursement ".$withdraw->amount." (Withdraw ID ".$withdraw->withdraw_id.")",
+      ]);
+      $response = $data_request->object();
+      $response = json_decode(json_encode($response), true);
 
-    // array(8) { ["id"]=> string(24) "667eca815ce46e3d4bc268aa" ["user_id"]=> string(24) "66289830df8395661cb19d7b" ["external_id"]=> string(10) "Pr6eyt0Ojt" ["amount"]=> int(90000) ["bank_code"]=> string(3) "BCA" ["account_holder_name"]=> string(12) "Testing Name" ["disbursement_description"]=> string(23) "Reimbursement for shoes" ["status"]=> string(7) "PENDING" }
-    var_dump($response);die;
-
-    die;
-
-
+      $disb['withdraw_id'] = $withdraw->withdraw_id;
+      $disb['payment_type'] = 'Xendit';
+      $disb['callback'] = json_encode($response);
+      $disb['req_header'] = json_encode($header);
+      $disb['callback_id'] = $response['id'];
+      $disb['external_id'] = $response['external_id'];
+      $disb['amount'] = $response['amount'];
+      $disb['bank_code'] = $response['bank_code'];
+      $disb['account_holder_name'] = $response['account_holder_name'];
+      $disb['disbursement_description'] = $response['disbursement_description'];
+      $disb['status'] = $response['status'];
+      $disb['currency'] = 'IDR';
+      $disb['description'] = null;
+      $disb = Disbursement::create($disb);
+    }
 
     //mail sending
     // get the website title & mail's smtp information from db
@@ -289,6 +305,7 @@ class WithdrawController extends Controller
     $mailBody = str_replace('{payable_amount}', $info->base_currency_symbol . $payable_amount, $mailBody);
 
     $mailBody = str_replace('{withdraw_method}', $method->name, $mailBody);
+    $mailBody = str_replace('{transaction_id}', $withdraw->withdraw_id, $mailBody);
     $mailBody = str_replace('{website_title}', $websiteTitle, $mailBody);
 
     $mailData['body'] = $mailBody;

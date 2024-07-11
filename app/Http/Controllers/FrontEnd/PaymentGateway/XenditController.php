@@ -19,6 +19,8 @@ use App\Models\Event\EventContent;
 use App\Models\Event\Ticket;
 use Illuminate\Support\Facades\DB;
 use App\Models\ParticipantCompetitions;
+use App\Models\Disbursement;
+use App\Models\DisbursementCallback;
 
 class XenditController extends Controller
 {
@@ -509,8 +511,14 @@ class XenditController extends Controller
   public function callback_tournament($request)
   {
     $data = $request->all();
-    $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
+    $req_header = $request->header();
 
+    $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
+    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
+      echo 'Invalid Callback Token.'; die;
+    }
+
+    $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
     if ($data['payment_method'] == "CREDIT_CARD") {
       $payment_channel = "CREDIT_CARD";
     } elseif ($data['payment_method'] == "QR_CODE") {
@@ -532,6 +540,7 @@ class XenditController extends Controller
       $transaction->save();
 
       $bookings_payment->callback = json_encode($data);
+      $bookings_payment->req_header = json_encode($req_header);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
@@ -561,6 +570,7 @@ class XenditController extends Controller
       $transaction->save();
 
       $bookings_payment->callback = json_encode($data);
+      $bookings_payment->req_header = json_encode($req_header);
       $bookings_payment->payment_method = $data['payment_method'];
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
@@ -587,5 +597,39 @@ class XenditController extends Controller
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
     }
+  }
+
+  public function callback_disbursement($request){
+    $data = $request->all();
+    $req_header = $request->header();
+
+    $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
+    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
+      echo 'Invalid Callback Token.'; die;
+    }
+
+    $callback['payment_type'] = 'Xendit';
+    $callback['callback'] = json_encode($data);
+    $callback['req_header'] = json_encode($header);
+    $callback['callback_id'] = $data['id'];
+    $callback['external_id'] = $data['external_id'];
+    $callback['amount'] = $data['amount'];
+    $callback['bank_code'] = $data['bank_code'];
+    $callback['account_holder_name'] = $data['account_holder_name'];
+    $callback['disbursement_description'] = $data['disbursement_description'];
+    $callback['status'] = $data['status'];
+    $callback['currency'] = 'IDR';
+    $callback['description'] = null;
+    $callback['updated_callback'] = $data['updated'];
+    $callback['created_callback'] = $data['created'];
+    $callback = DisbursementCallback::create($callback);
+
+    $disb = Disbursement::where('external_id', $data['external_id'])->first();
+    $disb->status = $data['status'];
+    $disb->save();
+
+    // send a mail to the customer with the invoice
+    // $booking->sendMail($bookingInfo);
+
   }
 }
