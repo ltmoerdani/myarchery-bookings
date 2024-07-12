@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Rules\MatchEmailRule;
 use App\Models\BasicSettings\MailTemplate;
 use App\Models\Event;
+use App\Models\ParticipantCompetitions;
 use App\Models\Event\Booking;
+use App\Models\Event\EventContent;
 use App\Models\Language;
 use App\Models\OrganizerInfo;
 use App\Models\Transaction;
@@ -979,5 +981,64 @@ class OrganizerController extends Controller
     $information['expenses'] = $expenses;
 
     return view('organizer.income', $information);
+  }
+
+  public function participant(Request $request){
+    $information['langs'] = Language::all();
+    if(!$request->language){
+      $request->language = 'en';
+    }
+    $language = Language::where('code', $request->language)->firstOrFail();
+    $information['language'] = $language;
+
+    $event_type = null;
+    if (filled($request->event_type)) {
+      $event_type = $request->event_type;
+    }
+    $title = null;
+    if (request()->filled('title')) {
+      $title = request()->input('title');
+    }
+
+    $events = Event::join('event_contents', 'event_contents.event_id', '=', 'events.id')
+      ->join('event_categories', 'event_categories.id', '=', 'event_contents.event_category_id')
+      ->where('event_contents.language_id', '=', $language->id)->where('organizer_id', Auth::guard('organizer')->user()->id)
+      ->when($title, function ($query) use ($title) {
+        return $query->where('event_contents.title', 'like', '%' . $title . '%');
+      })
+      ->when($event_type, function ($query) use ($event_type) {
+        return $query->where('events.event_type', $event_type);
+      })
+      ->select('events.*', 'event_contents.id as eventInfoId', 'event_contents.title', 'event_contents.slug', 'event_categories.name as category')
+      ->orderByDesc('events.id')
+      ->paginate(10);
+
+    $information['events'] = $events;
+    return view('organizer.participant', $information);
+  }
+
+  public function detail_participant(Request $request, $id){
+    $language = $this->getLanguage();
+    $language_id = $language->id;
+    
+    $event_name = null;
+    if ($request->filled('event_name')) {
+      $event_name = $request->event_name;
+    }
+    
+    $event = EventContent::where('event_id', $id)->where('language_id', $language_id)->first();
+    $event_title = $event->title;
+
+    $participant = ParticipantCompetitions::when($event_name, function ($query) use ($event_name) {
+      return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
+    })
+
+    ->select('event_contents.title as event_name', 'participant_competitions.competition_name', 'participant.fname', 'participant.lname', 'ticket_contents.title')
+    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
+    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
+    ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
+    ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)->where('participant_competitions.event_id', $id)
+    ->orderBy('participant_competitions.id', 'asc')->paginate(10);
+    return view('organizer.detail-participant', compact('participant', 'event_title'));
   }
 }

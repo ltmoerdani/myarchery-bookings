@@ -218,6 +218,16 @@
                     </li>
                 @endif
 
+                {{-- Transaction --}}
+                @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Transaction', $rolePermissions)))
+                    <li class="nav-item @if (request()->routeIs('admin.event_participant')) active @endif">
+                        <a href="{{ route('admin.event_participant') }}">
+                            <i class="fal fa-list-alt"></i>
+                            <p>{{ __('Event Participant') }}</p>
+                        </a>
+                    </li>
+                @endif
+
                 {{-- event booking --}}
                 @if (is_null($roleInfo) || (!empty($rolePermissions) && in_array('Event Bookings', $rolePermissions)))
                     <li

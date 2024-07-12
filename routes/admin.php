@@ -22,6 +22,10 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
   });
 
 
+  Route::get('/participant', 'BackEnd\AdminController@participant')->name('admin.event_participant');
+  Route::get('/detail-participant/{id}', 'BackEnd\AdminController@detail_participant')->name('admin.detail_event_participant');
+
+
   // change admin-panel theme (dark/light) route
   Route::post('/change-theme', 'BackEnd\AdminController@changeTheme')->name('admin.change_theme');
 

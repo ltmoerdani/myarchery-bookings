@@ -100,6 +100,9 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::get('/event-booking/report', 'BackEnd\Organizer\EventBookingController@report')->name('organizer.event_booking.report');
   Route::get('/event-booking/export', 'BackEnd\Organizer\EventBookingController@export')->name('organizer.event_bookings.export');
 
+  Route::get('participant', 'BackEnd\Organizer\OrganizerController@participant')->name('organizer.participant');
+  Route::get('/detail-participant/{id}', 'BackEnd\Organizer\OrganizerController@detail_participant')->name('organizer.detail_event_participant');
+
 
   /*
   |---------------------------------------------

@@ -135,6 +135,16 @@
         </li>
 
         <li
+          class="nav-item 
+        @if (request()->routeIs('organizer.participant')) active 
+        @elseif (request()->routeIs('organizer.participant')) active @endif">
+          <a href="{{ route('organizer.participant', ['language' => $defaultLang->code]) }}">
+            <i class="fal fa-list-alt"></i>
+            <p>{{ __('Event Participant') }}</p>
+          </a>
+        </li>
+
+        <li
           class="nav-item
           @if (request()->routeIs('organizer.event.booking')) active
           @elseif (request()->routeIs('organizer.event_booking.details')) active
