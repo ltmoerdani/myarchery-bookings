@@ -21,34 +21,21 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div class="card-title d-inline-block">
-                                {{ __('Events Participant') . ' (' . $language->name . ' ' . __('Language') . ')' }}
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3">
-                            @if (!empty($langs))
-                                <select name="language" class="form-control"
-                                    onchange="window.location='{{ url()->current() . '?language=' }}' + this.value+'&event_type='+'{{ request()->input('event_type') }}'">
-                                    <option selected disabled>{{ __('Select a Language') }}</option>
-                                    @foreach ($langs as $lang)
-                                        <option value="{{ $lang->code }}"
-                                            {{ $lang->code == request()->input('language') ? 'selected' : '' }}>
-                                            {{ $lang->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @endif
-                        </div>
-                    </div>
-                </div>
 
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-12">
+
+                            <div class="float-left">
+                                <div class="form-group">
+                                    <form action="{{ route('organizer.participant.export') }}" class="form-inline justify-content-lg-end justify-content-start">
+                                        <div class="form-group">
+                                        <input type="hidden" name="event" value="{{ $event_name }}" name="event" placeholder="Enter Event Name" class="form-control">
+                                        <button type="submit" class="btn btn-success btn-sm ml-1" title="CSV Format">{{ __('Export List Participant') }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
 
                             <div class="float-right">
                                 <div class="form-group">
@@ -61,58 +48,46 @@
                                 </div>
                             </div>
 
-                            @if (count($events) == 0)
-                                <h3 class="text-center mt-2">
-                                    {{ __('NO EVENT CONTENT FOUND FOR ') . $language->name . '!' }}</h3>
+                            @if (count($participant) == 0)
+                                <h3 class="text-center mt-2">{{ __('NO PARTICIPANT FOUND ') }}</h3>
                             @else
                                 <div class="table-responsive">
                                     <table class="table table-striped mt-3" id="">
                                         <thead>
                                             <tr>
-                                                <th scope="col" width="30%">{{ __('Title') }}</th>
+                                                <th scope="col">{{ __('No') }}</th>
+                                                <th scope="col">{{ __('Event Title') }}</th>
+                                                <th scope="col">{{ __('Participant Name') }}</th>
                                                 <th scope="col">{{ __('Type') }}</th>
                                                 <th scope="col">{{ __('Category') }}</th>
-                                                <th scope="col">{{ __('Start Date') }}</th>
-                                                <th scope="col">{{ __('End Date') }}</th>
-                                                <th scope="col">{{ __('Actions') }}</th>
+                                                <th scope="col">{{ __('Delegation') }}</th>
+                                                <th scope="col">{{ __('Delegation Name') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($events as $event)
+                                            @php
+                                                $no = ($participant->currentpage()-1)* $participant->perpage() + 1;
+                                            @endphp
+                                            @foreach ($participant as $p)
                                                 <tr>
-                                                    <td width="20%">
-                                                        <a target="_blank"
-                                                            href="{{ route('event.details', ['slug' => $event->slug, 'id' => $event->id]) }}">{{ strlen($event->title) > 30 ? mb_substr($event->title, 0, 30, 'UTF-8') . '....' : $event->title }}</a>
+                                                    <td>{{ $no++ }}</td>
+                                                    <td>
+                                                        {{ $p->event_name }}
                                                     </td>
                                                     <td>
-                                                        {{ ucfirst($event->event_type) }}
+                                                        {{ $p->fname }}
                                                     </td>
                                                     <td>
-                                                        {{ $event->category }}
+                                                        {{ $p->competition_name }}
                                                     </td>
                                                     <td>
-                                                        {{ $event->start_date }} {{ $event->start_time }}
+                                                        {{ $p->title }}
                                                     </td>
                                                     <td>
-                                                        {{ $event->end_date }} {{ $event->end_time }}
+                                                        {{ $p->category }} 
                                                     </td>
                                                     <td>
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-secondary dropdown-toggle btn-sm"
-                                                                type="button" id="dropdownMenuButton"
-                                                                data-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                                {{ __('Select') }}
-                                                            </button>
-
-                                                            <div class="dropdown-menu"
-                                                                aria-labelledby="dropdownMenuButton">
-                                                                <a href="{{ route('organizer.detail_event_participant', ['id' => $event->id]) }}"
-                                                                    class="dropdown-item">
-                                                                    {{ __('Detail Participant') }}
-                                                                </a>
-                                                            </div>
-                                                        </div>
+                                                        {{ $p->delegation }} 
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -126,7 +101,7 @@
 
                 <div class="card-footer text-center">
                     <div class="d-inline-block mt-3">
-                        {{ $events->appends([
+                        {{ $participant->appends([
                                 'language' => request()->input('language'),
                                 'title' => request()->input('title'),
                             ])->links() }}

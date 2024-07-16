@@ -21,7 +21,7 @@
                 </li>
                 <li class="nav-item">
                     <a
-                        href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
+                        href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
                 </li>
             @endif
             @if (request()->filled('event_type') && request()->input('event_type') == 'venue')
@@ -241,6 +241,12 @@
                                                                         </button>
                                                                     </form>
                                                                 @endif
+
+                                                                <a href="{{ route('organizer.detail_event_participant', ['id' => $event->id]) }}"
+                                                                    class="dropdown-item">
+                                                                    {{ __('Detail Participant') }}
+                                                                </a>
+
                                                             </div>
                                                         </div>
                                                     </td>

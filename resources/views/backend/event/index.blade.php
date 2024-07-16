@@ -241,6 +241,11 @@
                                                                         </button>
                                                                     </form>
                                                                 @endif
+
+                                                                <a href="{{ route('admin.detail_event_participant', ['id' => $event->id]) }}"
+                                                                    class="dropdown-item">
+                                                                    {{ __('Detail Participant') }}
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </td>

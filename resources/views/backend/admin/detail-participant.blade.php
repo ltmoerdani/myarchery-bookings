@@ -10,10 +10,16 @@
         </a>
       </li>
       <li class="separator">
+          <i class="flaticon-right-arrow"></i>
+      </li>
+      <li class="nav-item">
+          <a href="#">{{ __('Events Management') }}</a>
+      </li>
+      <li class="separator">
         <i class="flaticon-right-arrow"></i>
       </li>
       <li class="nav-item">
-        <a href="{{ route('admin.event_participant') }}">{{ __('Event Participant') }}</a>
+          <a href="{{ route('admin.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
       </li>
       <li class="separator">
             <i class="flaticon-right-arrow"></i>

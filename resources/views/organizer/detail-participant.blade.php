@@ -11,10 +11,17 @@
         </a>
       </li>
       <li class="separator">
-        <i class="flaticon-right-arrow"></i>
+          <i class="flaticon-right-arrow"></i>
       </li>
       <li class="nav-item">
-        <a href="{{ route('organizer.participant') }}">{{ __('Event Participant') }}</a>
+          <a href="#">{{ __('Event Management') }}</a>
+      </li>
+      <li class="separator">
+          <i class="flaticon-right-arrow"></i>
+      </li>
+      <li class="nav-item">
+          <a
+              href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">{{ __('All Events') }}</a>
       </li>
       <li class="separator">
             <i class="flaticon-right-arrow"></i>
