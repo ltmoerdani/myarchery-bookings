@@ -1010,9 +1010,10 @@ class OrganizerController extends Controller
     ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
     ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
     ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
+    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
     ->leftjoin('events', 'events.id', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
     ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)
-    ->orderBy('participant_competitions.id', 'asc')->paginate(10);
+    ->orderBy('participant.fname', 'asc')->paginate(10);
 
     $information['participant'] = $participant;
     $information['event_name'] = $title;
@@ -1039,6 +1040,7 @@ class OrganizerController extends Controller
     ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
     ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
     ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
+    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
     ->leftjoin('events', 'events.id', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
     ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)->where('participant_competitions.event_id', $id)
     ->orderBy('participant_competitions.id', 'asc')->paginate(10);
@@ -1070,9 +1072,10 @@ class OrganizerController extends Controller
     ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
     ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
     ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
+    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
     ->leftjoin('events', 'events.id', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
     ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)
-    ->orderBy('participant_competitions.id', 'asc')->get();
+    ->orderBy('participant.fname', 'asc')->get();
 
     if (empty($participant) || count($participant) == 0) {
       Session::flash('warning', 'There is no participant to export');
