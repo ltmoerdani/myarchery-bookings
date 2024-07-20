@@ -515,4 +515,13 @@ class TicketController extends Controller
     Session::flash('success', 'Deleted Successfully');
     return response()->json(['status' => 'success'], 200);
   }
+
+  // update status ticket tournament
+  public function edit_status_ticket_tournament(Request $request)
+  {
+    $ticket = Ticket::find($request->id);
+    Ticket::query()->where('title', $ticket->title)->update(['status' => $request->status]);
+
+    return redirect()->back()->with('success', 'update status ticket: ' . $ticket->title . ' successfully!');
+  }
 }

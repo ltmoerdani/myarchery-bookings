@@ -201,7 +201,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
                                                 <div class="row">
@@ -240,7 +240,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
@@ -387,8 +387,12 @@
                                                                     @foreach ($competitions as $competition)
                                                                         <tr>
                                                                             <td>
+                                                                                <input type="hidden"
+                                                                                    name="competition_id[{{ $competition->id }}]"
+                                                                                    value="{{ $competition->id }}">
                                                                                 <div class="form-group">
-                                                                                    <select name="competition_categories[]"
+                                                                                    <select
+                                                                                        name="competition_categories[{{ $competition->id }}]"
                                                                                         id="competition_categories[]"
                                                                                         class="form-control"
                                                                                         value="{{ $competition->competition_category_id }}">
@@ -404,7 +408,8 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="form-group">
-                                                                                    <select name="competition_class_type[]"
+                                                                                    <select
+                                                                                        name="competition_class_type[{{ $competition->id }}]"
                                                                                         id="competition_class_type[]"
                                                                                         class="form-control"
                                                                                         value="{{ $competition->class_type }}">
@@ -421,7 +426,7 @@
                                                                             <td>
                                                                                 <div class="form-group">
                                                                                     <input type="text"
-                                                                                        name="competition_class_name[]"
+                                                                                        name="competition_class_name[{{ $competition->id }}]"
                                                                                         id="competition_class_name[]"
                                                                                         value="{{ $competition->class_name }}"
                                                                                         class="form-control">
@@ -429,7 +434,8 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="form-group">
-                                                                                    <select name="competition_distance[]"
+                                                                                    <select
+                                                                                        name="competition_distance[{{ $competition->id }}]"
                                                                                         id="competition_distance[]"
                                                                                         class="form-control"
                                                                                         value="{{ $competition->distance }}">
@@ -556,56 +562,6 @@
                                                                 @endif
                                                             </select>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="card border border-1">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
-                                                        <label class="mb-1">
-                                                            {{ __('Individual') . '*' }}
-                                                        </label>
-                                                        <select class="custom-select" id="individu" name="individu"
-                                                            required disabled readonly>
-                                                            <option selected disabled value="active">Active</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
-                                                        <label class="mb-1">
-                                                            {{ __('Team') }}
-                                                        </label>
-                                                        <select class="custom-select"
-                                                            value="{{ $team_allowed == true ? 'active' : 'disable' }}"
-                                                            id="team" name="team" required>
-                                                            <option value="active">Active</option>
-                                                            <option value="disable">Disable</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
-                                                        <label class="mb-1">
-                                                            {{ __('Mixed Team') }}
-                                                        </label>
-                                                        <select class="custom-select"
-                                                            value="{{ $mix_team_allowed == true ? 'active' : 'disable' }}"
-                                                            id="mixed_team" name="mixed_team" required>
-                                                            <option value="active">Active</option>
-                                                            <option value="disable">Disable</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
-                                                        <label class="mb-1">
-                                                            {{ __('Official') }}
-                                                        </label>
-                                                        <select class="custom-select"
-                                                            value="{{ $official_allowed == true ? 'active' : 'disable' }}"
-                                                            id="official" name="official" required>
-                                                            <option value="active">Active</option>
-                                                            <option value="disable">Disable</option>
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>

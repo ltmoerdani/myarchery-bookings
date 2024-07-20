@@ -42,6 +42,7 @@ class Ticket extends Model
     'variations',
     'trans_vars',
     'original_ticket_available',
+    'status',
   ];
   //ticket_variations
   public function ticket_variations()

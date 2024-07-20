@@ -974,9 +974,9 @@ $("#EventSubmit").on("click", function (e) {
   // $(e.target).attr("disabled", true);
   // $(".request-loader").addClass("show");
 
-  if ($(".iconpicker-component").length > 0) {
-    $("#inputIcon").val($(".iconpicker-component").find("i").attr("class"));
-  }
+  // if ($(".iconpicker-component").length > 0) {
+  //   $("#inputIcon").val($(".iconpicker-component").find("i").attr("class"));
+  // }
 
   let eventForm = document.getElementById("eventForm");
   let fd = new FormData(eventForm);

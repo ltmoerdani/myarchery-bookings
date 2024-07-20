@@ -475,6 +475,53 @@
                                         <div class="card border border-1">
                                             <div class="card-body">
                                                 <div class="row">
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Individual') . '*' }}
+                                                        </label>
+                                                        <select class="custom-select" id="individu" name="individu"
+                                                            required disabled readonly>
+                                                            <option selected disabled value="active">Active</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Team') }}
+                                                        </label>
+                                                        <select class="custom-select" id="team" name="team"
+                                                            required>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Mixed Team') }}
+                                                        </label>
+                                                        <select class="custom-select" id="mixed_team" name="mixed_team"
+                                                            required>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-xl-3 mt-2">
+                                                        <label class="mb-1">
+                                                            {{ __('Official') }}
+                                                        </label>
+                                                        <select class="custom-select" id="official" name="official"
+                                                            required>
+                                                            <option value="active">Active</option>
+                                                            <option selected value="disable">Disable</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card border border-1">
+                                            <div class="card-body">
+                                                <div class="row">
                                                     <div class="col-12 col-md-6">
                                                         <label class="mb-1">
                                                             {{ __('Upload File THB') }}

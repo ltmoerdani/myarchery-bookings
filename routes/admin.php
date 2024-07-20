@@ -112,6 +112,7 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
     Route::get('event/edit/ticket', 'BackEnd\Event\TicketController@edit')->name('admin.event.edit.ticket');
     Route::get('event/edit/ticket-tournament', 'BackEnd\Event\TicketController@editTournament')->name('admin.event.edit.ticket-tournament');
     Route::post('event/ticket/delete-ticket', 'BackEnd\Event\TicketController@destroy')->name('admin.ticket_management.delete_ticket');
+    Route::post('event/ticket/update-status-ticket-tournament', 'BackEnd\Event\TicketController@edit_status_ticket_tournament')->name('admin.ticket_management.update_status_ticket_tournament');
     Route::get('delete-variation/{id}', 'BackEnd\Event\TicketController@delete_variation')->name('delete.variation');
     Route::post('ticket_management/update/ticket', 'BackEnd\Event\TicketController@update')->name('admin.ticket_management.update_ticket');
     Route::post('ticket_management/update/ticket/tournament', 'BackEnd\Event\TicketController@updateTournament')->name('admin.ticket_management.update_ticket_tournament');
