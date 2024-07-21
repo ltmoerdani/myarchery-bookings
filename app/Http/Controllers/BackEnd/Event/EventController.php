@@ -2292,14 +2292,14 @@ class EventController extends Controller
     return redirect()->back()->with('success', 'Deleted Successfully');
   }
 
-  public function destroy_tournament($id)
+  // delete tournament event
+  public function destroy_tournament_backup($id)
   {
     $event = Event::find($id);
     if (empty($event)) {
       return redirect()->back()->with('warning', 'Delete failed, because event not found!');
     }
 
-    // $checkBookings = Booking::where('event_id', $id)->count();
     $checkBookings = Booking::where('event_id', $id)
       ->whereIn('paymentStatus', ['completed', 'pending'])
       ->get()
@@ -2350,6 +2350,28 @@ class EventController extends Controller
     $dates = $event->dates()->get();
     foreach ($dates as $date) {
       $date->delete();
+    }
+
+    // finally delete the event
+    $event->delete();
+
+    return redirect()->back()->with('success', 'Deleted Successfully');
+  }
+
+  public function destroy_tournament($id)
+  {
+    $event = Event::find($id);
+    if (empty($event)) {
+      return redirect()->back()->with('warning', 'Delete failed, because event not found!');
+    }
+
+    $checkBookings = Booking::where('event_id', $id)
+      ->whereIn('paymentStatus', ['completed', 'pending'])
+      ->get()
+      ->count();
+
+    if ($checkBookings > 0) {
+      return redirect()->back()->with('warning', 'Delete failed, because have a participants order!');
     }
 
     // finally delete the event
