@@ -37,9 +37,16 @@ class TicketController extends Controller
     $information['event'] = $event;
 
     if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
-      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
+      $tickets = Ticket::where('event_id', $request->event_id)->inRandomOrder()->groupBy('title')->get();
       foreach ($tickets as $key => $ticket) {
-        $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        if (strtolower($ticket->title) == 'official') {
+          $detailTicket = Ticket::where('event_id', $request->event_id)
+            ->where('title', $ticket->title)
+            ->whereNull('competition_id')
+            ->get();
+        } else {
+          $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        }
         $ticket_available = [];
         $international_price = [];
         $local_price = [];
@@ -326,6 +333,7 @@ class TicketController extends Controller
       ->first();
 
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
+    dd($information);
     return view('backend.event.ticket.edit_tournament', $information);
   }
 
@@ -357,20 +365,20 @@ class TicketController extends Controller
         ], 404);
       }
 
-      $check_have_a_bookings = Booking::where('event_id', $request->event_id)
-        ->whereIn('paymentStatus', ['completed', 'pending'])
-        ->get()
-        ->count();
+      // $check_have_a_bookings = Booking::where('event_id', $request->event_id)
+      //   ->whereIn('paymentStatus', ['completed', 'pending'])
+      //   ->get()
+      //   ->count();
 
-      if ($check_have_a_bookings > 0) {
-        return Response([
-          'errors' => [
-            'message' => [
-              'Update Error, Because the event already has participants who have booked'
-            ]
-          ]
-        ], 403);
-      }
+      // if ($check_have_a_bookings > 0) {
+      //   return Response([
+      //     'errors' => [
+      //       'message' => [
+      //         'Update Error, Because the event already has participants who have booked'
+      //       ]
+      //     ]
+      //   ], 403);
+      // }
 
       $checkTicket = Ticket::where('event_id', $request->event_id)
         ->whereIn('id', $request->ticket_id)

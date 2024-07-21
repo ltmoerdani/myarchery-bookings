@@ -2195,14 +2195,33 @@ class EventController extends Controller
         }
 
         $event->update($in);
+
         Competitions::where('event_id', $event->id)->whereNotIn('id', $listCompetitionId)->delete();
         Ticket::where('event_id', $event->id)->whereNotIn('competition_id', $listCompetitionId)->delete();
+
+        $listParticipantCompetition = ParticipantCompetitions::query()
+          ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')
+          ->where('participant_competitions.event_id', $event->id)
+          ->whereIn('bookings.paymentStatus', ['completed', 'pending'])
+          ->select('participant_competitions.ticket_id')
+          ->get();
+
+        foreach ($listParticipantCompetition as $value) {
+          $infoTicket = Ticket::withTrashed()->where('id', $value->ticket_id)->first();
+          if (!empty($infoTicket)) {
+            Competitions::withTrashed()->where('id', $infoTicket->competition_id)->restore();
+            Ticket::withTrashed()
+              ->where('competition_id', $infoTicket->competition_id)
+              ->where('title', '!=', 'Official')
+              ->restore();
+          }
+        }
+
         Ticket::query()
           ->withTrashed()
           ->where('event_id', $event->id)
           ->update(['pricing_scheme' => $request['pricing_scheme']]);
-        // return response()->json(['data' => $listCompetitionId]);
-
+        // return response()->json(['listCompetitionId' => $listCompetitionId, 'listBookings' => $listParticipantCompetition]);
       });
       Session::flash('success', 'Updated Successfully');
       return response()->json(['status' => 'success'], 200);

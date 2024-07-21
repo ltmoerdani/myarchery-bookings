@@ -971,8 +971,8 @@ function cloneInput(fromId, toId, event) {
 
 // Form Submit with AJAX Request Start
 $("#EventSubmit").on("click", function (e) {
-  // $(e.target).attr("disabled", true);
-  // $(".request-loader").addClass("show");
+  $(e.target).attr("disabled", true);
+  $(".request-loader").addClass("show");
 
   // if ($(".iconpicker-component").length > 0) {
   //   $("#inputIcon").val($(".iconpicker-component").find("i").attr("class"));
@@ -1005,14 +1005,14 @@ $("#EventSubmit").on("click", function (e) {
     contentType: false,
     processData: false,
     success: function (data) {
+      if (data.status == "success") {
+        location.reload();
+      }
       $(e.target).attr("disabled", false);
       $(".request-loader").removeClass("show");
       $(".em").each(function () {
         $(this).html("");
       });
-      if (data.status == "success") {
-        location.reload();
-      }
     },
     error: function (error) {
       let errors = ``;
