@@ -1084,11 +1084,11 @@ class EventController extends Controller
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
     if ($event->event_type == "tournament" || $event->event_type == "turnamen") {
-      $information['ticket_info'] =  Ticket::where('event_id', $id)->where('deleted_at', null)->first();
-      $information['individu_allowed'] = Ticket::where('event_id', $id)->where('title', 'Individu')->where('deleted_at', null)->exists();
-      $information['team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Team')->where('deleted_at', null)->exists();
-      $information['mix_team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Mix Team')->where('deleted_at', null)->exists();
-      $information['official_allowed'] = Ticket::where('event_id', $id)->where('title', 'Official')->where('deleted_at', null)->exists();
+      $information['ticket_info'] =  Ticket::withTrashed()->where('event_id', $id)->first();
+      // $information['individu_allowed'] = Ticket::withTrashed()->where('event_id', $id)->where('title', 'Individu')->where('deleted_at', null)->exists();
+      // $information['team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Team')->where('deleted_at', null)->exists();
+      // $information['mix_team_allowed'] = Ticket::where('event_id', $id)->where('title', 'Mix Team')->where('deleted_at', null)->exists();
+      // $information['official_allowed'] = Ticket::where('event_id', $id)->where('title', 'Official')->where('deleted_at', null)->exists();
       $information['event_publisher'] = EventPublisher::where('event_id', $id)->first();
       $information['contingent_type'] = ContingentType::where('event_id', $id)->first();
       $information['competitions'] = Competitions::where('event_id', $id)->get();
@@ -1107,7 +1107,6 @@ class EventController extends Controller
             ->get();
         }
       }
-      // dd($information['state_list']);
       return view('backend.event.edit_tournament', $information);
     } else {
       return view('backend.event.edit', $information);
@@ -1653,6 +1652,7 @@ class EventController extends Controller
   public function update_tournament(UpdateRequestTournament $request)
   {
     try {
+      // return response()->json(['data' => $request->all()]);
       if (empty(Auth::guard('admin'))) {
         return Response(
           [
@@ -1790,6 +1790,7 @@ class EventController extends Controller
         }
 
         $i = 1;
+        $listCompetitionId = null;
         foreach ($request->competition_categories as $key => $c) {
           $competition_categories = CompetitionCategories::where('id', $request->competition_categories[$key])->first();
           $name_competition = $competition_categories->name . ' ' . $request->competition_class_name[$key] . ' ' . $request->competition_distance[$key] . ' Meter';
@@ -1806,7 +1807,8 @@ class EventController extends Controller
                 'class_name' => $request->competition_class_name[$key],
               ]);
 
-              Ticket::withTrashed()->where('competition_id', $key)->restore();
+              Ticket::withTrashed()->where('event_id', $event->id)->where('competition_id', $key)->restore();
+              Ticket::withTrashed()->where('event_id', $event->id)->where('competition_id', $key)->update(['pricing_scheme' => $request['pricing_scheme']]);
             }
 
             if (empty($request->competition_id[$key])) {
@@ -1821,7 +1823,8 @@ class EventController extends Controller
               if (!empty($checkHaveSameCategory)) {
                 $listCompetitionId[] = $checkHaveSameCategory->id;
                 $competition_id = $checkHaveSameCategory->id;
-                Ticket::withTrashed()->where('competition_id', $competition_id)->restore();
+                Ticket::withTrashed()->where('competition_id', $competition_id)->where('event_id', $event->id)->restore();
+                Ticket::withTrashed()->where('event_id', $event->id)->where('competition_id', $competition_id)->update(['pricing_scheme' => $request['pricing_scheme']]);
               } else {
                 $competitions = Competitions::create([
                   'event_id' => $event->id,
@@ -1852,7 +1855,7 @@ class EventController extends Controller
                   $ticket['max_ticket_buy_type'] = 'limited';
                   $ticket['max_buy_ticket'] = 10;
                   $ticket['pricing_type'] = 'normal';
-                  $ticket['pricing_scheme'] = $individuTicketOld->pricing_scheme;
+                  $ticket['pricing_scheme'] = $request['pricing_scheme'];
                   $ticket['price'] = $individuTicketOld->f_price;
                   $ticket['f_price'] = $individuTicketOld->f_price;
                   $ticket['international_price'] = $individuTicketOld->f_international_price;
@@ -1895,6 +1898,7 @@ class EventController extends Controller
                 foreach ($gender as $g) {
                   $ticket['event_id'] = $event->id;
                   $ticket['event_type'] = 'tournament';
+                  $ticket['competition_id'] = $competition_id;
                   $ticket['title'] = 'Team';
                   $ticket['ticket_available_type'] = 'limited';
                   $ticket['ticket_available'] = 0;
@@ -1902,7 +1906,7 @@ class EventController extends Controller
                   $ticket['max_ticket_buy_type'] = 'limited';
                   $ticket['max_buy_ticket'] = 1;
                   $ticket['pricing_type'] = 'normal';
-                  $ticket['pricing_scheme'] = $teamTicketOld->pricing_scheme;
+                  $ticket['pricing_scheme'] = $request['pricing_scheme'];
                   $ticket['price'] = $teamTicketOld->f_price;
                   $ticket['f_price'] = $teamTicketOld->f_price;
                   $ticket['international_price'] = $teamTicketOld->f_international_price;
@@ -1944,6 +1948,7 @@ class EventController extends Controller
                 $mixTeamTicketOld = Ticket::where('event_id', $event->id)->where('title', 'Mix Team')->first();
                 $ticket['event_id'] = $event->id;
                 $ticket['event_type'] = 'tournament';
+                $ticket['competition_id'] = $competition_id;
                 $ticket['title'] = 'Mix Team';
                 $ticket['ticket_available_type'] = 'limited';
                 $ticket['ticket_available'] = 100;
@@ -1951,7 +1956,7 @@ class EventController extends Controller
                 $ticket['max_ticket_buy_type'] = 'limited';
                 $ticket['max_buy_ticket'] = 10;
                 $ticket['pricing_type'] = 'normal';
-                $ticket['pricing_scheme'] = $mixTeamTicketOld->pricing_scheme;
+                $ticket['pricing_scheme'] = $request['pricing_scheme'];
                 $ticket['price'] = $mixTeamTicketOld->f_price;
                 $ticket['f_price'] = $mixTeamTicketOld->f_price;
                 $ticket['international_price'] = $mixTeamTicketOld->f_international_price;
@@ -1987,7 +1992,8 @@ class EventController extends Controller
             if (!empty($checkHaveSameCategory)) {
               $listCompetitionId[] = $checkHaveSameCategory->id;
               $competition_id = $checkHaveSameCategory->id;
-              Ticket::withTrashed()->where('competition_id', $competition_id)->restore();
+              Ticket::withTrashed()->where('event_id', $event->id)->where('competition_id', $competition_id)->restore();
+              Ticket::withTrashed()->where('event_id', $event->id)->where('competition_id', $competition_id)->update(['pricing_scheme' => $request['pricing_scheme']]);
             } else {
               $competitions = Competitions::create([
                 'event_id' => $event->id,
@@ -2018,7 +2024,7 @@ class EventController extends Controller
                 $ticket['max_ticket_buy_type'] = 'limited';
                 $ticket['max_buy_ticket'] = 10;
                 $ticket['pricing_type'] = 'normal';
-                $ticket['pricing_scheme'] = $individuTicketOld->pricing_scheme;
+                $ticket['pricing_scheme'] = $request['pricing_scheme'];
                 $ticket['price'] = $individuTicketOld->f_price;
                 $ticket['f_price'] = $individuTicketOld->f_price;
                 $ticket['international_price'] = $individuTicketOld->f_international_price;
@@ -2060,6 +2066,7 @@ class EventController extends Controller
               $teamTicketOld = Ticket::where('event_id', $event->id)->where('title', 'Team')->first();
               foreach ($gender as $g) {
                 $ticket['event_id'] = $event->id;
+                $ticket['competition_id'] = $competition_id;
                 $ticket['event_type'] = 'tournament';
                 $ticket['title'] = 'Team';
                 $ticket['ticket_available_type'] = 'limited';
@@ -2068,7 +2075,7 @@ class EventController extends Controller
                 $ticket['max_ticket_buy_type'] = 'limited';
                 $ticket['max_buy_ticket'] = 1;
                 $ticket['pricing_type'] = 'normal';
-                $ticket['pricing_scheme'] = $teamTicketOld->pricing_scheme;
+                $ticket['pricing_scheme'] = $request['pricing_scheme'];
                 $ticket['price'] = $teamTicketOld->f_price;
                 $ticket['f_price'] = $teamTicketOld->f_price;
                 $ticket['international_price'] = $teamTicketOld->f_international_price;
@@ -2110,6 +2117,7 @@ class EventController extends Controller
               $mixTeamTicketOld = Ticket::where('event_id', $event->id)->where('title', 'Mix Team')->first();
               $ticket['event_id'] = $event->id;
               $ticket['event_type'] = 'tournament';
+              $ticket['competition_id'] = $competition_id;
               $ticket['title'] = 'Mix Team';
               $ticket['ticket_available_type'] = 'limited';
               $ticket['ticket_available'] = 100;
@@ -2117,7 +2125,7 @@ class EventController extends Controller
               $ticket['max_ticket_buy_type'] = 'limited';
               $ticket['max_buy_ticket'] = 10;
               $ticket['pricing_type'] = 'normal';
-              $ticket['pricing_scheme'] = $mixTeamTicketOld->pricing_scheme;
+              $ticket['pricing_scheme'] = $request['pricing_scheme'];
               $ticket['price'] = $mixTeamTicketOld->f_price;
               $ticket['f_price'] = $mixTeamTicketOld->f_price;
               $ticket['international_price'] = $mixTeamTicketOld->f_international_price;
@@ -2144,15 +2152,20 @@ class EventController extends Controller
         }
 
         // official
-        $official = Ticket::query()->withTrashed()->where('event_id', $event->id)->latest()->first();
+        $official = Ticket::query()->withTrashed()
+          ->where('title', 'Official')
+          ->where('event_id', $event->id)
+          ->latest()
+          ->first();
         if (!empty($official)) {
-          $official->update(['competition_id' => null]);
+          $official->update(['competition_id' => null, 'pricing_scheme' => $request['pricing_scheme']]);
           $official->restore();
         }
 
         if (empty($official)) {
           $ticket['event_id'] = $event->id;
           $ticket['event_type'] = 'tournament';
+          $ticket['competition_id'] = null;
           $ticket['title'] = 'Official';
           $ticket['ticket_available_type'] = 'limited';
           $ticket['ticket_available'] = 100;
@@ -2182,9 +2195,14 @@ class EventController extends Controller
         }
 
         $event->update($in);
-
         Competitions::where('event_id', $event->id)->whereNotIn('id', $listCompetitionId)->delete();
-        Ticket::where('event_id', $event->id)->whereNotIn('id', $listCompetitionId)->delete();
+        Ticket::where('event_id', $event->id)->whereNotIn('competition_id', $listCompetitionId)->delete();
+        Ticket::query()
+          ->withTrashed()
+          ->where('event_id', $event->id)
+          ->update(['pricing_scheme' => $request['pricing_scheme']]);
+        // return response()->json(['data' => $listCompetitionId]);
+
       });
       Session::flash('success', 'Updated Successfully');
       return response()->json(['status' => 'success'], 200);
