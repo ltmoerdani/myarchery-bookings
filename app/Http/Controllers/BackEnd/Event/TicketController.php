@@ -303,7 +303,15 @@ class TicketController extends Controller
     }
 
     $information['event'] = $event;
-    $tickets = Ticket::where('title', $request->title)->where('event_id', $request->event_id)->get();
+    $query = Ticket::query()
+      ->where('title', $request->title)
+      ->where('event_id', $request->event_id);
+
+    if (strtolower($request->title) == 'official') {
+      $query = $query->whereNull('competition_id');
+    }
+
+    $tickets = $query->get();
 
     $ticket_info = [];
     foreach ($tickets as $ticket) {
@@ -328,12 +336,19 @@ class TicketController extends Controller
     }
 
     $information['list_ticket'] = $ticket_info;
-    $information['ticket'] = Ticket::where('title', $request->title)
-      ->where('event_id', $request->event_id)
-      ->first();
+
+    $queryTicket =
+      Ticket::query()
+      ->where('title', $request->title)
+      ->where('event_id', $request->event_id);
+
+    if (strtolower($request->title) == 'official') {
+      $queryTicket = $queryTicket->whereNull('competition_id');
+    }
+
+    $information['ticket'] = $queryTicket->first();
 
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
-    dd($information);
     return view('backend.event.ticket.edit_tournament', $information);
   }
 

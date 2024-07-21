@@ -2158,6 +2158,7 @@ class EventController extends Controller
           ->latest()
           ->first();
         if (!empty($official)) {
+          TicketContent::where('ticket_id', $official->id)->update(['title' => 'Official']);
           $official->update(['competition_id' => null, 'pricing_scheme' => $request['pricing_scheme']]);
           $official->restore();
         }
@@ -2188,7 +2189,7 @@ class EventController extends Controller
           foreach ($languages as $language) {
             $data['language_id'] = $language->id;
             $data['ticket_id'] = $t->id;
-            $data['title'] = $name_competition . ' Official';
+            $data['title'] = 'Official';
             $data['description'] = null;
             TicketContent::create($data);
           }
