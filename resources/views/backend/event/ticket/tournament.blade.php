@@ -146,11 +146,11 @@
                                                                     onchange="document.getElementById('statusForm-{{ $ticket->id }}').submit()">
                                                                     <option value="1"
                                                                         {{ $ticket->status == 1 ? 'selected' : '' }}>
-                                                                        {{ __('Show') }}
+                                                                        {{ __('Active') }}
                                                                     </option>
                                                                     <option value="0"
                                                                         {{ $ticket->status == 0 ? 'selected' : '' }}>
-                                                                        {{ __('Hide') }}
+                                                                        {{ __('Unactive') }}
                                                                     </option>
                                                                 </select>
                                                             </form>

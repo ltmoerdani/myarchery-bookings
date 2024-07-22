@@ -80,6 +80,7 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::get('delete-variation/{id}', 'BackEnd\Organizer\TicketController@delete_variation')->name('organizer.delete.variation');
   Route::post('ticket_management/update/ticket', 'BackEnd\Organizer\TicketController@update')->name('organizer.ticket_management.update_ticket');
   Route::post('ticket_management/update/ticket-tournament', 'BackEnd\Organizer\TicketController@updateTournament')->name('organizer.ticket_management.update_ticket_tournament');
+  Route::post('ticket_management/update-status-ticket-tournament', 'BackEnd\Organizer\TicketController@edit_status_ticket_tournament')->name('organizer.ticket_management.update_status_ticket_tournament');
   Route::post('bulk/delete/bulk/event/ticket', 'BackEnd\Organizer\TicketController@bulk_delete')->name('organizer.event_management.bulk_delete_event_ticket');
 
   Route::get('withdraw', 'BackEnd\Organizer\OrganizerWithdrawController@index')->name('organizer.withdraw');

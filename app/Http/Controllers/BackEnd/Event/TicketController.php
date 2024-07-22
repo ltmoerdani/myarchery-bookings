@@ -543,6 +543,9 @@ class TicketController extends Controller
   public function edit_status_ticket_tournament(Request $request)
   {
     $ticket = Ticket::find($request->id);
+    if (empty($ticket)) {
+      return redirect()->route('organizer.dashboard')->with('Error', 'Ticket Not Found');
+    }
     Ticket::query()->where('title', $ticket->title)->update(['status' => $request->status]);
 
     return redirect()->back()->with('success', 'update status ticket: ' . $ticket->title . ' successfully!');

@@ -42,9 +42,16 @@ class TicketController extends Controller
     $information['event'] = $event;
 
     if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
-      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('id', 'asc')->groupBy('title')->get();
+      $tickets = Ticket::where('event_id', $request->event_id)->inRandomOrder()->groupBy('title')->get();
       foreach ($tickets as $key => $ticket) {
-        $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        if (strtolower($ticket->title) == 'official') {
+          $detailTicket = Ticket::where('event_id', $request->event_id)
+            ->where('title', $ticket->title)
+            ->whereNull('competition_id')
+            ->get();
+        } else {
+          $detailTicket = Ticket::where('event_id', $request->event_id)->where('title', $ticket->title)->get();
+        }
         $ticket_available = [];
         $international_price = [];
         $local_price = [];
@@ -326,6 +333,24 @@ class TicketController extends Controller
     $information['getCurrencyInfo']  = $this->getCurrencyInfo();
 
     return view('organizer.event.ticket.edit_tournament', $information);
+  }
+
+  // update status ticket tournament
+  public function edit_status_ticket_tournament(Request $request)
+  {
+    $event = Event::where('id', $request->event_id)->select('organizer_id')->firstOrFail();
+    if (!($event) || $event->organizer_id != Auth::guard('organizer')->user()->id) {
+      return redirect()->route('organizer.dashboard')->with('Error', 'Ticket Not Found');
+    }
+
+    $ticket = Ticket::find($request->id);
+    if (empty($ticket)) {
+      return redirect()->route('organizer.dashboard')->with('Error', 'Ticket Not Found');
+    }
+
+    Ticket::query()->where('title', $ticket->title)->update(['status' => $request->status]);
+
+    return redirect()->back()->with('success', 'update status ticket: ' . $ticket->title . ' successfully!');
   }
 
   // update tournament ticket

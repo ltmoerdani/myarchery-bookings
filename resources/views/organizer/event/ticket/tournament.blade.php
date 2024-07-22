@@ -93,6 +93,7 @@
                                                 <th scope="col">{{ __('Tickets Available') }}</th>
                                                 <th scope="col">{{ __('Local Price*') }}</th>
                                                 <th scope="col">{{ __('International Price*') }}</th>
+                                                <th scope="col">{{ __('Status Ticket') }}</th>
                                                 <th scope="col">{{ __('Actions') }}</th>
                                             </tr>
                                         </thead>
@@ -133,124 +134,29 @@
                                                     <td>
                                                         {{ $ticket->international_price }}
                                                     </td>
-                                                    {{-- <td>
-                                                        @if ($ticket->pricing_type == 'normal')
-                                                            @if ($ticket->early_bird_discount == 'enable')
-                                                                @php
-                                                                    $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-                                                                @endphp
-
-                                                                @if ($ticket->early_bird_discount_type == 'fixed' && !$discount_date->isPast())
-                                                                    @php
-                                                                        $calculate_price = $ticket->price - $ticket->early_bird_discount_amount;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                    <del>
-                                                                        {{ symbolPrice($ticket->price) }}
-                                                                    </del>
-                                                                @elseif ($ticket->early_bird_discount_type == 'percentage' && !$discount_date->isPast())
-                                                                    @php
-                                                                        $c_price = ($ticket->price * $ticket->early_bird_discount_amount) / 100;
-                                                                        $calculate_price = $ticket->price - $c_price;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                    <del>
-                                                                        {{ symbolPrice($ticket->price) }}
-                                                                    </del>
-                                                                @else
-                                                                    @php
-                                                                        $calculate_price = $ticket->price;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                @endif
-                                                            @else
-                                                                {{ symbolPrice($ticket->price) }}
-                                                            @endif
-                                                        @elseif ($ticket->pricing_type == 'variation')
-                                                            @php
-                                                                $variation = json_decode($ticket->variations, true);
-                                                            @endphp
-                                                            @foreach ($variation as $v)
-                                                                @if ($ticket->early_bird_discount == 'enable')
-                                                                    @php
-                                                                        $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-                                                                    @endphp
-
-                                                                    @if ($ticket->early_bird_discount_type == 'fixed' && !$discount_date->isPast())
-                                                                        @php
-                                                                            $calculate_price = $v['price'] - $ticket->early_bird_discount_amount;
-                                                                        @endphp
-                                                                        {{ symbolPrice($calculate_price) }}
-                                                                        <del>
-
-                                                                            {{ symbolPrice($v['price']) }}
-                                                                        </del>
-                                                                    @elseif ($ticket->early_bird_discount_type == 'percentage' && !$discount_date->isPast())
-                                                                        @php
-                                                                            $c_price = ($v['price'] * $ticket->early_bird_discount_amount) / 100;
-                                                                            $calculate_price = $v['price'] - $c_price;
-                                                                        @endphp
-                                                                        {{ symbolPrice($calculate_price) }}
-
-                                                                        <del>
-                                                                            {{ symbolPrice($v['price']) }}
-                                                                        </del>
-                                                                    @else
-                                                                        @php
-                                                                            $calculate_price = $v['price'];
-                                                                        @endphp
-                                                                        {{ symbolPrice($calculate_price) }}
-                                                                    @endif
-                                                                    @if (!$loop->last)
-                                                                        ,
-                                                                    @endif
-                                                                @else
-                                                                    {{ symbolPrice($v['price']) }}
-                                                                    @if (!$loop->last)
-                                                                        ,
-                                                                    @endif
-                                                                @endif
-                                                            @endforeach
-                                                        @elseif ($ticket->pricing_type == 'free')
-                                                            <span class="badge badge-info">{{ __('Free') }}</span>
-                                                        @endif
-
-                                                    </td>
                                                     <td>
-                                                        @if ($ticket->pricing_type == 'normal')
-                                                            @if ($ticket->early_bird_discount == 'enable')
-                                                                @php
-                                                                    $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-                                                                @endphp
-
-                                                                @if ($ticket->early_bird_discount_type == 'fixed' && !$discount_date->isPast())
-                                                                    @php
-                                                                        $calculate_price = $ticket->international_price - $ticket->early_bird_discount_amount;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                    <del>
-                                                                        {{ symbolPrice($ticket->international_price) }}
-                                                                    </del>
-                                                                @elseif ($ticket->early_bird_discount_type == 'percentage' && !$discount_date->isPast())
-                                                                    @php
-                                                                        $c_price = ($ticket->international_price * $ticket->early_bird_discount_amount) / 100;
-                                                                        $calculate_price = $ticket->international_price - $c_price;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                    <del>
-                                                                        {{ symbolPrice($ticket->international_price) }}
-                                                                    </del>
-                                                                @else
-                                                                    @php
-                                                                        $calculate_price = $ticket->international_price;
-                                                                    @endphp
-                                                                    {{ symbolPrice($calculate_price) }}
-                                                                @endif
-                                                            @else
-                                                                {{ symbolPrice($ticket->international_price) }}
-                                                            @endif
+                                                        @if (strtolower($ticket->title) != 'individu')
+                                                            <form id="statusForm-{{ $ticket->id }}"
+                                                                class="d-inline-block"
+                                                                action="{{ route('organizer.ticket_management.update_status_ticket_tournament', ['id' => $ticket->id, 'event_id' => request()->input('event_id')]) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                <select
+                                                                    class="form-control form-control-sm {{ $ticket->status == 0 ? 'bg-warning text-dark' : 'bg-primary' }}"
+                                                                    name="status"
+                                                                    onchange="document.getElementById('statusForm-{{ $ticket->id }}').submit()">
+                                                                    <option value="1"
+                                                                        {{ $ticket->status == 1 ? 'selected' : '' }}>
+                                                                        {{ __('Active') }}
+                                                                    </option>
+                                                                    <option value="0"
+                                                                        {{ $ticket->status == 0 ? 'selected' : '' }}>
+                                                                        {{ __('Unactive') }}
+                                                                    </option>
+                                                                </select>
+                                                            </form>
                                                         @endif
-                                                    </td> --}}
+                                                    </td>
                                                     <td>
                                                         <div class="dropdown">
                                                             <button class="btn btn-secondary dropdown-toggle btn-sm"

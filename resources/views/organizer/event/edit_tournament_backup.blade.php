@@ -359,9 +359,6 @@
                                                                     @foreach ($competitions as $competition)
                                                                         <tr>
                                                                             <td>
-                                                                                <input type="hidden"
-                                                                                    name="competition_id[{{ $competition->id }}]"
-                                                                                    value="{{ $competition->id }}">
                                                                                 <div class="form-group">
                                                                                     <select name="competition_categories[]"
                                                                                         id="competition_categories[]"
@@ -536,7 +533,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {{-- <div class="col-12">
+                                    <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
                                                 <div class="row">
@@ -585,7 +582,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> --}}
+                                    </div>
                                     <div class="col-12">
                                         <div class="card border border-1">
                                             <div class="card-body">
