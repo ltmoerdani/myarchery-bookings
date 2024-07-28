@@ -438,8 +438,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                                                                <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                                                                <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                                                                                            <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -473,20 +473,20 @@
                                             ->select(DB::raw('tickets.*'))
                                             ->where('event_id', $content->id)
                                             ->whereNull('deleted_at')
+                                            ->where('status', 1)
                                             ->groupBy('title')
                                             ->get();
 
                                         $competitons = DB::select(
-                                            "SELECT GROUP_CONCAT(DISTINCT(competition_categories.name)) as name,
+                                            "SELECT GROUP_CONCAT(DISTINCT competition_categories.name ORDER BY competition_categories.name SEPARATOR ', ') AS name,
                                                 (SELECT name FROM competition_type WHERE competition_type.id=competitions.competition_type_id)
-AS competition_type
-                                            FROM `competitions`, competition_categories
-                                            WHERE competitions.event_id=" .
+AS competition_type  FROM `competitions`, competition_categories WHERE competitions.event_id=" .
                                                 $content->id .
-                                                " AND competition_categories.id=competitions.competition_category_id
+                                                " AND competition_categories.id=competitions.competition_category_id AND competitions.deleted_at IS NULL
                                             GROUP BY competitions.competition_type_id ORDER BY competitions.competition_category_id ASC",
                                         );
                                     @endphp
+
                                     @if (count($tickets) > 0)
                                         <b>{{ __('Select Tickets') }}</b>
                                         <hr>

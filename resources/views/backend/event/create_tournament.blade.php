@@ -444,7 +444,7 @@
                                                             <label class="mb-1">
                                                                 {{ __('Select Country') . '*' }}
                                                             </label>
-                                                            <select class="custom-select select2 fieldCountry"
+                                                            <select class="custom-select 3 fieldCountry"
                                                                 id="select_country" name="select_country">
                                                                 <option selected value="">Choose Country</option>
                                                                 @foreach ($international_countries as $value_international_country)

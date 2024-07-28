@@ -757,6 +757,8 @@ class CheckOutController extends Controller
         ->select('tickets.*', 'ticket_contents.title as contents_title')
         ->where('ticket_contents.language_id', $language_id)
         ->where('tickets.event_id', $request->event_id)
+        ->where('status', 1)
+        ->where('ticket_available', '>', 0)
         // ->where('tickets.title', 'Individu')
         ->get();
 
