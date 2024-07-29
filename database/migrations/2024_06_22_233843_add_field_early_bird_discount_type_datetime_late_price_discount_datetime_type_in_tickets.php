@@ -63,18 +63,18 @@ return new class extends Migration
       $table->string('late_price_discount_time')->nullable()->after('late_price_discount_date')->change();
 
       // drop column
-      // $table->dropColumn('early_bird_discount_end_time');
-      // $table->dropColumn('early_bird_discount_amount_international');
-      // $table->dropColumn('early_bird_discount_international_type');
-      // $table->dropColumn('early_bird_discount_international_date');
-      // $table->dropColumn('early_bird_discount_international_time');
-      // $table->dropColumn('early_bird_discount_international_end_date');
-      // $table->dropColumn('early_bird_discount_international_end_time');
-      // $table->dropColumn('late_price_discount_international_type');
-      // $table->dropColumn('late_price_discount_international_date');
-      // $table->dropColumn('late_price_discount_international_time');
-      // $table->dropColumn('late_price_discount_international_end_date');
-      // $table->dropColumn('late_price_discount_international_end_time');
+      $table->dropColumn('early_bird_discount_end_time');
+      $table->dropColumn('early_bird_discount_amount_international');
+      $table->dropColumn('early_bird_discount_international_type');
+      $table->dropColumn('early_bird_discount_international_date');
+      $table->dropColumn('early_bird_discount_international_time');
+      $table->dropColumn('early_bird_discount_international_end_date');
+      $table->dropColumn('early_bird_discount_international_end_time');
+      $table->dropColumn('late_price_discount_international_type');
+      $table->dropColumn('late_price_discount_international_date');
+      $table->dropColumn('late_price_discount_international_time');
+      $table->dropColumn('late_price_discount_international_end_date');
+      $table->dropColumn('late_price_discount_international_end_time');
     });
   }
 };
