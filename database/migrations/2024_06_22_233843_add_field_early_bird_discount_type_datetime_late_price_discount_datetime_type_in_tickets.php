@@ -31,7 +31,7 @@ return new class extends Migration
       $table->string('late_price_discount_type')->nullable()->after('late_price_discount_amount')->comment('use for local late price tournament and support for outer tournament event')->change();
       $table->string('late_price_discount_date')->nullable()->after('late_price_discount_type')->comment('use for local start date late price tournament and support for outer tournament event')->change();
       $table->string('late_price_discount_time')->nullable()->after('late_price_discount_date')->comment('use for local start time late price tournament and support for outer tournament event')->change();
-      $table->string('late_price_discount_end_date')->nullable()->after('late_price_discount_time')->comment('use for local end date late price tournament and support for outer tournament event');
+      $table->string('late_price_discount_end_date')->nullable()->after('late_price_discount_time')->comment('use for local end date late price tournament and support for outer tournament event')->change();
       $table->string('late_price_discount_end_time')->nullable()->after('late_price_discount_end_date')->comment('use for local end time late price tournament and support for outer tournament event');
       $table->string('late_price_discount_amount_international')->nullable()->after('late_price_discount_end_time')->comment('use for international late price tournament and support for outer tournament event')->change();
       $table->string('late_price_discount_international_type')->nullable()->after('late_price_discount_amount_international')->comment('use for international late price tournament and support for outer tournament event');
