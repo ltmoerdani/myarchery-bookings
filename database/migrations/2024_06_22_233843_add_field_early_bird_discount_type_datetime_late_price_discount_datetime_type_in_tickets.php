@@ -21,7 +21,7 @@ return new class extends Migration
       $table->string('early_bird_discount_end_date')->nullable()->comment('user for local end date early bird tournament and support use outer tournament event')->after('early_bird_discount_time');
       $table->string('early_bird_discount_end_time')->nullable()->comment('user for local end time early bird tournament and support use outer tournament event')->after('early_bird_discount_end_date');
       $table->string('early_bird_discount_amount_international')->nullable()->after('early_bird_discount_end_time');
-      $table->string('early_bird_discount_amount_international')->nullable()->after('early_bird_discount_end_time')->change();
+      // $table->string('early_bird_discount_amount_international')->nullable()->after('early_bird_discount_end_time')->change();
       $table->string('early_bird_discount_international_type')->nullable()->comment('use for type international earlybird tournament')->after('early_bird_discount_amount_international');
       $table->string('early_bird_discount_international_date')->nullable()->comment('use for start date international earlybird tournament and support if use outer tournament event')->after('early_bird_discount_international_type');
       $table->string('early_bird_discount_international_time')->nullable()->comment('use for start time international earlybird tournament and support if use outer tournament event')->after('early_bird_discount_international_date');
