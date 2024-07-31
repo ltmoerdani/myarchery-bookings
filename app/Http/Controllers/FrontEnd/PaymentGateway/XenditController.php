@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontEnd\PaymentGateway;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FrontEnd\Event\BookingController;
+use App\Http\Helpers\HelperPayment;
 use App\Models\BasicSettings\Basic;
 use App\Models\Earning;
 use App\Models\PaymentGateway\OnlineGateway;
