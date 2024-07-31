@@ -519,10 +519,16 @@ class XenditController extends Controller
     // }
 
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
+    // if ($data['payment_method'] == "CREDIT_CARD") {
+    //   $payment_channel = "CREDIT_CARD";
+    // } elseif ($data['payment_method'] == "QR_CODE") {
+    //   $payment_channel = "QR_CODE";
+    // } else {
+    //   $payment_channel = $data['payment_channel'];
+    // }
+
     if ($data['payment_method'] == "CREDIT_CARD") {
       $payment_channel = "CREDIT_CARD";
-    } elseif ($data['payment_method'] == "QR_CODE") {
-      $payment_channel = "QR_CODE";
     } else {
       $payment_channel = $data['payment_channel'];
     }
