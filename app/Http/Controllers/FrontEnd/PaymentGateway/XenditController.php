@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontEnd\PaymentGateway;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FrontEnd\Event\BookingController;
+use App\Http\Helpers\HelperPayment;
 use App\Models\BasicSettings\Basic;
 use App\Models\Earning;
 use App\Models\PaymentGateway\OnlineGateway;
@@ -514,15 +515,21 @@ class XenditController extends Controller
     $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
-      echo 'Invalid Callback Token.'; die;
-    }
+    // if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
+    //   echo 'Invalid Callback Token.'; die;
+    // }
 
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
+    // if ($data['payment_method'] == "CREDIT_CARD") {
+    //   $payment_channel = "CREDIT_CARD";
+    // } elseif ($data['payment_method'] == "QR_CODE") {
+    //   $payment_channel = "QR_CODE";
+    // } else {
+    //   $payment_channel = $data['payment_channel'];
+    // }
+
     if ($data['payment_method'] == "CREDIT_CARD") {
       $payment_channel = "CREDIT_CARD";
-    } elseif ($data['payment_method'] == "QR_CODE") {
-      $payment_channel = "QR_CODE";
     } else {
       $payment_channel = $data['payment_channel'];
     }
@@ -545,15 +552,15 @@ class XenditController extends Controller
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
       $bookings_payment->paid_amount = $data['paid_amount'];
-      $bookings_payment->bank_code = $data['bank_code'];
+      $bookings_payment->bank_code = empty($data['bank_code']) ? null : $data['bank_code'];
       $bookings_payment->paid_at = $data['paid_at'];
-      $bookings_payment->payer_email = $data['payer_email'];
+      $bookings_payment->payer_email = empty($data['payer_email']) ? null : $data['payer_email'];
       $bookings_payment->description = $data['description'];
-      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
-      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
-      $bookings_payment->currency = $data['currency'];
-      $bookings_payment->payment_channel = $data['payment_channel'];
-      $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->adjusted_received_amount = empty($data['adjusted_received_amount']) ? null : $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = empty($data['fees_paid_amount']) ? null : $data['fees_paid_amount'];
+      $bookings_payment->currency = empty($data['currency']) ? null : $data['currency'];
+      $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
+      $bookings_payment->payment_destination = empty($data['payment_destination']) ? null : $data['payment_destination'];
       $bookings_payment->payment_fee = $fee;
       $bookings_payment->save();
 
@@ -599,13 +606,15 @@ class XenditController extends Controller
     }
   }
 
-  public function callback_disbursement($request){
+  public function callback_disbursement($request)
+  {
     $data = $request->all();
     $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
-      echo 'Invalid Callback Token.'; die;
+    if ($req_header['X-CALLBACK-TOKEN'] !== $callback_token) {
+      echo 'Invalid Callback Token.';
+      die;
     }
 
     $callback['payment_type'] = 'Xendit';
