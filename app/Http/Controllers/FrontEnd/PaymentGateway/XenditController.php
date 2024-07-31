@@ -552,15 +552,15 @@ class XenditController extends Controller
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
       $bookings_payment->paid_amount = $data['paid_amount'];
-      $bookings_payment->bank_code = $data['bank_code'];
+      $bookings_payment->bank_code = empty($data['bank_code']) ? null : $data['bank_code'];
       $bookings_payment->paid_at = $data['paid_at'];
-      $bookings_payment->payer_email = $data['payer_email'];
+      $bookings_payment->payer_email = empty($data['payer_email']) ? null : $data['payer_email'];
       $bookings_payment->description = $data['description'];
-      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
-      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
-      $bookings_payment->currency = $data['currency'];
-      $bookings_payment->payment_channel = $data['payment_channel'];
-      $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->adjusted_received_amount = empty($data['adjusted_received_amount']) ? null : $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = empty($data['fees_paid_amount']) ? null : $data['fees_paid_amount'];
+      $bookings_payment->currency = empty($data['currency']) ? null : $data['currency'];
+      $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
+      $bookings_payment->payment_destination = empty($data['payment_destination']) ? null : $data['payment_destination'];
       $bookings_payment->payment_fee = $fee;
       $bookings_payment->save();
 
