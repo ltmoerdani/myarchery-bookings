@@ -514,9 +514,9 @@ class XenditController extends Controller
     $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
-      echo 'Invalid Callback Token.'; die;
-    }
+    // if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
+    //   echo 'Invalid Callback Token.'; die;
+    // }
 
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
     if ($data['payment_method'] == "CREDIT_CARD") {
@@ -599,13 +599,15 @@ class XenditController extends Controller
     }
   }
 
-  public function callback_disbursement($request){
+  public function callback_disbursement($request)
+  {
     $data = $request->all();
     $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
-      echo 'Invalid Callback Token.'; die;
+    if ($req_header['X-CALLBACK-TOKEN'] !== $callback_token) {
+      echo 'Invalid Callback Token.';
+      die;
     }
 
     $callback['payment_type'] = 'Xendit';
