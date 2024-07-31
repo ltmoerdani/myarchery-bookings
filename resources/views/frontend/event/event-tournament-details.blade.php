@@ -1130,7 +1130,7 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
     @includeIf('frontend.partials.modals')
 @endsection
 @section('custom-script')
-    <script>
+    <!-- <script>
         $(document).ready(function() {
             $(".first-info-detail-quota-ticket").trigger('click');
         });
@@ -1202,5 +1202,5 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
             })
             $("#content-qouta-ticket").append(content);
         });
-    </script>
+    </script> -->
 @endsection
