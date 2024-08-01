@@ -105,11 +105,10 @@
                         @endif
                       </td>
                       <td>
-                        <a href="javascript:void(0)" data-toggle="modal" data-target="#withdrawModal{{ $item->id }}"
-                          class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>
+                        <!-- <a href="javascript:void(0)" data-toggle="modal" data-target="#withdrawModal{{ $item->id }}"
+                          class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a> -->
                         <form class="deleteForm d-inline-block"
-                          action="{{ route('organizer.witdraw.delete_withdraw', ['id' => $item->id]) }}" method="post">
-
+                          action="{{ route('organizer.witdraw.delete_account', ['id' => $item->id]) }}" method="post">
                           @csrf
                           <button type="submit" class="btn btn-danger btn-sm deleteBtn"><i class="fas fa-trash"></i></button>
                         </form>

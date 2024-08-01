@@ -343,36 +343,31 @@ class OrganizerWithdrawController extends Controller{
   }
 
   //Delete
-  public function Delete(Request $request)
-  {
+  public function Delete(Request $request){
     $delete = Withdraw::where([['organizer_id', Auth::guard('organizer')->user()->id], ['id', $request->id]])->first();
     $delete->delete();
     return redirect()->back()->with('success', 'Withdraw Request Deleted Successfully!');
   }
 
   //bulkDelete
-  public function bulkDelete(Request $request)
-  {
+  public function bulkDelete(Request $request){
     $ids = $request->ids;
     foreach ($ids as $id) {
       $withdraw = Withdraw::where([['organizer_id', Auth::guard('organizer')->user()->id], ['id', $id]])->first();
       $withdraw->delete();
     }
     Session::flash('success', 'Deleted Successfully');
-
     return Response::json(['status' => 'success'], 200);
   }
 
   //account
-  public function account()
-  {
+  public function account(){
     $account = BankAccount::with('bank')->where('organizer_id', Auth::guard('organizer')->user()->id)->orderby('id', 'asc')->paginate(10);
     return view('organizer.withdraw.account', compact('account'));
   }
 
   //add account
-  public function addaccount()
-  {
+  public function addaccount(){
     $information = [];
     $language = Language::where('code', request()->input('language'))->firstOrFail();
     $lang_id = $language->id;
@@ -400,17 +395,32 @@ class OrganizerWithdrawController extends Controller{
       ], 400);
     }
 
-    $save = new BankAccount;
-    $save->role = 'organizer';
-    $save->organizer_id = Auth::guard('organizer')->user()->id;
-    $save->bank_id = $request->bank_name;
-    $save->account_no = $request->account_number;
-    $save->account_name = $request->account_name;
-    $save->is_active = 1;
-    $save->save();
+    $cek_bank = BankAccount::where('organizer_id', Auth::guard('organizer')->user()->id)->where('bank_id', $request->bank_name)
+                  ->where('account_no', $request->account_number)->first();
+    if($cek_bank){
+      Session::flash('warning', 'Account number has been registered');
+      return Response::json(['status' => 'success'], 200);
+    }else{
+      $save = new BankAccount;
+      $save->role = 'organizer';
+      $save->organizer_id = Auth::guard('organizer')->user()->id;
+      $save->bank_id = $request->bank_name;
+      $save->account_no = $request->account_number;
+      $save->account_name = $request->account_name;
+      $save->is_active = 1;
+      $save->save();
 
-    Session::flash('success', 'Save Account Bank Successfully!');
-    // return Response::json(['status' => 'success'], 200);
-    return redirect()->route('organizer.withdraw.account');
+      Session::flash('success', 'Save Account Bank Successfully!');
+      return Response::json(['status' => 'success'], 200);
+      // return redirect()->route('organizer.withdraw.account');
+    }
   }
+
+  //delete_account
+  public function delete_account(Request $request){
+    $delete = BankAccount::where([['organizer_id', Auth::guard('organizer')->user()->id], ['id', $request->id]])->first();
+    $delete->delete();
+    return redirect()->back()->with('success', 'Bank Account Request Deleted Successfully!');
+  }
+
 }
