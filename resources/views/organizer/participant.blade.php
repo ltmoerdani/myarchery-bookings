@@ -81,13 +81,13 @@
                                                         {{ $p->competition_name }}
                                                     </td>
                                                     <td>
-                                                        {{ $p->title }}
+                                                        {{ $p->ticket_title }}
                                                     </td>
                                                     <td>
                                                         {{ $p->category }} 
                                                     </td>
                                                     <td>
-                                                        {{ $p->delegation }} 
+                                                        {{ $p->delegation_name }} 
                                                     </td>
                                                 </tr>
                                             @endforeach

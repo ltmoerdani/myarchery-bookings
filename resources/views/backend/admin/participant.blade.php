@@ -43,7 +43,7 @@
                                         <input type="hidden" name="language" value="{{ request()->input('language') }}"
                                             class="hidden">
                                         <input type="text" name="title" value="{{ request()->input('title') }}"
-                                            name="name" placeholder="Enter Event Name" class="form-control">
+                                            name="name" placeholder="Search" class="form-control">
                                     </form>
                                 </div>
                             </div>
@@ -81,13 +81,13 @@
                                                         {{ $p->competition_name }}
                                                     </td>
                                                     <td>
-                                                        {{ $p->title }}
+                                                        {{ $p->ticket_title }}
                                                     </td>
                                                     <td>
                                                         {{ $p->category }} 
                                                     </td>
                                                     <td>
-                                                        {{ $p->delegation }} 
+                                                        {{ $p->delegation_name }} 
                                                     </td>
                                                 </tr>
                                             @endforeach
