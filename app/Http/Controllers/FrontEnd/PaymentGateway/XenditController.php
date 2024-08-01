@@ -512,14 +512,12 @@ class XenditController extends Controller
   public function callback_tournament($request)
   {
     $data = $request->all();
-    var_dump($request->header());
-    die;
-    $req_header = json_decode($request->header());
+    $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if ($req_header['X-CALLBACK-TOKEN'] !== $callback_token) {
+    if ($req_header['X-CALLBACK-TOKEN'][0] !== $callback_token) {
       echo 'Invalid Callback Token.';
-      var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);
+      // var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);
       die;
     }
 
