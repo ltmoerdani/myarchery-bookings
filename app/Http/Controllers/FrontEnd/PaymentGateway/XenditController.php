@@ -530,18 +530,20 @@ class XenditController extends Controller
     //   $payment_channel = $data['payment_channel'];
     // }
 
-    if ($data['payment_method'] == "CREDIT_CARD") {
-      $payment_channel = "CREDIT_CARD";
-    } else {
-      $payment_channel = $data['payment_channel'];
-    }
 
-    $getPaymentFee['amount'] = $data['amount'];
-    $getPaymentFee['payment_method'] = $data['payment_method'];
-    $getPaymentFee['payment_channel'] = $payment_channel;
-    $fee = HelperPayment::getPaymentFee($getPaymentFee);
 
     if ($data['status'] == 'PAID') {
+      if ($data['payment_method'] == "CREDIT_CARD") {
+        $payment_channel = "CREDIT_CARD";
+      } else {
+        $payment_channel = $data['payment_channel'];
+      }
+
+      $getPaymentFee['amount'] = $data['amount'];
+      $getPaymentFee['payment_method'] = $data['payment_method'];
+      $getPaymentFee['payment_channel'] = $payment_channel;
+      $fee = HelperPayment::getPaymentFee($getPaymentFee);
+
       $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
       $transaction = Transaction::where('booking_id', $bookings->id)->first();
       $transaction->payment_fee = $fee;
@@ -580,20 +582,20 @@ class XenditController extends Controller
 
       $bookings_payment->callback = json_encode($data);
       $bookings_payment->req_header = json_encode($req_header);
-      $bookings_payment->payment_method = $data['payment_method'];
+      $bookings_payment->payment_method = null;
       $bookings_payment->status = $data['status'];
       $bookings_payment->amount = $data['amount'];
-      $bookings_payment->paid_amount = $data['paid_amount'];
-      $bookings_payment->bank_code = $data['bank_code'];
-      $bookings_payment->paid_at = $data['paid_at'];
-      $bookings_payment->payer_email = $data['payer_email'];
+      $bookings_payment->paid_amount = null;
+      $bookings_payment->bank_code = null;
+      $bookings_payment->paid_at = null;
+      $bookings_payment->payer_email = null;
       $bookings_payment->description = $data['description'];
-      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
-      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
+      $bookings_payment->adjusted_received_amount = empty($data['adjusted_received_amount']) ? null : $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = empty($data['fees_paid_amount']) ? null : $data['fees_paid_amount'];
       $bookings_payment->currency = $data['currency'];
-      $bookings_payment->payment_channel = $data['payment_channel'];
+      $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
       $bookings_payment->payment_destination = $data['payment_destination'];
-      $bookings_payment->payment_fee = $fee;
+      $bookings_payment->payment_fee = 0;
       $bookings_payment->save();
 
       $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
