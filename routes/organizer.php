@@ -85,6 +85,9 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
 
   Route::get('withdraw', 'BackEnd\Organizer\OrganizerWithdrawController@index')->name('organizer.withdraw');
   Route::get('withdraw/create', 'BackEnd\Organizer\OrganizerWithdrawController@create')->name('organizer.withdraw.create');
+  Route::get('withdraw/account', 'BackEnd\Organizer\OrganizerWithdrawController@account')->name('organizer.withdraw.account');
+  Route::get('withdraw/addaccount', 'BackEnd\Organizer\OrganizerWithdrawController@addaccount')->name('organizer.withdraw.addaccount');
+  Route::post('/withdraw/save-account', 'BackEnd\Organizer\OrganizerWithdrawController@save_account')->name('organizer.withdraw.save-account');
   Route::get('/get-withdraw-method/input/{id}', 'BackEnd\Organizer\OrganizerWithdrawController@get_inputs');
 
   Route::get('withdraw/balance-calculation/{method}/{amount}', 'BackEnd\Organizer\OrganizerWithdrawController@balance_calculation');

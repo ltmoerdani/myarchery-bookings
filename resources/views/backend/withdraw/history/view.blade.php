@@ -20,6 +20,7 @@
               {{ $item->payable_amount }}
               {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
             </p>
+            @if ($item->feilds != '')
             @foreach ($d_feilds as $key => $d_feild)
               @if($key == 'Bank_Account')
                 @php
@@ -31,6 +32,7 @@
                 <p><strong>{{ str_replace('_', ' ', $key) }} : {{ $d_feild }}</strong></p>
               @endif
             @endforeach
+            @endif
           </div>
         </div>
 

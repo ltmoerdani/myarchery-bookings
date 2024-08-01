@@ -35,6 +35,21 @@
           </div>
         </div>
 
+        @php
+        if($account_bank == 0){
+        @endphp
+        
+        <center>
+        <a href="{{ route('organizer.withdraw.addaccount', ['language' => $defaultLang->code]) }}"
+          class="btn btn-secondary btn-sm" style="width: 20%;margin: 50px;">
+          <i class="fas fa-plus"></i> {{ __('Add Bank Account')."!" }}
+        </a>
+        </center> 
+
+        @php
+        }else{
+        @endphp
+
         <div class="card-body">
           <div class="row">
             <div class="col-lg-6 offset-lg-3">
@@ -52,12 +67,13 @@
                     </ul>
                   </div>
                 @endif
+
                 <div class="form-group">
                   <label for="">{{ __('Withdraw Method') }} <span class="text-danger">*</span></label>
                   <select name="withdraw_method" id="withdraw_method" class="form-control" required>
                     <option selected disabled value="">{{ __('Select Withdraw Method') }}</option>
                     @foreach ($methods as $item)
-                      <option value="{{ $item->id }}">{{ $item->name }}</option>
+                      <option value="{{ $item->id }}" data-method-name="{{ $item->name }}">{{ $item->name }}</option>
                     @endforeach
                   </select>
                   <p id="err_withdraw_method" class="mt-2 mb-0 text-danger em"></p>
@@ -95,6 +111,7 @@
                 <div id="appned_input">
                   <div class="all-inputs"></div>
                 </div>
+
                 <div class="form-group">
                   <label>{{ __('Additional Reference (Optional)') }}</label>
                   <input type="text" class="form-control" name="additional_reference"
@@ -117,6 +134,9 @@
             </div>
           </div>
         </div>
+        @php
+        }
+        @endphp
       </div>
     </div>
   </div>

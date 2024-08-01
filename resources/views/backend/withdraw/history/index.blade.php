@@ -107,11 +107,11 @@
                                                                     <i class="fas fa-check-circle"></i>
                                                                 </span> {{ __('Approve') }}</a>
                                                             @if($item->method_id == 6)
-                                                            <a href="{{ route('admin.witdraw.approve_withdraw_disbursement', ['id' => $item->id]) }}"
+                                                            <!-- <a href="{{ route('admin.witdraw.approve_withdraw_disbursement', ['id' => $item->id]) }}"
                                                                 class="btn btn-success mt-1 btn-xs  confirmBtn"><span
                                                                     class="btn-label">
                                                                     <i class="fas fa-check-circle"></i>
-                                                                </span> {{ __('Approve And Send Disbursement') }}</a>
+                                                                </span> {{ __('Approve And Send Disbursement') }}</a> -->
                                                             @endif
                                                             <a href="{{ route('admin.witdraw.decline_withdraw', ['id' => $item->id]) }}"
                                                                 class="btn btn-warning mt-1 btn-xs confirmBtn"><span

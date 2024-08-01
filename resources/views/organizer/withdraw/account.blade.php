@@ -13,7 +13,7 @@
         <i class="flaticon-right-arrow"></i>
       </li>
       <li class="nav-item">
-        <a href="#">{{ __('My Withdraws') }}</a>
+        <a href="#">{{ __('Account Bank') }}</a>
       </li>
     </ul>
   </div>
@@ -36,9 +36,9 @@
             </div>
             <div class="col-lg-4 mt-2 mt-lg-0">
 
-              <a href="{{ route('organizer.withdraw.account', ['language' => $defaultLang->code]) }}"
+              <a href="{{ route('organizer.withdraw.addaccount', ['language' => $defaultLang->code]) }}"
                 class="btn btn-secondary btn-sm float-lg-right float-left" style="margin-left: 10px;">
-                <i class="fas fa-plus"></i> {{ __('Bank Account')."!" }}
+                <i class="fas fa-plus"></i> {{ __('Add Bank Account')."!" }}
               </a> 
  
               <a href="{{ route('organizer.withdraw.create', ['language' => $defaultLang->code]) }}"
@@ -71,52 +71,37 @@
               <table class="table table-striped mt-3" id="basic-datatables">
                 <thead>
                   <tr>
-                    <th scope="col">
-                      <input type="checkbox" class="bulk-check" data-val="all">
-                    </th>
-                    <th scope="col">{{ __('Withdraw Id') }}</th>
-                    <th scope="col">{{ __('Method Name') }}</th>
-                    <th scope="col">{{ __('Total Amount') }}</th>
-                    <th scope="col">{{ __('Total Charge') }}</th>
-                    <th scope="col">{{ __('Total Payable Amount') }}</th>
+                    <th scope="col">{{ __('No') }}</th>
+                    <th scope="col">{{ __('Bank Name') }}</th>
+                    <th scope="col">{{ __('Account Number') }}</th>
+                    <th scope="col">{{ __('Account Name') }}</th>
                     <th scope="col">{{ __('Status') }}</th>
                     <th scope="col">{{ __('Action') }}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach ($collection as $item)
+                  @php
+                      $no = ($account->currentpage()-1)* $account->perpage() + 1;
+                  @endphp
+                  @foreach ($account as $item)
                     <tr>
                       <td>
-                        <input type="checkbox" class="bulk-check" data-val="{{ $item->id }}">
+                        {{ $no++ }}
                       </td>
                       <td>
-                        {{ $item->withdraw_id }}
+                        {{ $item->bank->bank_name }}
                       </td>
                       <td>
-                        {{ optional($item->method)->name }}
+                        {{ $item->account_no }}
                       </td>
                       <td>
-                        {{ $currencyInfo->base_currency_symbol_position == 'left' ? $currencyInfo->base_currency_symbol : '' }}
-                        {{ $item->amount }}
-                        {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
+                        {{ $item->account_name }}
                       </td>
                       <td>
-                        {{ $currencyInfo->base_currency_symbol_position == 'left' ? $currencyInfo->base_currency_symbol : '' }}
-                        {{ $item->total_charge }}
-                        {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
-                      </td>
-                      <td>
-                        {{ $currencyInfo->base_currency_symbol_position == 'left' ? $currencyInfo->base_currency_symbol : '' }}
-                        {{ $item->payable_amount }}
-                        {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
-                      </td>
-                      <td>
-                        @if ($item->status == 0)
-                          <span class="badge badge-danger">{{ __('Pending') }}</span>
-                        @elseif($item->status == 1)
-                          <span class="badge badge-success">{{ __('Approved') }}</span>
-                        @elseif($item->status == 2)
-                          <span class="badge badge-warning">{{ __('Decline') }}</span>
+                        @if ($item->is_active == 1)
+                          Active
+                        @else
+                          Deactive
                         @endif
                       </td>
                       <td>
@@ -142,7 +127,7 @@
     </div>
   </div>
   </div>
-  @foreach ($collection as $item)
+  @foreach ($account as $item)
     <div class="modal fade" id="withdrawModal{{ $item->id }}" tabindex="-1" role="dialog"
       aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
@@ -152,24 +137,6 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-          </div>
-
-          <div class="modal-body">
-            @php
-              $d_feilds = json_decode($item->feilds, true);
-            @endphp
-            <div class="">
-              <p>{{ __('Total Payable Amount') }} :
-                {{ $currencyInfo->base_currency_symbol_position == 'left' ? $currencyInfo->base_currency_symbol : '' }}
-                {{ $item->payable_amount }}
-                {{ $currencyInfo->base_currency_symbol_position == 'right' ? $currencyInfo->base_currency_symbol : '' }}
-              </p>
-              @if ($item->feilds != '')
-              @foreach ($d_feilds as $key => $d_feild)
-                <p><strong>{{ str_replace('_', ' ', $key) }} : {{ $d_feild }}</strong></p>
-              @endforeach
-              @endif
-            </div>
           </div>
 
           <div class="modal-footer">
