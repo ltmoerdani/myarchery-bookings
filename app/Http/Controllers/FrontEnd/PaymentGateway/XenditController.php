@@ -515,7 +515,7 @@ class XenditController extends Controller
     $req_header = $request->header();
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if ($req_header['X-CALLBACK-TOKEN'][0] !== $callback_token) {
+    if ($req_header['x-callback-token'][0] !== $callback_token) {
       echo 'Invalid Callback Token.';
       // var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);
       die;
