@@ -99,7 +99,7 @@ class OrganizerWithdrawController extends Controller{
           'bank_code' => $bank_account->bank->bank_code,
           'account_holder_name' => $bank_account->account_name,
           'account_number' => $bank_account->account_no	,
-          'description' => "Reimbursement ".$withdraw->amount." (Withdraw ID ".$withdraw->withdraw_id.")",
+          'description' => "Disbursements ".$withdraw->amount." (Withdraw ID ".$withdraw->withdraw_id.")",
       ]);
       $response = $data_request->object();
       $response = json_decode(json_encode($response), true);
