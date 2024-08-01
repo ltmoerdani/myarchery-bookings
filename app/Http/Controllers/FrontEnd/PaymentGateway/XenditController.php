@@ -585,7 +585,7 @@ class XenditController extends Controller
       $bookings_payment->currency = empty($data['currency']) ? null : $data['currency'];
       $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
       $bookings_payment->payment_destination = empty($data['payment_destination']) ? null : $data['payment_destination'];
-      $bookings_payment->payment_fee = null;
+      $bookings_payment->payment_fee = 0;
       $bookings_payment->save();
 
       $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
@@ -596,6 +596,7 @@ class XenditController extends Controller
       }
 
       echo "Booking ID ".$bookings_payment->booking_id." status Expired";
+      
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
     }
