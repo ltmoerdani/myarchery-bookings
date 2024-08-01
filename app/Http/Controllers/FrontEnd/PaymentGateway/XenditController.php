@@ -517,31 +517,23 @@ class XenditController extends Controller
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
     if ($req_header['x-callback-token'][0] !== $callback_token) {
       echo 'Invalid Callback Token.';
-      // var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);
       die;
     }
 
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
-    // if ($data['payment_method'] == "CREDIT_CARD") {
-    //   $payment_channel = "CREDIT_CARD";
-    // } elseif ($data['payment_method'] == "QR_CODE") {
-    //   $payment_channel = "QR_CODE";
-    // } else {
-    //   $payment_channel = $data['payment_channel'];
-    // }
-
-    if ($data['payment_method'] == "CREDIT_CARD") {
-      $payment_channel = "CREDIT_CARD";
-    } else {
-      $payment_channel = $data['payment_channel'];
-    }
-
-    $getPaymentFee['amount'] = $data['amount'];
-    $getPaymentFee['payment_method'] = $data['payment_method'];
-    $getPaymentFee['payment_channel'] = $payment_channel;
-    $fee = HelperPayment::getPaymentFee($getPaymentFee);
 
     if ($data['status'] == 'PAID') {
+      if ($data['payment_method'] == "CREDIT_CARD") {
+        $payment_channel = "CREDIT_CARD";
+      } else {
+        $payment_channel = $data['payment_channel'];
+      }
+  
+      $getPaymentFee['amount'] = $data['amount'];
+      $getPaymentFee['payment_method'] = $data['payment_method'];
+      $getPaymentFee['payment_channel'] = $payment_channel;
+      $fee = HelperPayment::getPaymentFee($getPaymentFee);
+
       $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
       $transaction = Transaction::where('booking_id', $bookings->id)->first();
       $transaction->payment_fee = $fee;
@@ -580,29 +572,30 @@ class XenditController extends Controller
 
       $bookings_payment->callback = json_encode($data);
       $bookings_payment->req_header = json_encode($req_header);
-      $bookings_payment->payment_method = $data['payment_method'];
-      $bookings_payment->status = $data['status'];
-      $bookings_payment->amount = $data['amount'];
-      $bookings_payment->paid_amount = $data['paid_amount'];
-      $bookings_payment->bank_code = $data['bank_code'];
-      $bookings_payment->paid_at = $data['paid_at'];
-      $bookings_payment->payer_email = $data['payer_email'];
-      $bookings_payment->description = $data['description'];
-      $bookings_payment->adjusted_received_amount = $data['adjusted_received_amount'];
-      $bookings_payment->fees_paid_amount = $data['fees_paid_amount'];
-      $bookings_payment->currency = $data['currency'];
-      $bookings_payment->payment_channel = $data['payment_channel'];
-      $bookings_payment->payment_destination = $data['payment_destination'];
-      $bookings_payment->payment_fee = $fee;
+      $bookings_payment->payment_method = empty($data['payment_method']) ? null : $data['payment_method'];
+      $bookings_payment->status = empty($data['status']) ? null : $data['status']; 
+      $bookings_payment->amount = empty($data['amount']) ? null : $data['amount']; 
+      $bookings_payment->paid_amount = empty($data['paid_amount']) ? null : $data['paid_amount'];
+      $bookings_payment->bank_code = empty($data['bank_code']) ? null : $data['bank_code'];
+      $bookings_payment->paid_at = empty($data['paid_at']) ? null : $data['paid_at'];
+      $bookings_payment->payer_email = empty($data['payer_email']) ? null : $data['payer_email'];
+      $bookings_payment->description = empty($data['description']) ? null : $data['description'];
+      $bookings_payment->adjusted_received_amount = empty($data['adjusted_received_amount']) ? null : $data['adjusted_received_amount'];
+      $bookings_payment->fees_paid_amount = empty($data['fees_paid_amount']) ? null : $data['fees_paid_amount'];
+      $bookings_payment->currency = empty($data['currency']) ? null : $data['currency'];
+      $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
+      $bookings_payment->payment_destination = empty($data['payment_destination']) ? null : $data['payment_destination'];
+      $bookings_payment->payment_fee = null;
       $bookings_payment->save();
 
       $participant_competitions = ParticipantCompetitions::where('booking_id', $bookings->id)->get();
       foreach ($participant_competitions as $c) {
         $ticket = Ticket::where('id', $c->ticket_id)->first();
-        $ticket->ticket_available = $ticket->ticket_available - 1;
+        $ticket->ticket_available = $ticket->ticket_available + 1;
         $ticket->save();
       }
 
+      echo "Booking ID ".$bookings_payment->booking_id." status Expired";
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);
     }
