@@ -594,7 +594,7 @@ class XenditController extends Controller
       $bookings_payment->fees_paid_amount = empty($data['fees_paid_amount']) ? null : $data['fees_paid_amount'];
       $bookings_payment->currency = $data['currency'];
       $bookings_payment->payment_channel = empty($data['payment_channel']) ? null : $data['payment_channel'];
-      $bookings_payment->payment_destination = $data['payment_destination'];
+      $bookings_payment->payment_destination = null;
       $bookings_payment->payment_fee = 0;
       $bookings_payment->save();
 
