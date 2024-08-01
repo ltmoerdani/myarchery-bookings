@@ -512,12 +512,15 @@ class XenditController extends Controller
   public function callback_tournament($request)
   {
     $data = $request->all();
+    var_dump($request->header());
+    die;
     $req_header = json_decode($request->header());
 
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
-    if($req_header['X-CALLBACK-TOKEN'] !== $callback_token){
-      echo 'Invalid Callback Token.'; 
-      var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);die; 
+    if ($req_header['X-CALLBACK-TOKEN'] !== $callback_token) {
+      echo 'Invalid Callback Token.';
+      var_dump($callback_token, $req_header['X-CALLBACK-TOKEN']);
+      die;
     }
 
     $bookings_payment = BookingsPayment::where('external_id', $data['external_id'])->first();
