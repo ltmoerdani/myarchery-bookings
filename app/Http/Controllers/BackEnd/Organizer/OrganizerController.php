@@ -985,30 +985,33 @@ class OrganizerController extends Controller
     return view('organizer.income', $information);
   }
 
-  public function participant(Request $request){
+  public function participant(Request $request) {
     $language = $this->getLanguage();
     $language_id = $language->id;
 
-    $title = null;
-    if ($request->filled('title')) {
-        $title = $request->input('title');
-    }
+    $title = $request->input('title');
 
     $participant = ParticipantCompetitions::query()
-        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title, participant_competitions.category, 
-        CASE
-            WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
-            ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
-        END as delegation'))
-        ->leftjoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
-        ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
-        ->leftjoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
-        ->leftjoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
-        ->leftjoin('events', 'events.id', '=', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
+        ->select('event_contents.title as event_name', 'participant_competitions.competition_name', 'participant.fname', 'participant.lname', 'ticket_contents.title as ticket_title', 'participant_competitions.category', 
+        DB::raw('CASE
+            WHEN LOWER(participant_competitions.category) = "club" THEN clubs.name
+            WHEN LOWER(participant_competitions.category) = "school/universities" THEN school.name
+            WHEN LOWER(participant_competitions.category) = "organization" THEN organization.name
+            WHEN LOWER(participant_competitions.category) = "country" THEN international_countries.name
+            WHEN LOWER(participant_competitions.category) = "province" THEN indonesian_province.name
+            ELSE indonesian_cities.name
+        END as delegation_name'))
+        ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
+        ->leftJoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
+        ->leftJoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
+        ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
+        ->leftJoin('events', 'events.id', '=', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
+        ->leftJoin('clubs', 'clubs.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('school', 'school.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('organization', 'organization.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('international_countries', 'international_countries.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_province', 'indonesian_province.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_cities', 'indonesian_cities.id', '=', 'participant_competitions.delegation_id')
         ->where('ticket_contents.language_id', $language_id)
         ->where('event_contents.language_id', $language_id)
         ->when($title, function ($query) use ($title) {
@@ -1016,20 +1019,21 @@ class OrganizerController extends Controller
                 $q->where('event_contents.title', 'like', '%' . $title . '%')
                   ->orWhere('participant.fname', 'like', '%' . $title . '%')
                   ->orWhere('participant.lname', 'like', '%' . $title . '%')
+                  ->orWhere('ticket_contents.title', 'like', '%' . $title . '%')
                   ->orWhere('participant_competitions.category', 'like', '%' . $title . '%')
                   ->orWhere(DB::raw('
                       CASE
-                          WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
-                          WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
-                          WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
-                          WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
-                          WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
-                          ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "club" THEN clubs.name
+                          WHEN LOWER(participant_competitions.category) = "school/universities" THEN school.name
+                          WHEN LOWER(participant_competitions.category) = "organization" THEN organization.name
+                          WHEN LOWER(participant_competitions.category) = "country" THEN international_countries.name
+                          WHEN LOWER(participant_competitions.category) = "province" THEN indonesian_province.name
+                          ELSE indonesian_cities.name
                       END
                   '), 'like', '%' . $title . '%');
             });
         })
-        ->orderBy('participant_competitions.created_at', 'asc')
+        ->orderBy('participant_competitions.id', 'asc')
         ->paginate(10);
 
     $information['participant'] = $participant;
