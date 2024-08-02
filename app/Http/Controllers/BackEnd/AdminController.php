@@ -680,8 +680,8 @@ class AdminController extends Controller
                   '), 'like', '%' . $title . '%');
             });
         })
-        ->orderBy('participant_competitions.created_at', 'asc')
-        ->paginate(10);
+        ->orderBy('participant_competitions.created_at', 'desc')
+        ->paginate(25);
 
     $information['participant'] = $participant;
     $information['event_name'] = $title;
@@ -741,8 +741,8 @@ class AdminController extends Controller
                   '), 'like', '%' . $event_name . '%');
             });
         })
-        ->orderBy('participant_competitions.created_at', 'asc')
-        ->paginate(10);
+        ->orderBy('participant_competitions.created_at', 'desc')
+        ->paginate(25);
 
     return view('backend.admin.detail-participant', compact('participant', 'event_title'));
   }

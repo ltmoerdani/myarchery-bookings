@@ -1033,8 +1033,8 @@ class OrganizerController extends Controller
                   '), 'like', '%' . $title . '%');
             });
         })
-        ->orderBy('participant_competitions.id', 'asc')
-        ->paginate(10);
+        ->orderBy('participant_competitions.id', 'desc')
+        ->paginate(25);
 
     $information['participant'] = $participant;
     $information['event_name'] = $title;
@@ -1094,8 +1094,8 @@ public function detail_participant(Request $request, $id) {
                 '), 'like', '%' . $event_name . '%');
           });
       })
-      ->orderBy('participant_competitions.created_at', 'asc')
-      ->paginate(10);
+      ->orderBy('participant_competitions.created_at', 'desc')
+      ->paginate(25);
 
   return view('organizer.detail-participant', compact('participant', 'event_title'));
 }

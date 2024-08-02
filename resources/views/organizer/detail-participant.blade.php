@@ -67,6 +67,7 @@
                         <th scope="col">{{ __('Category') }}</th>
                         <th scope="col">{{ __('Delegation') }}</th>
                         <th scope="col">{{ __('Delegation Name') }}</th>
+                        <th scope="col">{{ __('Date Registered') }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -81,6 +82,7 @@
                           <td>{{ $p->ticket_title }}</td>
                           <td>{{ $p->category }}</td>
                           <td>{{ $p->delegation_name }}</td>
+                          <td>{{ $p->created_at }}</td>
                         </tr>
                       @endforeach
                     </tbody>
