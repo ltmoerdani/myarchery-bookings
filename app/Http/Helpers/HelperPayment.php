@@ -5,6 +5,7 @@ namespace App\Http\Helpers;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Models\GatewaySettings;
+use App\Models\BasicSettings\Basic;
 
 class HelperPayment
 {
@@ -12,7 +13,9 @@ class HelperPayment
   public static function getPaymentFee($data)
   {
     try {
-      $ppn = 11;
+      $info = Basic::select('percent_ppn')->first();
+      $ppn = $info->percent_ppn;
+
       $amount = $data['amount'];
       $fixed_amount = 0;
       $percentage_amount = 0;

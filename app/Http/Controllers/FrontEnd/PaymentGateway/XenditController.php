@@ -154,7 +154,7 @@ class XenditController extends Controller
         $bookingInfo['invoice_url_booking'] = $response['invoice_url'];
 
         $bookingInfo['payment_url'] = $response['invoice_url'];
-        storeTranscation($bookingInfo);
+        storeTranscation($bookingInfo); 
 
         // Update invoice_url_booking in table bookings
         $updateBooking = Booking::where('booking_id', $bookingInfo->booking_id)->first();
@@ -350,7 +350,7 @@ class XenditController extends Controller
         // get the information from session
         $event_id = Session::get('event_id');
         $arrData = Session::get('arrData');
-
+        
         // if type tournament
         if ($arrData['form_type'] == "tournament") {
           if (!empty($arrData['booking_id'])) {
@@ -361,7 +361,10 @@ class XenditController extends Controller
 
             // status update paid
             $updateTransaction = Transaction::where('booking_id', $booking->id)->first();
-            $updateTransaction->payment_status = 1;
+            if($updateTransaction->payment_status != 1){
+              $updateTransaction->after_balance = $updateTransaction->pre_balance + ($updateTransaction->grand_total - $updateTransaction->commission - $updateTransaction->payment_fee);
+              $updateTransaction->payment_status = 1;
+            }
             $updateTransaction->save();
 
             // remove all session data
@@ -537,7 +540,9 @@ class XenditController extends Controller
       $bookings = Booking::where('booking_id', $bookings_payment->booking_id)->first();
       $transaction = Transaction::where('booking_id', $bookings->id)->first();
       $transaction->payment_fee = $fee;
-      $transaction->after_balance = $transaction->after_balance - $fee;
+      $transaction->payment_status = 1; //PAID
+      $transaction->after_balance = $transaction->pre_balance + ($transaction->grand_total - $transaction->commission - $fee);
+      // $transaction->after_balance = $transaction->after_balance - $fee;
       $transaction->save();
 
       $bookings_payment->callback = json_encode($data);

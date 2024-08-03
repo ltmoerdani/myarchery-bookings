@@ -242,6 +242,10 @@ if (!function_exists('storeTranscation')) {
       $pre_balance = NULL;
       $after_balance = NULL;
     }
+
+    if($booking->paymentStatus != 1){
+      $after_balance = $pre_balance == null ? 0 : $pre_balance;
+    }
     
     //store data to transcation table
     $transcation = Transaction::create([

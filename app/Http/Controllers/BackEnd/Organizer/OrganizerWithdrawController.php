@@ -290,6 +290,10 @@ class OrganizerWithdrawController extends Controller{
     $receive_balance = $request->withdraw_amount - $total_charge;
     //calculation end
 
+    $get_ppn = Basic::select('percent_ppn')->first();
+    $ppn = $get_ppn->percent_ppn;
+    $ppn_fee = $total_charge + ($total_charge * ($ppn/100));
+
     $save = new Withdraw;
     $save->withdraw_id = uniqid();
     $save->organizer_id = Auth::guard('organizer')->user()->id;
@@ -302,15 +306,17 @@ class OrganizerWithdrawController extends Controller{
     $after_balance = $organizer->amount;
 
     $save->amount = $request->withdraw_amount;
-    $save->payable_amount = $receive_balance;
+    $save->payable_amount = $receive_balance - $ppn_fee;
     $save->total_charge = $total_charge;
     $save->additional_reference = $request->additional_reference;
-
+    
     if(strtolower($method->name) != 'xendit'){
       $save->feilds = json_encode($fields);
     }else{
       $bank_account['Account_Bank'] = $request->bank_account; 
       $save->feilds = json_encode($bank_account); 
+      $save->percent_ppn = $ppn;
+      $save->ppn_fee = $ppn_fee;
     }
     
     $save->save();
@@ -319,6 +325,12 @@ class OrganizerWithdrawController extends Controller{
     $data['bank_account'] = BankAccount::with('bank')->where('organizer_id', Auth::guard('organizer')->user()->id)->where('id', $request->bank_account)->first();    
     $header = $request->header();
     $this->send_disbursement($data, $header);
+
+    if(strtolower($method->name) != 'xendit'){
+      $grand_total = $save->amount;
+    }else{
+      $grand_total = $save->amount - $ppn_fee;
+    }
 
     //store data to transcation table 
     $currencyInfo = $this->getCurrencyInfo();
@@ -329,11 +341,12 @@ class OrganizerWithdrawController extends Controller{
       'user_id' => null,
       'organizer_id' => Auth::guard('organizer')->user()->id,
       'payment_status' => 0,
-      'payment_method' => $save->method_id,
-      'grand_total' => $save->amount,
+      'payment_method' => $method->name,
+      'grand_total' => $grand_total,
+      'payment_fee' => $ppn_fee,
       'pre_balance' => $pre_balance,
       'after_balance' => $after_balance,
-      'gateway_type' => null,
+      'gateway_type' => 'online',
       'currency_symbol' => $currencyInfo->base_currency_symbol,
       'currency_symbol_position' => $currencyInfo->base_currency_text_position,
     ]);
