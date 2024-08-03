@@ -66,6 +66,7 @@
                         <th scope="col">{{ __('Delegation') }}</th>
                         <th scope="col">{{ __('Delegation Name') }}</th>
                         <th scope="col">{{ __('Date Registered') }}</th>
+                        <th scope="col">{{ __('Status') }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -81,6 +82,15 @@
                           <td>{{ $p->category }}</td>
                           <td>{{ $p->delegation_name }}</td>
                           <td>{{ $p->created_at }}</td>
+                          <td>
+                            @if ($p->status == 3)
+                              Refund
+                            @elseif ($p->status == 2)
+                              Cancel
+                            @else
+                              Active
+                            @endif
+                          </td>
                         </tr>
                       @endforeach
                     </tbody>

@@ -63,6 +63,8 @@
                                                 <th scope="col">{{ __('Delegation') }}</th>
                                                 <th scope="col">{{ __('Delegation Name') }}</th>
                                                 <th scope="col">{{ __('Date Registered') }}</th>
+                                                <!-- <th scope="col">{{ __('Description Status') }}</th> -->
+                                                <th scope="col">{{ __('Status') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -92,6 +94,37 @@
                                                     </td>
                                                     <td>
                                                         {{ $p->created_at }} 
+                                                    </td>
+                                                    <!-- <td>
+                                                        <input type="text" name="description_status" id="description_status" value="{{ $p->description_status != '' ? $p->description_status : '' }}">
+                                                    </td> -->
+                                                    <td>
+                                                        <form id="statusForm-{{ $p->id }}" class="d-inline-block" action="{{ route('admin.update_participant', ['id' => $p->id, 'language' => request()->input('language')]) }}" method="post">
+                                                            @csrf
+                                                            <select
+                                                                @if ($p->status == 3)
+                                                                    class="form-control form-control-sm bg-danger text-dark"
+                                                                @elseif ($p->status == 2)
+                                                                    class="form-control form-control-sm bg-warning text-dark"
+                                                                @else
+                                                                    class="form-control form-control-sm bg-primary"
+                                                                @endif
+                                                                name="status"
+                                                                onchange="document.getElementById('statusForm-{{ $p->id }}').submit()">
+                                                                <option value="1"
+                                                                    {{ $p->status == 1 ? 'selected' : '' }}>
+                                                                    {{ __('Active') }}
+                                                                </option>
+                                                                <option value="2"
+                                                                    {{ $p->status == 2 ? 'selected' : '' }}>
+                                                                    {{ __('Cancel') }}
+                                                                </option>
+                                                                <option value="3"
+                                                                    {{ $p->status == 3 ? 'selected' : '' }}>
+                                                                    {{ __('Refund') }}
+                                                                </option>
+                                                            </select>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             @endforeach

@@ -1123,7 +1123,12 @@ public function detail_participant(Request $request, $id) {
             WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
             ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
-        END as delegation'))
+        END as delegation,
+        CASE
+            WHEN LOWER(participant_competitions.status) = 2 THEN "Cancel"
+            WHEN LOWER(participant_competitions.status) = 3 THEN "Refund"
+            ELSE "Active"
+        END as status'))
     ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
     ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
     ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')

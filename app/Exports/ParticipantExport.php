@@ -26,13 +26,14 @@ class ParticipantExport implements FromCollection, WithHeadings, WithMapping{
       $participant->competition_type,
       $participant->title,
       $participant->category,
-      $participant->delegation
+      $participant->delegation,
+      $participant->status
     ];
   }
 
   public function headings(): array{
     return [
-      'Event Title', 'Participant Name', 'Type', 'Category', 'Delegation', 'Delegation Name'
+      'Event Title', 'Participant Name', 'Type', 'Category', 'Delegation', 'Delegation Name', 'Status'
     ];
   }
 }
