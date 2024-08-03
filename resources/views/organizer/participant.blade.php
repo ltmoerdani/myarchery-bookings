@@ -79,7 +79,7 @@
                                                         {{ $p->fname }}
                                                     </td>
                                                     <td>
-                                                        {{ $p->competition_name }}
+                                                        {{ $p->competition_type }}
                                                     </td>
                                                     <td>
                                                         {{ $p->ticket_title }}
