@@ -45,7 +45,7 @@
             <div class="col-lg-4">
               <form action="" method="get">
                 <input type="text" value="{{ request()->input('event_name') }}" name="event_name"
-                  placeholder="Enter Event Name" class="form-control">
+                  placeholder="Search" class="form-control">
               </form>
             </div>
           </div>
@@ -62,10 +62,12 @@
                     <thead>
                       <tr>
                         <th scope="col">{{ __('No') }}</th>
-                        <!-- <th scope="col">{{ __('Event Name') }}</th> -->
                         <th scope="col">{{ __('Participant Name') }}</th>
-                        <th scope="col">{{ __('Competition') }}</th>
+                        <th scope="col">{{ __('Type') }}</th>
                         <th scope="col">{{ __('Category') }}</th>
+                        <th scope="col">{{ __('Delegation') }}</th>
+                        <th scope="col">{{ __('Delegation Name') }}</th>
+                        <th scope="col">{{ __('Date Registered') }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -75,10 +77,12 @@
                       @foreach ($participant as $p)
                         <tr>
                           <td>{{ $no++ }}</td>
-                          <!-- <td>{{ $p->event_name }}</td> -->
                           <td>{{ $p->fname }}</td>
                           <td>{{ $p->competition_name }}</td>
-                          <td>{{ $p->title }}</td>
+                          <td>{{ $p->ticket_title }}</td>
+                          <td>{{ $p->category }}</td>
+                          <td>{{ $p->delegation_name }}</td>
+                          <td>{{ $p->created_at }}</td>
                         </tr>
                       @endforeach
                     </tbody>

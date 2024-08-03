@@ -632,20 +632,14 @@ class AdminController extends Controller
 
 
   //participant 
-  public function participant(Request $request){
+  public function participant(Request $request) {
     $language = $this->getLanguage();
     $language_id = $language->id;
 
-    $title = null;
-    if (request()->filled('title')) {
-      $title = request()->input('title');
-    }
+    $title = $request->input('title');
 
-    $participant = ParticipantCompetitions::when($title, function ($query) use ($title) {
-      return $query->where('event_contents.title', 'like', '%' . $title . '%');
-    })
-
-    ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title, 
+    $participant = ParticipantCompetitions::query()
+        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title as ticket_title, participant_competitions.category, 
         CASE
             WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
@@ -653,43 +647,103 @@ class AdminController extends Controller
             WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
             ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
-        END as delegation'))
-    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
-    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
-    ->leftjoin('tickets', 'tickets.id', 'ticket_contents.ticket_id')
-    ->leftjoin('event_contents', 'event_contents.event_id', 'tickets.event_id')
-    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
-    ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)
-    ->orderBy('participant.fname', 'asc')->paginate(10);
-    
+        END as delegation_name'))
+        ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
+        ->leftJoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
+        ->leftJoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
+        ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
+        ->leftJoin('events', 'events.id', '=', 'participant_competitions.event_id')
+        ->leftJoin('clubs', 'clubs.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('school', 'school.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('organization', 'organization.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('international_countries', 'international_countries.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_province', 'indonesian_province.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_cities', 'indonesian_cities.id', '=', 'participant_competitions.delegation_id')
+        ->where('ticket_contents.language_id', $language_id)
+        ->where('event_contents.language_id', $language_id)
+        ->when($title, function ($query) use ($title) {
+            return $query->where(function ($q) use ($title) {
+                $q->where('event_contents.title', 'like', '%' . $title . '%')
+                  ->orWhere('participant.fname', 'like', '%' . $title . '%')
+                  ->orWhere('participant.lname', 'like', '%' . $title . '%')
+                  ->orWhere('ticket_contents.title', 'like', '%' . $title . '%')
+                  ->orWhere('participant_competitions.category', 'like', '%' . $title . '%')
+                  ->orWhere(DB::raw('
+                      CASE
+                          WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
+                          ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
+                      END
+                  '), 'like', '%' . $title . '%');
+            });
+        })
+        ->orderBy('participant_competitions.created_at', 'desc')
+        ->paginate(25);
+
     $information['participant'] = $participant;
     $information['event_name'] = $title;
     return view('backend.admin.participant', $information);
   }
 
-  public function detail_participant(Request $request, $id){
+  public function detail_participant(Request $request, $id) {
     $language = $this->getLanguage();
     $language_id = $language->id;
-    
-    $event_name = null;
-    if ($request->filled('event_name')) {
-      $event_name = $request->event_name;
-    }
 
+    $event_name = $request->input('event_name');
+
+    // Mendapatkan judul acara
     $event = EventContent::where('event_id', $id)->where('language_id', $language_id)->first();
-    $event_title = $event->title;
+    $event_title = $event ? $event->title : 'Event Title Not Found';
 
-    $participant = ParticipantCompetitions::when($event_name, function ($query) use ($event_name) {
-      return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
-    })
+    $participant = ParticipantCompetitions::query()
+        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title as ticket_title, participant_competitions.category, 
+        CASE
+            WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
+            WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
+            WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
+            WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
+            WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
+            ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
+        END as delegation_name'))
+        ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
+        ->leftJoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
+        ->leftJoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
+        ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
+        ->leftJoin('events', 'events.id', '=', 'participant_competitions.event_id')
+        ->leftJoin('clubs', 'clubs.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('school', 'school.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('organization', 'organization.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('international_countries', 'international_countries.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_province', 'indonesian_province.id', '=', 'participant_competitions.delegation_id')
+        ->leftJoin('indonesian_cities', 'indonesian_cities.id', '=', 'participant_competitions.delegation_id')
+        ->where('ticket_contents.language_id', $language_id)
+        ->where('event_contents.language_id', $language_id)
+        ->where('participant_competitions.event_id', $id)
+        ->when($event_name, function ($query) use ($event_name) {
+            return $query->where(function ($q) use ($event_name) {
+                $q->where('event_contents.title', 'like', '%' . $event_name . '%')
+                  ->orWhere('participant.fname', 'like', '%' . $event_name . '%')
+                  ->orWhere('participant.lname', 'like', '%' . $event_name . '%')
+                  ->orWhere('ticket_contents.title', 'like', '%' . $event_name . '%')
+                  ->orWhere('participant_competitions.category', 'like', '%' . $event_name . '%')
+                  ->orWhere(DB::raw('
+                      CASE
+                          WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
+                          WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
+                          ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
+                      END
+                  '), 'like', '%' . $event_name . '%');
+            });
+        })
+        ->orderBy('participant_competitions.created_at', 'desc')
+        ->paginate(25);
 
-    ->select('event_contents.title as event_name', 'participant_competitions.competition_name', 'participant.fname', 'participant.lname', 'ticket_contents.title')
-    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
-    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
-    ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
-    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
-    ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)->where('participant_competitions.event_id', $id)
-    ->orderBy('participant_competitions.id', 'asc')->paginate(10);
     return view('backend.admin.detail-participant', compact('participant', 'event_title'));
   }
 
