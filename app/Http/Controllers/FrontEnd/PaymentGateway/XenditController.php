@@ -621,21 +621,24 @@ class XenditController extends Controller
     $callback['payment_type'] = 'Xendit';
     $callback['callback'] = json_encode($data);
     $callback['req_header'] = json_encode($header);
-    $callback['callback_id'] = $data['id'];
-    $callback['external_id'] = $data['external_id'];
-    $callback['amount'] = $data['amount'];
-    $callback['bank_code'] = $data['bank_code'];
-    $callback['account_holder_name'] = $data['account_holder_name'];
-    $callback['disbursement_description'] = $data['disbursement_description'];
-    $callback['status'] = $data['status'];
+    $callback['callback_id'] = empty($data['id']) ? null : $data['id'];
+    $callback['external_id'] = empty($data['external_id']) ? null : $data['external_id'];
+    $callback['user_id'] = empty($data['user_id']) ? null : $data['user_id'];
+    $callback['amount'] = empty($data['amount']) ? null : $data['amount'];
+    $callback['bank_code'] = empty($data['bank_code']) ? null : $data['bank_code'];
+    $callback['account_number'] = empty($data['account_number']) ? null : $data['account_number'];
+    $callback['account_holder_name'] = empty($data['account_holder_name']) ? null : $data['account_holder_name'];
+    $callback['disbursement_description'] = empty($data['disbursement_description']) ? null : $data['disbursement_description'];
+    $callback['status'] = empty($data['status']) ? null : $data['status'];
     $callback['currency'] = 'IDR';
-    $callback['description'] = null;
-    $callback['updated_callback'] = $data['updated'];
-    $callback['created_callback'] = $data['created'];
+    $callback['description'] = empty($data['failure_code']) ? null : $data['failure_code'];
+    $callback['updated_callback'] = empty($data['updated']) ? null : $data['updated'];
+    $callback['created_callback'] = empty($data['created']) ? null : $data['created'];
+    $callback['is_instant'] = empty($data['is_instant']) ? null : $data['is_instant'];
     $callback = DisbursementCallback::create($callback);
 
     $disb = Disbursement::where('external_id', $data['external_id'])->first();
-    $disb->status = $data['status'];
+    $disb->status = empty($data['status']) ? null : $data['status'];
     $disb->save();
 
     // send a mail to the customer with the invoice
