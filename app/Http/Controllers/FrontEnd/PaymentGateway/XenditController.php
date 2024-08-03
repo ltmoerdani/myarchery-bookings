@@ -39,7 +39,7 @@ class XenditController extends Controller
         return back()->with(['alert-type' => 'error', 'message' => 'Invalid Currency.']);
       }
 
-      if ($request->form_type == "tournament") {
+      if ($request->form_type == "tournament" || $request->form_type == "turnamen") {
         $cust = Auth::guard('customer')->user();
         $event_content = EventContent::where('event_id', $event_id)->where('language_id', $request->language_id)->first();
 
@@ -154,7 +154,7 @@ class XenditController extends Controller
         $bookingInfo['invoice_url_booking'] = $response['invoice_url'];
 
         $bookingInfo['payment_url'] = $response['invoice_url'];
-        storeTranscation($bookingInfo); 
+        storeTranscation($bookingInfo);
 
         // Update invoice_url_booking in table bookings
         $updateBooking = Booking::where('booking_id', $bookingInfo->booking_id)->first();
@@ -350,9 +350,9 @@ class XenditController extends Controller
         // get the information from session
         $event_id = Session::get('event_id');
         $arrData = Session::get('arrData');
-        
+
         // if type tournament
-        if ($arrData['form_type'] == "tournament") {
+        if ($arrData['form_type'] == "tournament" || $arrData['form_type'] == "turnamen") {
           if (!empty($arrData['booking_id'])) {
             // status update completed
             $booking = Booking::where('booking_id', $arrData['booking_id'])->first();
@@ -361,7 +361,7 @@ class XenditController extends Controller
 
             // status update paid
             $updateTransaction = Transaction::where('booking_id', $booking->id)->first();
-            if($updateTransaction->payment_status != 1){
+            if ($updateTransaction->payment_status != 1) {
               $updateTransaction->after_balance = $updateTransaction->pre_balance + ($updateTransaction->grand_total - $updateTransaction->commission - $updateTransaction->payment_fee);
               $updateTransaction->payment_status = 1;
             }
@@ -531,7 +531,7 @@ class XenditController extends Controller
       } else {
         $payment_channel = $data['payment_channel'];
       }
-  
+
       $getPaymentFee['amount'] = $data['amount'];
       $getPaymentFee['payment_method'] = $data['payment_method'];
       $getPaymentFee['payment_channel'] = $payment_channel;
@@ -578,8 +578,8 @@ class XenditController extends Controller
       $bookings_payment->callback = json_encode($data);
       $bookings_payment->req_header = json_encode($req_header);
       $bookings_payment->payment_method = empty($data['payment_method']) ? null : $data['payment_method'];
-      $bookings_payment->status = empty($data['status']) ? null : $data['status']; 
-      $bookings_payment->amount = empty($data['amount']) ? null : $data['amount']; 
+      $bookings_payment->status = empty($data['status']) ? null : $data['status'];
+      $bookings_payment->amount = empty($data['amount']) ? null : $data['amount'];
       $bookings_payment->paid_amount = empty($data['paid_amount']) ? null : $data['paid_amount'];
       $bookings_payment->bank_code = empty($data['bank_code']) ? null : $data['bank_code'];
       $bookings_payment->paid_at = empty($data['paid_at']) ? null : $data['paid_at'];
@@ -600,7 +600,7 @@ class XenditController extends Controller
         $ticket->save();
       }
 
-      echo "Booking ID ".$bookings_payment->booking_id." status Expired";
+      echo "Booking ID " . $bookings_payment->booking_id . " status Expired";
 
       // send a mail to the customer with the invoice
       // $booking->sendMail($bookingInfo);

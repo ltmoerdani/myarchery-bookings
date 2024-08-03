@@ -720,7 +720,7 @@ class CheckOutController extends Controller
       return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
     }
 
-    if ($request->event_type == 'tournament') {
+    if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
       $information['customer'] = Auth::guard('customer')->user();
       $information['event'] = $event;
       $information['organizer'] = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
