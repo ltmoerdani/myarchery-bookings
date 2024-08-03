@@ -16,7 +16,7 @@
   @endif
 
   <div class="row dashboard-items">
-    <div class="col-xl-3 col-lg-6">
+    <!-- Sementara <div class="col-xl-3 col-lg-6">
       <a href="{{ route('organizer.monthly_income') }}">
         <div class="card card-stats card-info card-round">
           <div class="card-body">
@@ -41,7 +41,7 @@
           </div>
         </div>
       </a>
-    </div>
+    </div> -->
     <div class="col-xl-3 col-lg-6">
       <a href="{{ route('organizer.event_management.event', ['language' => $defaultLang->code]) }}">
         <div class="card card-stats card-success card-round">

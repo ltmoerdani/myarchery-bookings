@@ -56,11 +56,11 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">{{ __('No') }}</th>
-                                                <th scope="col">{{ __('Event Title') }}</th>
+                                                <!-- <th scope="col">{{ __('Event Title') }}</th> -->
                                                 <th scope="col">{{ __('Participant Name') }}</th>
                                                 <th scope="col">{{ __('Type') }}</th>
                                                 <th scope="col">{{ __('Category') }}</th>
-                                                <th scope="col">{{ __('Delegation') }}</th>
+                                                <!-- <th scope="col">{{ __('Delegation') }}</th> -->
                                                 <th scope="col">{{ __('Delegation Name') }}</th>
                                                 <th scope="col">{{ __('Date Registered') }}</th>
                                                 <th scope="col">{{ __('Status') }}</th>
@@ -73,9 +73,9 @@
                                             @foreach ($participant as $p)
                                                 <tr>
                                                     <td>{{ $no++ }}</td>
-                                                    <td>
+                                                    <!-- <td>
                                                         {{ $p->event_name }}
-                                                    </td>
+                                                    </td> -->
                                                     <td>
                                                         {{ $p->fname }}
                                                     </td>
@@ -85,9 +85,9 @@
                                                     <td>
                                                         {{ $p->ticket_title }}
                                                     </td>
-                                                    <td>
+                                                    <!-- <td>
                                                         {{ $p->category }} 
-                                                    </td>
+                                                    </td> -->
                                                     <td>
                                                         {{ $p->delegation_name }} 
                                                     </td>
