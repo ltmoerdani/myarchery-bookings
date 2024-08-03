@@ -639,7 +639,7 @@ class AdminController extends Controller
     $title = $request->input('title');
 
     $participant = ParticipantCompetitions::query()
-        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title as ticket_title, participant_competitions.category, 
+        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title as ticket_title, participant_competitions.category, 
         CASE
             WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
@@ -650,6 +650,7 @@ class AdminController extends Controller
         END as delegation_name'))
         ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
         ->leftJoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
+        ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
         ->leftJoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
         ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
         ->leftJoin('events', 'events.id', '=', 'participant_competitions.event_id')
@@ -699,7 +700,7 @@ class AdminController extends Controller
     $event_title = $event ? $event->title : 'Event Title Not Found';
 
     $participant = ParticipantCompetitions::query()
-        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title as ticket_title, participant_competitions.category, 
+        ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title as ticket_title, participant_competitions.category, 
         CASE
             WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
@@ -710,6 +711,7 @@ class AdminController extends Controller
         END as delegation_name'))
         ->leftJoin('participant', 'participant.id', '=', 'participant_competitions.participant_id')
         ->leftJoin('ticket_contents', 'ticket_contents.ticket_id', '=', 'participant_competitions.ticket_id')
+        ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
         ->leftJoin('event_contents', 'event_contents.event_id', '=', 'participant_competitions.event_id')
         ->leftJoin('bookings', 'bookings.id', '=', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
         ->leftJoin('events', 'events.id', '=', 'participant_competitions.event_id')
@@ -760,7 +762,7 @@ class AdminController extends Controller
       return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
     })
 
-    ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, ticket_contents.title, 
+    ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title, 
         CASE
             WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
             WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
@@ -771,6 +773,7 @@ class AdminController extends Controller
         END as delegation'))
     ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
     ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
+    ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
     ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
     ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
     ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)

@@ -76,7 +76,7 @@
                         <tr>
                           <td>{{ $no++ }}</td>
                           <td>{{ $p->fname }}</td>
-                          <td>{{ $p->competition_name }}</td>
+                          <td>{{ $p->competition_type }}</td>
                           <td>{{ $p->ticket_title }}</td>
                           <td>{{ $p->category }}</td>
                           <td>{{ $p->delegation_name }}</td>

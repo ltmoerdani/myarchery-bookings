@@ -23,7 +23,7 @@ class ParticipantExport implements FromCollection, WithHeadings, WithMapping{
     return [
       $participant->event_name,
       $participant->fname,
-      $participant->competition_name,
+      $participant->competition_type,
       $participant->title,
       $participant->category,
       $participant->delegation
