@@ -234,16 +234,16 @@
                                     @endforeach
                                 </div>
                             </div>
-                            <div class="col-12 my-2">
+                            {{-- <div class="col-12 my-2">
                                 <div class="card bg-light text-primary" style="font-weight: bold">
                                     <div class="card-body py-1 px-0 d-flex justify-content-center">
                                         {{ __('Quota Match') }}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-12 mb-2 d-flex justify-content-center justify-content-md-start flex-row flex-wrap"
+                            </div> --}}
+                            {{-- <div class="col-12 mb-2 d-flex justify-content-center justify-content-md-start flex-row flex-wrap"
                                 style="gap:10px;" id="content-qouta-ticket">
-                            </div>
+                            </div> --}}
                             {{-- end qouta --}}
                             <div class="col-12">
                                 <div class="event-details-content-inner">
@@ -270,8 +270,7 @@
                                         <div class="our-location mb-50">
                                             <iframe
                                                 src="//maps.google.com/maps?width=100%25&amp;height=385&amp;hl=en&amp;q={{ $map_address }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-                                                height="385" class="map-h" allowfullscreen=""
-                                                loading="lazy"></iframe>
+                                                height="385" class="map-h" allowfullscreen="" loading="lazy"></iframe>
                                         </div>
                                     @endif
 
@@ -437,8 +436,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            <hr> -->
                                     @endif
                                     {{-- end location --}}
 
