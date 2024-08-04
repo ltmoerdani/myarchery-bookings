@@ -111,6 +111,9 @@ Route::middleware('change.lang')->group(function () {
   // tournament
   Route::post('/ticket-booking-tournament/{id}', 'FrontEnd\Event\BookingController@booking_tournament')->name('ticket.booking.tournament');
   Route::post('/booking-tournament-pending/{id}', 'FrontEnd\Event\BookingController@booking_tournament_pending')->name('ticket.booking.tournament.pending');
+  
+  // Validasi kode akses
+  Route::post('/validate-code-access', 'FrontEnd\CheckOutController@validateCodeAccess')->name('validate.code.access');
 });
 
 
@@ -158,7 +161,7 @@ Route::prefix('event-booking')->group(function () {
   Route::get('/yoco/notify', 'FrontEnd\PaymentGateway\YocoController@notify')->name('event_booking.yoco.notify');
   //xindit
   Route::get('/xendit/pay/{id}', 'FrontEnd\PaymentGateway\XenditController@pay_booking')->name('event_booking.xindit.pay_booking');
-  Route::get('/xendit/notify', 'FrontEnd\PaymentGateway\XenditController@notify')->name('event_booking.xindit.notify');
+  Route::get('/xendit/notify', 'FrontEnd\PaymentGateway\XenditController@notify')->name('event_booking.xendit.notify');
 
   //perfect money
   Route::get('/perfect-money/notify', 'FrontEnd\PaymentGateway\PerfectMoneyController@notify')->name('event_booking.perfect-money.notify');
