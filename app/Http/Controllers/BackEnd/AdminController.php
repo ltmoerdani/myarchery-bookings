@@ -750,18 +750,21 @@ class AdminController extends Controller
   }
 
   public function participant_export(Request $request){
+    // Mengambil bahasa yang digunakan
     $language = $this->getLanguage();
     $language_id = $language->id;
 
     $event_name = null;
+    // Mengecek apakah ada input event pada request
     if ($request->filled('event')) {
-      $event_name = $request->event;
+        $event_name = $request->event;
     }
     
+    // Query untuk mengambil data participant competitions
     $participant = ParticipantCompetitions::when($event_name, function ($query) use ($event_name) {
-      return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
+        // Menambahkan kondisi where jika event_name diisi
+        return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
     })
-
     ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title, 
         CASE
             WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
@@ -776,21 +779,29 @@ class AdminController extends Controller
             WHEN LOWER(participant_competitions.status) = 3 THEN "Refund"
             ELSE "Active"
         END as status'))
-    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
-    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
-    ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
-    ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
-    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
-    ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)
-    ->orderBy('participant.fname', 'asc')->get();
+    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id') // Join dengan tabel participant
+    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id') // Join dengan tabel ticket_contents
+    ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id') // Join dengan tabel tickets
+    ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id') // Join dengan tabel event_contents
+    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id') // Join dengan tabel bookings
+    ->where('bookings.paymentStatus', 'completed') // Kondisi untuk paymentStatus harus 'completed'
+    ->where('participant_competitions.status', 1) // Kondisi untuk status harus 1 Untuk menampilkan yg terdaftar saja
+    ->where('ticket_contents.language_id', $language_id) // Kondisi untuk language_id pada ticket_contents
+    ->where('event_contents.language_id', $language_id) // Kondisi untuk language_id pada event_contents
+    ->orderBy('ticket_contents.title', 'asc') // Mengurutkan berdasarkan ticket_contents.title (Kategori Perlombaan)
+    // Mengambil data
+    ->get();
 
+    // Mengecek apakah ada data participant yang diambil
     if (empty($participant) || count($participant) == 0) {
-      Session::flash('warning', 'There is no participant to export');
-      return back();
+        // Menampilkan pesan peringatan jika tidak ada data
+        Session::flash('warning', 'There is no participant to export');
+        return back();
     }
 
+    // Mengunduh data dalam format Excel
     return Excel::download(new ParticipantExport($participant), 'participant.xlsx');
-  }
+}
 
   public function update_participant(Request $request, $id){
     $data = ParticipantCompetitions::where('id', $id)->first();

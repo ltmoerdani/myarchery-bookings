@@ -1102,47 +1102,53 @@ public function detail_participant(Request $request, $id) {
   return view('organizer.detail-participant', compact('participant', 'event_title'));
 }
 
-  public function participant_export(Request $request){
-    $language = $this->getLanguage();
-    $language_id = $language->id;
+public function participant_export(Request $request){
+  $language = $this->getLanguage();  // Mengambil bahasa yang digunakan
+  $language_id = $language->id;
 
-    $event_name = null;
-    if ($request->filled('event')) {
+  $event_name = null;
+  if ($request->filled('event')) {  // Mengecek apakah ada input event pada request
       $event_name = $request->event;
-    }
-    
-    $participant = ParticipantCompetitions::when($event_name, function ($query) use ($event_name) {
-      return $query->where('event_contents.title', 'like', '%' . $event_name . '%');
-    })
-
-    ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title, 
-        CASE
-            WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
-            WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
-            ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
-        END as delegation,
-        CASE
-            WHEN LOWER(participant_competitions.status) = 2 THEN "Cancel"
-            WHEN LOWER(participant_competitions.status) = 3 THEN "Refund"
-            ELSE "Active"
-        END as status'))
-    ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')
-    ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')
-    ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')
-    ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')
-    ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')->where('bookings.paymentStatus', 'completed')
-    ->leftjoin('events', 'events.id', 'participant_competitions.event_id')->where('events.organizer_id', Auth::guard('organizer')->user()->id)
-    ->where('ticket_contents.language_id', $language_id)->where('event_contents.language_id', $language_id)
-    ->orderBy('participant.fname', 'asc')->get();
-
-    if (empty($participant) || count($participant) == 0) {
-      Session::flash('warning', 'There is no participant to export');
-      return back();
-    }
-
-    return Excel::download(new ParticipantExport($participant), 'participant.xlsx');
   }
+  
+  // Query untuk mengambil data participant competitions
+  $participant = ParticipantCompetitions::when($event_name, function ($query) use ($event_name) {
+      return $query->where('event_contents.title', 'like', '%' . $event_name . '%');  // Menambahkan kondisi where jika event_name diisi
+  })
+  ->select(DB::raw('event_contents.title as event_name, participant_competitions.*, participant.fname, participant.lname, tickets.title as competition_type, ticket_contents.title, 
+      CASE
+          WHEN LOWER(participant_competitions.category) = "club" THEN (SELECT clubs.name FROM clubs WHERE clubs.id=participant_competitions.delegation_id)
+          WHEN LOWER(participant_competitions.category) = "school/universities" THEN (SELECT school.name FROM school WHERE school.id=participant_competitions.delegation_id)
+          WHEN LOWER(participant_competitions.category) = "organization" THEN (SELECT organization.name FROM organization WHERE organization.id=participant_competitions.delegation_id)
+          WHEN LOWER(participant_competitions.category) = "country" THEN (SELECT international_countries.name FROM international_countries WHERE international_countries.id=participant_competitions.delegation_id)
+          WHEN LOWER(participant_competitions.category) = "province" THEN (SELECT indonesian_province.name FROM indonesian_province WHERE indonesian_province.id=participant_competitions.delegation_id)
+          ELSE (SELECT indonesian_cities.name FROM indonesian_cities WHERE indonesian_cities.id=delegation_id)
+      END as delegation,
+      CASE
+          WHEN LOWER(participant_competitions.status) = 2 THEN "Cancel"
+          WHEN LOWER(participant_competitions.status) = 3 THEN "Refund"
+          ELSE "Active"
+      END as status'))
+  ->leftjoin('participant', 'participant.id', 'participant_competitions.participant_id')  // Join dengan tabel participant
+  ->leftjoin('ticket_contents', 'ticket_contents.ticket_id', 'participant_competitions.ticket_id')  // Join dengan tabel ticket_contents
+  ->leftJoin('tickets', 'tickets.id', '=', 'participant_competitions.ticket_id')  // Join dengan tabel tickets
+  ->leftjoin('event_contents', 'event_contents.event_id', 'participant_competitions.event_id')  // Join dengan tabel event_contents
+  ->leftjoin('bookings', 'bookings.id', 'participant_competitions.booking_id')  // Join dengan tabel bookings
+  ->where('bookings.paymentStatus', 'completed')  // Kondisi untuk paymentStatus harus 'completed'
+  ->leftjoin('events', 'events.id', 'participant_competitions.event_id')  // Join dengan tabel events
+  ->where('events.organizer_id', Auth::guard('organizer')->user()->id)  // Kondisi untuk organizer_id sesuai dengan ID organizer yang sedang login
+  ->where('participant_competitions.status', 1)  // Kondisi untuk status harus 1
+  ->where('ticket_contents.language_id', $language_id)  // Kondisi untuk language_id pada ticket_contents
+  ->where('event_contents.language_id', $language_id)  // Kondisi untuk language_id pada event_contents
+  ->orderBy('ticket_contents.title', 'asc')  // Mengurutkan berdasarkan ticket_contents.title
+  ->get();
+
+  if (empty($participant) || count($participant) == 0) {  // Mengecek apakah ada data participant yang diambil
+      Session::flash('warning', 'There is no participant to export');  // Menampilkan pesan peringatan jika tidak ada data
+      return back();
+  }
+
+  return Excel::download(new ParticipantExport($participant), 'participant.xlsx');  // Mengunduh data dalam format Excel
+}
+
 }

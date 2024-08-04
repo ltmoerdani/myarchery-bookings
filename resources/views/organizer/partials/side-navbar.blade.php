@@ -203,17 +203,17 @@
           class="nav-item 
         @if (request()->routeIs('organizer.withdraw')) active 
         @elseif (request()->routeIs('organizer.withdraw.create')) active @endif">
-          <a href="{{ route('organizer.withdraw', ['language' => $defaultLang->code]) }}">
+          <!-- Sementara <a href="{{ route('organizer.withdraw', ['language' => $defaultLang->code]) }}">
             <i class="fal fa-donate"></i>
             <p>{{ __('Withdraw') }}</p>
-          </a>
+          </a> -->
         </li>
-        <li class="nav-item @if (request()->routeIs('organizer.transcation')) active @endif">
+       <!-- Sementara <li class="nav-item @if (request()->routeIs('organizer.transcation')) active @endif">
           <a href="{{ route('organizer.transcation') }}">
             <i class="fal fa-exchange-alt"></i>
             <p>{{ __('Transactions') }}</p>
           </a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a href="{{ route('organizer.pwa') }}" target="_blank">
             <i class="fas fa-scanner"></i>

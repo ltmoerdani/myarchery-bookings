@@ -1,4 +1,5 @@
 @extends('frontend.layout')
+
 @php
     $og_title = $from_step_one['event_title'];
     if ($event->date_type == 'multiple') {
@@ -55,12 +56,11 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
+    <form id="bookingForm" action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
         <input type="hidden" id="base_url" value="{{ url('/') }}">
-        <input type="hidden" class="contingent_type" value="{{ $delegation_event['contingent_type'] }}"
-            id="contingent_type">
+        <input type="hidden" class="contingent_type" value="{{ $delegation_event['contingent_type'] }}" id="contingent_type">
 
         <section class="event-details-section pt-110 rpt-90 pb-90 rpb-70">
             <div class="container">
@@ -89,8 +89,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">
-                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
+                                                    <td rows="2">{{ __('Info Phone Number Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
                                                     <td rows="1">
                                                         {{ empty($customer->phone) ? '' : $customer->phone }}
@@ -148,8 +147,7 @@
                                                                                 required>
                                                                         </div>
                                                                         <div class="col-12 col-lg-6 form-group">
-                                                                            <label
-                                                                                for="gender_individu{{ $i }}">
+                                                                            <label for="gender_individu{{ $i }}">
                                                                                 {{ __('Gender') }}*
                                                                             </label>
                                                                             <select class="form-select"
@@ -162,8 +160,7 @@
                                                                             </select>
                                                                         </div>
                                                                         <div class="col-12 col-lg-6 form-group">
-                                                                            <label
-                                                                                for="birth_date_individu{{ $i }}">
+                                                                            <label for="birth_date_individu{{ $i }}">
                                                                                 {{ __('Birth Date') }}*
                                                                             </label>
                                                                             <input type="date" class="form-control"
@@ -172,14 +169,11 @@
                                                                                 placeholder="{{ __('Select Date') }}"
                                                                                 max="{{ date('Y-m-d') }}" required>
                                                                         </div>
-                                                                        <div
-                                                                            class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
-                                                                            <label
-                                                                                for="profile_country_individu{{ $i }}">
+                                                                        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
+                                                                            <label for="profile_country_individu{{ $i }}">
                                                                                 {{ __('Country') }}*
                                                                             </label>
-                                                                            <select
-                                                                                class="custom-select js-example-basic-single"
+                                                                            <select class="custom-select js-example-basic-single"
                                                                                 id="profile_country_individu{{ $i }}"
                                                                                 name="profile_country_individu[]"
                                                                                 onchange="handlerProfileCountry({{ $i }})"
@@ -188,21 +182,17 @@
                                                                                     {{ __('Select Country') }}
                                                                                 </option>
                                                                                 @foreach ($countries as $val_countries)
-                                                                                    <option
-                                                                                        value="{{ $val_countries['id'] }}">
+                                                                                    <option value="{{ $val_countries['id'] }}">
                                                                                         {{ $val_countries['name'] }}
                                                                                     </option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
-                                                                        <div
-                                                                            class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
-                                                                            <label
-                                                                                for="profile_city_individu{{ $i }}">
+                                                                        <div class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
+                                                                            <label for="profile_city_individu{{ $i }}">
                                                                                 {{ __('City/District') }}*
                                                                             </label>
-                                                                            <select
-                                                                                class="form-select js-example-basic-single"
+                                                                            <select class="form-select js-example-basic-single"
                                                                                 id="profile_city_individu{{ $i }}"
                                                                                 name="profile_city_individu[]" required>
                                                                                 <option value="" selected disabled>
@@ -211,25 +201,20 @@
                                                                             </select>
                                                                         </div>
                                                                         @if (strtolower($delegation_event['contingent_type']) == 'open')
-                                                                            <div
-                                                                                class="col-12 form-group d-flex flex-column gap-2 content-delegation-individu-{{ $i }}">
-                                                                                <label
-                                                                                    for="delegation_individu{{ $i }}">
+                                                                            <div class="col-12 form-group d-flex flex-column gap-2 content-delegation-individu-{{ $i }}">
+                                                                                <label for="delegation_individu{{ $i }}">
                                                                                     {{ __('Delegation Type') }}*
                                                                                 </label>
-                                                                                <select
-                                                                                    class="form-select js-example-basic-single"
+                                                                                <select class="form-select js-example-basic-single"
                                                                                     id="delegation_individu{{ $i }}"
                                                                                     name="delegation_individu[]"
                                                                                     onchange="handlerDelegationIndividu({{ $i }})"
                                                                                     required>
-                                                                                    <option value="" selected
-                                                                                        disabled>
+                                                                                    <option value="" selected disabled>
                                                                                         {{ __('Select Delegation Type') }}
                                                                                     </option>
                                                                                     @foreach ($delegation_type as $val_delegation_type)
-                                                                                        <option
-                                                                                            value="{{ $val_delegation_type['name'] }}">
+                                                                                        <option value="{{ $val_delegation_type['name'] }}">
                                                                                             {{ $val_delegation_type['name'] }}
                                                                                         </option>
                                                                                     @endforeach
@@ -261,27 +246,14 @@
                                                                                 value="{{ $delegation_event['select_type'] }}"
                                                                                 id="delegation_individu{{ $i }}">
                                                                         @endif
-                                                                        <div
-                                                                            class="col-12 content-delegation-country-individu-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-province-individu-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-city-individu-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-school-individu-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-club-individu-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-organization-individu-{{ $i }} d-none">
-                                                                        </div>
+                                                                        <div class="col-12 content-delegation-country-individu-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-province-individu-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-city-individu-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-school-individu-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-club-individu-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-organization-individu-{{ $i }} d-none"></div>
                                                                         <div class="col-12">
-                                                                            <label
-                                                                                for="category_individu{{ $i }}">
+                                                                            <label for="category_individu{{ $i }}">
                                                                                 {{ __('Category') }}*
                                                                             </label>
                                                                             <select class="form-select"
@@ -291,8 +263,7 @@
                                                                                     {{ __('Select Category') }}</option>
                                                                                 @foreach ($sub_category_tickets as $val_sub_cat_ticket)
                                                                                     @if (strtolower($val_sub_cat_ticket['category_name']) == 'individu')
-                                                                                        <option
-                                                                                            value="{{ $val_sub_cat_ticket['id'] }}">
+                                                                                        <option value="{{ $val_sub_cat_ticket['id'] }}">
                                                                                             {{ $val_sub_cat_ticket['title'] }}
                                                                                         </option>
                                                                                     @endif
@@ -418,8 +389,7 @@
                                                                 <div class="card-body">
                                                                     <div class="row">
                                                                         <div class="col-12 form-group">
-                                                                            <label
-                                                                                for="name_official{{ $i }}">
+                                                                            <label for="name_official{{ $i }}">
                                                                                 {{ __('Full Name') }}*
                                                                             </label>
                                                                             <input type="text" class="form-control"
@@ -429,8 +399,7 @@
                                                                                 required>
                                                                         </div>
                                                                         <div class="col-12 col-lg-6 form-group">
-                                                                            <label
-                                                                                for="gender_official{{ $i }}">
+                                                                            <label for="gender_official{{ $i }}">
                                                                                 {{ __('Gender') }}*
                                                                             </label>
                                                                             <select class="form-select"
@@ -438,14 +407,12 @@
                                                                                 name="gender_official[]">
                                                                                 <option value="male" selected>
                                                                                     {{ __('Male') }}</option>
-                                                                                <option value="female">
-                                                                                    {{ __('Female') }}
+                                                                                <option value="female">{{ __('Female') }}
                                                                                 </option>
                                                                             </select>
                                                                         </div>
                                                                         <div class="col-12 col-lg-6 form-group">
-                                                                            <label
-                                                                                for="birth_date_official{{ $i }}">
+                                                                            <label for="birth_date_official{{ $i }}">
                                                                                 {{ __('Birth Date') }}*
                                                                             </label>
                                                                             <input type="date" class="form-control"
@@ -454,14 +421,11 @@
                                                                                 placeholder="{{ __('Select Date') }}"
                                                                                 max="{{ date('Y-m-d') }}" required>
                                                                         </div>
-                                                                        <div
-                                                                            class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
-                                                                            <label
-                                                                                for="profile_country_official{{ $i }}">
+                                                                        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
+                                                                            <label for="profile_country_official{{ $i }}">
                                                                                 {{ __('Country') }}*
                                                                             </label>
-                                                                            <select
-                                                                                class="custom-select js-example-basic-single"
+                                                                            <select class="custom-select js-example-basic-single"
                                                                                 id="profile_country_official{{ $i }}"
                                                                                 name="profile_country_official[]"
                                                                                 onchange="handlerOfficialCountry({{ $i }})"
@@ -470,21 +434,17 @@
                                                                                     {{ __('Select Country') }}
                                                                                 </option>
                                                                                 @foreach ($countries as $val_countries)
-                                                                                    <option
-                                                                                        value="{{ $val_countries['id'] }}">
+                                                                                    <option value="{{ $val_countries['id'] }}">
                                                                                         {{ $val_countries['name'] }}
                                                                                     </option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
-                                                                        <div
-                                                                            class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
-                                                                            <label
-                                                                                for="profile_city_official{{ $i }}">
+                                                                        <div class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
+                                                                            <label for="profile_city_official{{ $i }}">
                                                                                 {{ __('City/District') }}*
                                                                             </label>
-                                                                            <select
-                                                                                class="form-select js-example-basic-single"
+                                                                            <select class="form-select js-example-basic-single"
                                                                                 id="profile_city_official{{ $i }}"
                                                                                 name="profile_city_official[]" required>
                                                                                 <option value="" selected disabled>
@@ -493,25 +453,20 @@
                                                                             </select>
                                                                         </div>
                                                                         @if (strtolower($delegation_event['contingent_type']) == 'open')
-                                                                            <div
-                                                                                class="col-12 form-group d-flex flex-column gap-2 content-delegation-official-{{ $i }}">
-                                                                                <label
-                                                                                    for="delegation_official{{ $i }}">
+                                                                            <div class="col-12 form-group d-flex flex-column gap-2 content-delegation-official-{{ $i }}">
+                                                                                <label for="delegation_official{{ $i }}">
                                                                                     {{ __('Delegation Type') }}*
                                                                                 </label>
-                                                                                <select
-                                                                                    class="form-select js-example-basic-single"
+                                                                                <select class="form-select js-example-basic-single"
                                                                                     id="delegation_official{{ $i }}"
                                                                                     name="delegation_official[]"
                                                                                     onchange="handlerDelegationOfficial({{ $i }})"
                                                                                     required>
-                                                                                    <option value="" selected
-                                                                                        disabled>
+                                                                                    <option value="" selected disabled>
                                                                                         {{ __('Select Delegation Type') }}
                                                                                     </option>
                                                                                     @foreach ($delegation_type as $val_delegation_type)
-                                                                                        <option
-                                                                                            value="{{ $val_delegation_type['name'] }}">
+                                                                                        <option value="{{ $val_delegation_type['name'] }}">
                                                                                             {{ $val_delegation_type['name'] }}
                                                                                         </option>
                                                                                     @endforeach
@@ -543,28 +498,15 @@
                                                                                 value="{{ $delegation_event['select_type'] }}"
                                                                                 id="delegation_official{{ $i }}">
                                                                         @endif
-                                                                        <div
-                                                                            class="col-12 content-delegation-country-official-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-province-official-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-city-official-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-school-official-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-club-official-{{ $i }} d-none">
-                                                                        </div>
-                                                                        <div
-                                                                            class="col-12 content-delegation-organization-official-{{ $i }} d-none">
-                                                                        </div>
+                                                                        <div class="col-12 content-delegation-country-official-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-province-official-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-city-official-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-school-official-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-club-official-{{ $i }} d-none"></div>
+                                                                        <div class="col-12 content-delegation-organization-official-{{ $i }} d-none"></div>
                                                                         @foreach ($sub_category_tickets as $val_sub_cat_ticket)
                                                                             @if (strtolower($val_sub_cat_ticket['category_name']) == 'official')
-                                                                                <input
-                                                                                    type="hidden"name="category_official[]"
+                                                                                <input type="hidden"name="category_official[]"
                                                                                     value="{{ $val_sub_cat_ticket['id'] }}">
                                                                             @endif
                                                                         @endforeach
@@ -671,10 +613,11 @@
                                                 </button>
                                             </div>
                                         </div>
+                                        <div id="code_status_message" class="text-center mt-2"></div>
                                     </div>
                                 @endif
                                 <div class="col-12 mt-3">
-                                    <button class="theme-btn w-100" type="submit">
+                                    <button class="theme-btn w-100" type="submit" id="submitBooking">
                                         {{ __('Continue') }}
                                     </button>
                                 </div>
@@ -694,10 +637,53 @@
 @endsection
 @section('custom-script')
     <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
-@endsection
+    <script>
+        let isCodeValid = false;
 
-<script>
-    function handleCheckCodeEvent($id) {
-        alert($id);
-    }
-</script>
+        document.getElementById('button-addon1').addEventListener('click', function(event) {
+            var eventId = document.getElementById('event_id').value;
+            var codeAccess = document.getElementById('code_access').value;
+
+            if (codeAccess.trim() === '') {
+                alert('Please enter a code access.');
+                return;
+            }
+
+            fetch('{{ route("validate.code.access") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    code_access: codeAccess
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var codeStatusMessage = document.getElementById('code_status_message');
+                if (data.status === 'approved') {
+                    codeStatusMessage.textContent = 'Code Accepted';
+                    codeStatusMessage.style.color = 'green';
+                    isCodeValid = true;
+                } else {
+                    codeStatusMessage.textContent = 'Wrong Access Code';
+                    codeStatusMessage.style.color = 'red';
+                    isCodeValid = false;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+            var codeAccessField = document.getElementById('code_access');
+            var codeAccessValue = codeAccessField ? codeAccessField.value : '';
+
+            if (codeAccessField && codeAccessValue.trim() === '' || !isCodeValid) {
+                event.preventDefault();
+                alert('Please input the correct code.');
+            }
+        });
+    </script>
+@endsection

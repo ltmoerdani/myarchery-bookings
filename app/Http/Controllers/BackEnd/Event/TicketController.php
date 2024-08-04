@@ -114,7 +114,7 @@ class TicketController extends Controller
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
 
-      if ($request->event_type == "tournament") {
+      if ($request->event_type == "tournament" || $request->event_type == "turnamen") {
         $in['international_price'] = $request->international_price;
       }
 
@@ -222,7 +222,7 @@ class TicketController extends Controller
       $in['price'] = $request->price;
       $in['f_price'] = $request->price;
 
-      if ($request->event_type == "tournament") {
+      if ($request->event_type == "tournament" || $request->event_type == "turnamen") {
         $in['international_price'] = $request->international_price;
       }
 

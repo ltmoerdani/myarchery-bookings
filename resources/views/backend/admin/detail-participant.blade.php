@@ -63,7 +63,7 @@
                         <th scope="col">{{ __('Participant Name') }}</th>
                         <th scope="col">{{ __('Type') }}</th>
                         <th scope="col">{{ __('Category') }}</th>
-                        <th scope="col">{{ __('Delegation') }}</th>
+                        <!-- <th scope="col">{{ __('Delegation') }}</th> -->
                         <th scope="col">{{ __('Delegation Name') }}</th>
                         <th scope="col">{{ __('Date Registered') }}</th>
                         <th scope="col">{{ __('Status') }}</th>
@@ -79,18 +79,37 @@
                           <td>{{ $p->fname }}</td>
                           <td>{{ $p->competition_type }}</td>
                           <td>{{ $p->ticket_title }}</td>
-                          <td>{{ $p->category }}</td>
+                          <!-- <td>{{ $p->category }}</td> -->
                           <td>{{ $p->delegation_name }}</td>
                           <td>{{ $p->created_at }}</td>
                           <td>
-                            @if ($p->status == 3)
-                              Refund
-                            @elseif ($p->status == 2)
-                              Cancel
-                            @else
-                              Active
-                            @endif
-                          </td>
+                            <form id="statusForm-{{ $p->id }}" class="d-inline-block" action="{{ route('admin.update_participant', ['id' => $p->id, 'language' => request()->input('language')]) }}" method="post">
+                                @csrf
+                                <select
+                                    @if ($p->status == 3)
+                                        class="form-control form-control-sm bg-danger text-dark"
+                                    @elseif ($p->status == 2)
+                                        class="form-control form-control-sm bg-warning text-dark"
+                                    @else
+                                        class="form-control form-control-sm bg-primary"
+                                    @endif
+                                    name="status"
+                                    onchange="document.getElementById('statusForm-{{ $p->id }}').submit()">
+                                    <option value="1"
+                                        {{ $p->status == 1 ? 'selected' : '' }}>
+                                        {{ __('Active') }}
+                                    </option>
+                                    <option value="2"
+                                        {{ $p->status == 2 ? 'selected' : '' }}>
+                                        {{ __('Cancel') }}
+                                    </option>
+                                    <option value="3"
+                                        {{ $p->status == 3 ? 'selected' : '' }}>
+                                        {{ __('Refund') }}
+                                    </option>
+                                </select>
+                            </form>
+                        </td>
                         </tr>
                       @endforeach
                     </tbody>

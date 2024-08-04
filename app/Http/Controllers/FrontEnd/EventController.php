@@ -210,7 +210,7 @@ class EventController extends Controller
       $category_id = $content->event_category_id;
       $event_id = $content->id;
 
-      if ($information['content']->event_type == 'tournament') {
+      if ($information['content']->event_type == 'tournament' || $information['content']->event_type == 'turnamen') {
         $tickets = Ticket::where('event_id', '=', $event_id)
           ->where('status', 1)
           ->get();

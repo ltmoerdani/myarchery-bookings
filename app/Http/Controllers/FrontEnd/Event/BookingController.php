@@ -461,7 +461,7 @@ class BookingController extends Controller
         }
       }
 
-      if ($info['form_type'] == "tournament") {
+      if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
         $variations = $info['ticketInfos'];
       } else {
         $variations = Session::get('selTickets');
@@ -469,14 +469,14 @@ class BookingController extends Controller
 
       if ($variations) {
         foreach ($variations as $variation) {
-          if ($info['form_type'] == "tournament") {
+          if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
             $variation = (array) $variation;
           }
 
           $ticket = Ticket::where('id', $variation['ticket_id'])->first();
           if ($ticket->pricing_type == 'normal' && $ticket->ticket_available_type == 'limited') {
 
-            if ($info['form_type'] == "tournament") {
+            if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
               if ($ticket->ticket_available - $variation['quantity'] >= 0) {
                 $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
                 $ticket->save();
@@ -522,7 +522,7 @@ class BookingController extends Controller
             $ticket->save();
           } elseif ($ticket->pricing_type == 'free' && $ticket->ticket_available_type == 'limited') {
 
-            if ($info['form_type'] == "tournament") {
+            if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
               if ($ticket->ticket_available - $variation['quantity'] >= 0) {
                 $ticket->ticket_available = $ticket->ticket_available - $variation['quantity'];
                 $ticket->save();
@@ -535,7 +535,7 @@ class BookingController extends Controller
             }
           }
 
-          if ($info['form_type'] == "tournament") {
+          if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
             $variations_ticket[] = [
               "ticket_id" => $variation['ticket_id'],
               "early_bird_dicount" => 0,
@@ -546,7 +546,7 @@ class BookingController extends Controller
           }
         }
 
-        if ($info['form_type'] == "tournament") {
+        if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
           $variations = json_encode($variations_ticket, true);
         } else {
           $variations = json_encode(Session::get('selTickets'), true);
@@ -598,7 +598,7 @@ class BookingController extends Controller
         'conversation_id' => array_key_exists('conversation_id', $info) ? $info['conversation_id'] : null,
       ]);
 
-      if ($info['form_type'] == "tournament") {
+      if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
         $dataOrders = $info['dataOrders'];
         // foreach ($dataOrders as $d) {
         //   $ticket_id = $d->title;
