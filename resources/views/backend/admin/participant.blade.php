@@ -80,15 +80,15 @@
                                                     <td>
                                                         {{ $p->fname }}
                                                     </td>
-                                                    <!-- <td>
+                                                    <td>
                                                         {{ $p->competition_type }}
-                                                    </td> -->
+                                                    </td>
                                                     <td>
                                                         {{ $p->ticket_title }}
                                                     </td>
-                                                    <td>
+                                                    <!-- <td>
                                                         {{ $p->category }} 
-                                                    </td>
+                                                    </td> -->
                                                     <td>
                                                         {{ $p->delegation_name }} 
                                                     </td>
