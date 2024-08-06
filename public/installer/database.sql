@@ -1363,7 +1363,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (24, '2024_02_10_105443_add_toyyibpay_payment_gateway_into_online_gateways', 9),
 (25, '2024_02_10_122829_add_phonepe_payment_gateway_into_online_gateways_table', 9),
 (26, '2024_02_10_152845_add_yoco_payment_gateway_into_online_gateways', 9),
-(27, '2024_02_10_172724_add_xindit_payment_gateway_into_online_gateways', 9),
+(27, '2024_02_10_172724_add_xendit_payment_gateway_into_online_gateways', 9),
 (28, '2024_02_11_143939_add_myfatoorah_payment_gateway_into_online_gateways', 9),
 (29, '2024_02_12_120007_add_conversation_id_to_event_bookings_table', 9),
 (30, '2024_02_12_162617_add_conversation_id_to_product_orders_table', 9),
