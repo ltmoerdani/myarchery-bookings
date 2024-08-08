@@ -26,6 +26,7 @@ Route::prefix('/admin')->middleware(['auth:admin', 'adminLang'])->group(function
   Route::get('/participant/export', 'BackEnd\AdminController@participant_export')->name('admin.participant.export');
   Route::get('/detail-participant/{id}', 'BackEnd\AdminController@detail_participant')->name('admin.detail_event_participant');
   Route::post('/update-participant/{id}', 'BackEnd\AdminController@update_participant')->name('admin.update_participant');
+  Route::get('/event-category-id/{lang}', 'BackEnd\AdminController@get_category_id_event')->name('admin.get_category_id_event');
 
 
   // change admin-panel theme (dark/light) route

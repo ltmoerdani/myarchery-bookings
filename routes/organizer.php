@@ -109,7 +109,6 @@ Route::prefix('/organizer')->middleware('auth:organizer', 'Deactive:organizer', 
   Route::get('/detail-participant/{id}', 'BackEnd\Organizer\OrganizerController@detail_participant')->name('organizer.detail_event_participant');
   Route::get('/participant/export', 'BackEnd\Organizer\OrganizerController@participant_export')->name('organizer.participant.export');
 
-
   /*
   |---------------------------------------------
   |support ticket

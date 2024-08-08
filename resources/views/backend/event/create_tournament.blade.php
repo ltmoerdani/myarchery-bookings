@@ -609,7 +609,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
                                                                 <label for="">{{ __('Country') . '*' }}</label>
-                                                                <select class="custom-select select2"
+                                                                <select class="custom-select select2 form-control"
                                                                     name="{{ $language->code }}_country"
                                                                     onchange="handleChooseEventContentLanguageCountry('{{ $language->code }}')"
                                                                     id="{{ $language->code }}_country">
@@ -628,7 +628,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
                                                                 <label for="">{{ __('State') }}</label>
-                                                                <select class="custom-select select2"
+                                                                <select class="custom-select select2 form-control"
                                                                     name="{{ $language->code }}_state"
                                                                     onchange="handleChooseEventContentLanguageState('{{ $language->code }}')"
                                                                     id="{{ $language->code }}_state">
@@ -645,7 +645,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
                                                                 <label for="">{{ __('City') . '*' }}</label>
-                                                                <select class="custom-select select2"
+                                                                <select class="custom-select select2 form-control"
                                                                     name="{{ $language->code }}_city"
                                                                     id="{{ $language->code }}_city">
                                                                     <option selected disable value="">
@@ -725,7 +725,7 @@
                                                                 <div class="form-check py-0">
                                                                     <label class="form-check-label">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', event)">
+                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', {{ $currLang->id }}, {{ $language->id }}, '{{ $currLang->code }}', '{{ $language->code }}', event)">
                                                                         <span
                                                                             class="form-check-sign">{{ __('Clone for') }}
                                                                             <strong

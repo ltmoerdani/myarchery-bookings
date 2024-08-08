@@ -924,16 +924,15 @@ $(function ($) {
   hljs.initHighlightingOnLoad();
 });
 
-function cloneInput(fromId, toId, event) {
+function cloneInput(fromId, toId, langFrom, langId, fromCode, langCode, event) { 
   let $target = $(event.target);
-
+  
   if ($target.is(":checked")) {
     $("#" + fromId + " .form-control").each(function (i) {
       let index = i;
       let val = $(this).val();
-
       let $toInput = $("#" + toId + " .form-control").eq(index);
-
+      
       if ($(this).hasClass("summernote")) {
         let val = tinyMCE.activeEditor.getContent();
         let tmcId = $toInput.attr("id");
@@ -948,7 +947,70 @@ function cloneInput(fromId, toId, event) {
           $toInput.tagsinput("removeAll");
         }
       } else {
-        $toInput.val(val);
+        if($(this).prop('type') == 'select-one'){
+          let text = $(this).prop('name');
+          if(text.indexOf("category_id") > 0){
+            $.get(baseUrl + '/admin/event-category-id/' + langId, function (data) {
+              $toInput.val(data);
+            });
+          }else{
+            if(text.indexOf("country") > 0){
+              $toInput.val(val).select2();
+              let contentOption = "";
+              $.ajax({
+                url: `${baseUrl}/api/get-state/${val}`,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                  if (response.data.length > 0) {
+                    response.data.map((value) => {
+                      contentOption += `<option value="${value.id}">${value.name}</option>`;
+                    });
+                  }
+                  $(`#${langCode}_state`).append(contentOption);
+                },
+                error: function (error) {
+                  $(`#${langCode}_state`).append(contentOption);
+                  console.log("error:", error);
+                },
+              });
+            }else{
+              setTimeout(
+                function() {
+                  $toInput.val(val).select2();
+              }, 1000);
+
+              let getCountryValue = $(`#${fromCode}_country`).val()
+              let getStateValue = $(`#${fromCode}_state`).val()
+              let getCityValue = $(`#${fromCode}_city`).val()
+              let contentOption = "";
+              $.ajax({
+                url: `${baseUrl}/api/get-city/${getCountryValue}/${getStateValue}`,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                  contentOption += `<option selected value="">Choose City</option>`;
+                  if (response.data.length > 0) {
+                    response.data.map((val) => {
+                      contentOption += `<option value="${val.id}">${val.name}</option>`;
+                    });
+                  }
+                  $(`#${langCode}_city`).append(contentOption);
+                },
+                error: function (error) {
+                  contentOption += `<option selected value="">Choose City</option>`;
+                  $(`#${langCode}_city`).append(contentOption);
+                  console.log("error:", error);
+                },
+              });
+
+              $(`#${fromCode}_city`).val(getCityValue)
+            }
+          }
+        }else{
+          $toInput.val(val);
+        }
+        
       }
     });
   } else {

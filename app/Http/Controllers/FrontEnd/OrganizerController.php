@@ -209,4 +209,5 @@ class OrganizerController extends Controller
 
     return 'success';
   }
+
 }

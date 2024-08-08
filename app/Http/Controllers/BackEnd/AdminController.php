@@ -812,4 +812,10 @@ class AdminController extends Controller
     return redirect()->back();
   }
 
+  public function get_category_id_event(Request $request){
+    $language_id = $request->lang;
+    $event = EventCategory::where('language_id', $language_id)->first();
+    return $event->id;
+  }
+
 }
