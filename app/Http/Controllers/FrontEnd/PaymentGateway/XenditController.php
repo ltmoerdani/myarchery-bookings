@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ParticipantCompetitions;
 use App\Models\Disbursement;
 use App\Models\DisbursementCallback;
+use App\Models\Withdraw;
 
 class XenditController extends Controller
 {
@@ -640,6 +641,20 @@ class XenditController extends Controller
     $disb = Disbursement::where('external_id', $data['external_id'])->first();
     $disb->status = empty($data['status']) ? null : $data['status'];
     $disb->save();
+
+    if($data['status'] == 'COMPLETED'){
+      $payment_status = 1;
+    }elseif($data['status'] == 'PENDING'){
+      $payment_status = 0;
+    }else{
+      $payment_status = 2;
+    }
+
+    $withdraw = Withdraw::where('id', $disb->id)->first();
+    $transaction = Transaction::where('booking_id', $disb->id)->first();
+    $transaction->payment_status = $payment_status;
+    $transaction->payment_fee = $withdraw->ppn_fee;
+    $transaction->save();
 
     // send a mail to the customer with the invoice
     // $booking->sendMail($bookingInfo);
