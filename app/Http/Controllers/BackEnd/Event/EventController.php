@@ -1008,6 +1008,10 @@ class EventController extends Controller
 
       Session::flash('success', 'Added Successfully');
       return response()->json(['status' => 'success'], 200);
+
+      // http://127.0.0.1/booking/admin/event/edit/ticket-tournament?language=en&event_id=2&event_type=tournament&title=Individu
+      // response()->json(['status' => 'success'], 200);
+      // return redirect()->route('admin.event.edit.ticket-tournament',  ['language' => 'en', 'event_id' => 2, 'event_type' => 'tournament', 'title' => 'Individu']);
     } catch (\Exception $e) {
       return $e->getMessage();
     }
