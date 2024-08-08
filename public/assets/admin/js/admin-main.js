@@ -989,7 +989,6 @@ function cloneInput(fromId, toId, langFrom, langId, fromCode, langCode, event) {
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
-                  contentOption += `<option selected value="">Choose City</option>`;
                   if (response.data.length > 0) {
                     response.data.map((val) => {
                       contentOption += `<option value="${val.id}">${val.name}</option>`;
@@ -998,13 +997,16 @@ function cloneInput(fromId, toId, langFrom, langId, fromCode, langCode, event) {
                   $(`#${langCode}_city`).append(contentOption);
                 },
                 error: function (error) {
-                  contentOption += `<option selected value="">Choose City</option>`;
                   $(`#${langCode}_city`).append(contentOption);
                   console.log("error:", error);
                 },
               });
 
-              $(`#${fromCode}_city`).val(getCityValue)
+              setTimeout(
+                function() {
+                  $(`#${fromCode}_city`).val(getCityValue)
+              }, 1000);
+              
             }
           }
         }else{
