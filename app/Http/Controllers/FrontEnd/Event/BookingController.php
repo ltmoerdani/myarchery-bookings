@@ -126,13 +126,13 @@ class BookingController extends Controller
 
         return $yoco->makePayment($request, $id);
       } else if ($request['gateway'] == 'xendit') {
-        $xindit = new XenditController();
+        $xendit = new XenditController();
 
-        return $xindit->makePayment($request, $id);
+        return $xendit->makePayment($request, $id);
       } else if ($request['gateway'] == 'myfatoorah') {
-        $xindit = new MyFatoorahController();
+        $xendit = new MyFatoorahController();
 
-        return $xindit->makePayment($request, $id);
+        return $xendit->makePayment($request, $id);
       } else if ($request['gateway'] == 'perfect_money') {
         $perfect_money = new PerfectMoneyController();
 
@@ -288,13 +288,13 @@ class BookingController extends Controller
 
         return $yoco->makePayment($request, $id);
       } else if ($request['gateway'] == 'xendit') {
-        $xindit = new XenditController();
+        $xendit = new XenditController();
 
-        return $xindit->makePayment($request, $id);
+        return $xendit->makePayment($request, $id);
       } else if ($request['gateway'] == 'myfatoorah') {
-        $xindit = new MyFatoorahController();
+        $xendit = new MyFatoorahController();
 
-        return $xindit->makePayment($request, $id);
+        return $xendit->makePayment($request, $id);
       } else if ($request['gateway'] == 'perfect_money') {
         $perfect_money = new PerfectMoneyController();
 
@@ -384,8 +384,8 @@ class BookingController extends Controller
     // payment
     if ($request->total != 0 || Session::get('sub_total') != 0) {
 
-      $xindit = new XenditController();
-      return $xindit->makePayment($request, $id);
+      $xendit = new XenditController();
+      return $xendit->makePayment($request, $id);
       $offline = new OfflineController();
       return $offline->bookingProcess($request, $id);
     } else {

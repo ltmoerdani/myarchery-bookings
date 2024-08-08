@@ -159,8 +159,8 @@ Route::prefix('event-booking')->group(function () {
 
   //yoco
   Route::get('/yoco/notify', 'FrontEnd\PaymentGateway\YocoController@notify')->name('event_booking.yoco.notify');
-  //xindit
-  Route::get('/xendit/pay/{id}', 'FrontEnd\PaymentGateway\XenditController@pay_booking')->name('event_booking.xindit.pay_booking');
+  //xendit
+  Route::get('/xendit/pay/{id}', 'FrontEnd\PaymentGateway\XenditController@pay_booking')->name('event_booking.xendit.pay_booking');
   Route::get('/xendit/notify', 'FrontEnd\PaymentGateway\XenditController@notify')->name('event_booking.xendit.notify');
 
   //perfect money

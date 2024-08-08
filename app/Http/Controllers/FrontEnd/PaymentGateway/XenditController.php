@@ -144,7 +144,7 @@ class XenditController extends Controller
           'amount' => $payable_amount,
           'description' => $event_content->title . ' (' . $cust->email . ')',
           'currency' => $currencyInfo->base_currency_text,
-          'success_redirect_url' => route('event_booking.xindit.notify')
+          'success_redirect_url' => route('event_booking.xendit.notify')
         ]);
         $response = $data_request->object();
         $response = json_decode(json_encode($response), true);
@@ -258,7 +258,7 @@ class XenditController extends Controller
           'external_id' => $external_id,
           'amount' => $payable_amount,
           'currency' => $currencyInfo->base_currency_text,
-          'success_redirect_url' => route('event_booking.xindit.notify')
+          'success_redirect_url' => route('event_booking.xendit.notify')
         ]);
         $response = $data_request->object();
         $response = json_decode(json_encode($response), true);
@@ -482,7 +482,7 @@ class XenditController extends Controller
   //             'external_id' => $external_id,
   //             'amount' => $booking->price,
   //             'currency' => $currencyInfo->base_currency_text,
-  //             'success_redirect_url' => route('event_booking.xindit.notify')
+  //             'success_redirect_url' => route('event_booking.xendit.notify')
   //         ]);
   //         $response = $data_request->object();
   //         $response = json_decode(json_encode($response), true);
