@@ -31,5 +31,5 @@ Route::get('get-delegation', 'BackEnd\DelegationController@getDelegationType')->
 Route::get('get-org', 'BackEnd\OrganizationController@getListOrganization')->name('get.list.organization');
 Route::get('generate-code', 'BackEnd\Event\EventController@codeGenerate')->name('generate.code.event');
 Route::get('check-code-event', 'BackEnd\Event\EventController@checkCodeEvent')->name('check.code.event');
-// delete soon
-// Route::post('event-store', 'BackEnd\Event\EventController@store')->name('admin.event_management.store_event');
+
+Route::post('xendit/callback-disbursement', 'FrontEnd\PaymentGateway\XenditController@callback_disbursement')->name('xendit_callback_disbursement');
