@@ -620,7 +620,7 @@ class XenditController extends Controller
 
     $callback['payment_type'] = 'Xendit';
     $callback['callback'] = json_encode($data);
-    $callback['req_header'] = json_encode($header);
+    $callback['req_header'] = json_encode($req_header);
     $callback['callback_id'] = empty($data['id']) ? null : $data['id'];
     $callback['external_id'] = empty($data['external_id']) ? null : $data['external_id'];
     $callback['user_id'] = empty($data['user_id']) ? null : $data['user_id'];
