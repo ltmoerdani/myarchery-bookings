@@ -607,7 +607,7 @@ class XenditController extends Controller
     }
   }
 
-  public function callback_disbursement($request)
+  public function callback_disbursement(Request $request)
   {
     $data = $request->all();
     $req_header = $request->header();
