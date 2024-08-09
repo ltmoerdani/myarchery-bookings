@@ -644,13 +644,16 @@ class XenditController extends Controller
 
     if($data['status'] == 'COMPLETED'){
       $payment_status = 1;
-    }elseif($data['status'] == 'PENDING'){
-      $payment_status = 0;
-    }else{
+    }elseif($data['status'] == 'FAILED'){
       $payment_status = 2;
+    }else{
+      $payment_status = 0;
     }
 
     $withdraw = Withdraw::where('id', $disb->id)->first();
+    $withdraw->status = $payment_status;
+    $withdraw->save();
+
     $transaction = Transaction::where('booking_id', $disb->id)->first();
     $transaction->payment_status = $payment_status;
     $transaction->payment_fee = $withdraw->ppn_fee;
