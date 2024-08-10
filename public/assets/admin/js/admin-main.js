@@ -924,7 +924,61 @@ $(function ($) {
   hljs.initHighlightingOnLoad();
 });
 
-function cloneInput(fromId, toId, langFrom, langId, fromCode, langCode, event) { 
+function cloneInput(fromId, toId, langFrom, langId, event) { 
+  let $target = $(event.target);
+  
+  if ($target.is(":checked")) {
+    $("#" + fromId + " .form-control").each(function (i) {
+      let index = i;
+      let val = $(this).val();
+      let $toInput = $("#" + toId + " .form-control").eq(index);
+      
+      if ($(this).hasClass("summernote")) {
+        let val = tinyMCE.activeEditor.getContent();
+        let tmcId = $toInput.attr("id");
+        tinyMCE.get(tmcId).setContent(val);
+      } else if ($(this).data("role") == "tagsinput") {
+        if (val.length > 0) {
+          let tags = val.split(",");
+          tags.forEach((tag) => {
+            $toInput.tagsinput("add", tag);
+          });
+        } else {
+          $toInput.tagsinput("removeAll");
+        }
+      } else {
+        if($(this).prop('type') == 'select-one'){
+          let text = $(this).prop('name');
+          if(text.indexOf("category_id") > 0){
+            $.get(baseUrl + '/admin/event-category-id/' + langId, function (data) {
+              $toInput.val(data);
+            });
+          }else{
+            $toInput.val(val);
+          }
+        }else{
+          $toInput.val(val);
+        }
+        
+      }
+    });
+  } else {
+    $("#" + toId + " .form-control").each(function (i) {
+      let index = i;
+      let $toInput = $("#" + toId + " .form-control").eq(index);
+      if ($(this).hasClass("summernote")) {
+        let tmcId = $toInput.attr("id");
+        tinyMCE.get(tmcId).setContent("");
+      } else if ($(this).data("role") == "tagsinput") {
+        $toInput.tagsinput("removeAll");
+      } else {
+        $toInput.val("");
+      }
+    });
+  }
+}
+
+function cloneInputTournament(fromId, toId, langFrom, langId, fromCode, langCode, event) { 
   let $target = $(event.target);
   
   if ($target.is(":checked")) {
@@ -1077,6 +1131,10 @@ $("#EventSubmit").on("click", function (e) {
       $(".em").each(function () {
         $(this).html("");
       });
+
+      if(data.event_id){
+        window.location.href = baseUrl+"/admin/event/ticket?language=en&event_id="+data.event_id+"&event_type=tournament";
+      }
     },
     error: function (error) {
       let errors = ``;

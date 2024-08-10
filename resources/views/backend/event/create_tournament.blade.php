@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                             <form id="eventForm" action="{{ route('admin.event_management.store_event_tournament') }}"
-                                method="POST" enctype="multipart/form-data">
+                                method="POST" enctype="multipart/form-data"> 
                                 @csrf
                                 <input type="hidden" name="event_type" value="{{ request()->input('type') }}">
                                 <input type="hidden" id="base_url" value="{{ url('/') }}">
@@ -725,7 +725,7 @@
                                                                 <div class="form-check py-0">
                                                                     <label class="form-check-label">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', {{ $currLang->id }}, {{ $language->id }}, '{{ $currLang->code }}', '{{ $language->code }}', event)">
+                                                                            onchange="cloneInputTournament('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', {{ $currLang->id }}, {{ $language->id }}, '{{ $currLang->code }}', '{{ $language->code }}', event)">
                                                                         <span
                                                                             class="form-check-sign">{{ __('Clone for') }}
                                                                             <strong

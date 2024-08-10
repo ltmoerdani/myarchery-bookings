@@ -681,8 +681,7 @@ class EventController extends Controller
     }
   }
 
-  public function store_tournament(StoreTournamentRequest $request)
-  {
+  public function store_tournament(StoreTournamentRequest $request){
     try {
       if (empty(Auth::guard('admin'))) {
         return Response(
@@ -697,7 +696,7 @@ class EventController extends Controller
         );
       }
 
-      DB::transaction(function () use ($request) {
+      $event_id_result = DB::transaction(function () use ($request) {
         $request->is_featured = "yes";
         $request->date_type = "single";
 
@@ -1004,14 +1003,16 @@ class EventController extends Controller
           $data['description'] = 'For Officials Only';
           TicketContent::create($data);
         }
+
+        return $event_id_result = $event->id;
       });
 
       Session::flash('success', 'Added Successfully');
-      return response()->json(['status' => 'success'], 200);
-
-      // http://127.0.0.1/booking/admin/event/edit/ticket-tournament?language=en&event_id=2&event_type=tournament&title=Individu
-      // response()->json(['status' => 'success'], 200);
-      // return redirect()->route('admin.event.edit.ticket-tournament',  ['language' => 'en', 'event_id' => 2, 'event_type' => 'tournament', 'title' => 'Individu']);
+      $data_result = [
+        'status' => 'success',
+        'event_id' => $event_id_result
+      ];
+      return response()->json($data_result, 200);
     } catch (\Exception $e) {
       return $e->getMessage();
     }

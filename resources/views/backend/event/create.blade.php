@@ -573,7 +573,7 @@
                                                                 <div class="form-check py-0">
                                                                     <label class="form-check-label">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', event)">
+                                                                            onchange="cloneInput('collapse{{ $currLang->id }}', 'collapse{{ $language->id }}', {{ $currLang->id }}, {{ $language->id }}, event)">
                                                                         <span
                                                                             class="form-check-sign">{{ __('Clone for') }}
                                                                             <strong
