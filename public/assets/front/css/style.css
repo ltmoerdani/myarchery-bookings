@@ -276,6 +276,15 @@ a.theme-btn:hover {
   color: var(--primary-color);
 }
 
+.theme-btn:disabled,
+a.theme-btn:disabled {
+  color: white;
+  background: var(--primary-color);
+  border: var(--primary-color);
+  cursor: no-drop;
+  opacity: 0.65;
+}
+
 .theme-btn-outline-warning,
 a.theme-btn-outline-warning {
   z-index: 1;

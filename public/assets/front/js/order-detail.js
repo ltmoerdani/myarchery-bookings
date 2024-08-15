@@ -1,653 +1,283 @@
 $(document).ready(function () {
-  $(".js-example-basic-single").select2({
-    selectionCssClass: "form-select",
+  window.dataIndividu = [];
+  window.dataTeam = [];
+  window.dataMixTeam = [];
+  window.dataOfficial = [];
+
+  $.ajax({
+    url: `${base_url}/get-data-form-order-tournament?checkoutID=${checkoutID}`,
+    method: "GET",
+    contentType: false,
+    success: function (response) {
+      const { data } = response;
+      console.log("data:", data);
+      window.dataIndividu = data.ticket_detail_individu_order;
+      window.dataTeam = data.ticket_detail_team_order;
+      window.dataMixTeam = data.ticket_detail_mix_team_order;
+      window.dataOfficial = data.ticket_detail_official_order;
+      generateViewIndividu();
+      generateViewTeam();
+      generateViewMixTeam();
+      generateViewOfficial();
+    },
+    error: function (error) {
+      console.log("error:", error.responseJson);
+    },
   });
 
-  const contingentType = $("#contingent_type").val();
-  if (contingentType.toLowerCase() !== "open") {
-    for (i = 0; i < 100; i++) {
-      const delegation_individu_choosed = $(
-        `.delegation_individu_choosed${i}`
-      ).val();
+  const generateViewIndividu = () => {
+    const dtIndividu = window.dataIndividu;
 
-      const delegation_official_choosed = $(
-        `.delegation_official_choosed${i}`
-      ).val();
-
-      if (
-        delegation_individu_choosed !== undefined ||
-        delegation_individu_choosed
-      ) {
-        handlerDelegationIndividu(i);
-      }
-
-      if (
-        delegation_official_choosed !== undefined ||
-        delegation_official_choosed
-      ) {
-        handlerDelegationOfficial(i);
-      }
+    if (dtIndividu.length < 1) {
+      return $("#individu_section").addClass("d-none");
     }
-  }
+
+    $("#individu_section").removeClass("d-none");
+
+    let content = ``;
+
+    dtIndividu?.map((val, index) => {
+      console.log("val:", val);
+      console.log("index:", index);
+      content += `
+        <div class="card">
+          <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
+              id="participant_individu${index}"
+              data-toggle="collapse"
+              data-target="#collapse_participant_${index}"
+              aria-expanded="false"
+              aria-controls="collapse_participant_${index}">
+              ${titleIndividuAccordion} ${index + 1}
+          </div>
+          <div id="collapse_participant_${index}"
+              class='collapse ${index == 0 ? "show" : ""}'
+              aria-labelledby="participant_individu${index}"
+              data-parent="#accordionParticipant">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 form-group">
+                      <label for="name_individu{{ $i }}">
+                          ${fullNameLabel}*
+                      </label>
+                      <input type="text" class="form-control" id="name_individu${index}" name="name_individu[]" placeholder="${fullNamePlaceholder}" required>
+                  </div>
+                  <div class="col-12 col-lg-6 form-group">
+                      <label
+                          for="gender_individu${index}">
+                          ${genderLabel}*
+                      </label>
+                      <select class="form-select"
+                          id="gender_individu${index}"
+                          name="gender_individu[]">
+                          <option value="male" selected>
+                            ${genderMaleLang}
+                          </option>
+                          <option value="female">
+                            ${genderFemaleLang}
+                          </option>
+                      </select>
+                  </div>
+                  <div class="col-12 col-lg-6 form-group">
+                      <label
+                          for="birth_date_individu${index}">
+                          ${birthDateLabel}*
+                      </label>
+                      <input type="date" class="form-control"
+                          id="birth_date_individu${index}"
+                          name="birth_date_individu[]"
+                          placeholder="${birthDatePlaceholder}"
+                          max="${
+                            new Date().toISOString().split("T")[0]
+                          }" required>
+                  </div>
+                  <div
+                      class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-${index}">
+                      <label
+                          for="profile_country_individu${index}">
+                          ${countryProfileLabel}*
+                      </label>
+                      <select
+                          class="form-select js-example-basic-single"
+                          id="profile_country_individu${index}"
+                          name="profile_country_individu[]"
+                          onchange="handlerProfileCountry(${index})"
+                          required>
+                          <option value="" selected disabled>
+                              ${countryProfileDefaultOption}
+                          </option>
+                      </select>
+                  </div>
+                  <div
+                      class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-${index}">
+                      <label
+                          for="profile_city_individu${index}">
+                          ${cityDistrictProfileLabel}*
+                      </label>
+                      <select
+                          class="form-select js-example-basic-single"
+                          id="profile_city_individu${index}"
+                          name="profile_city_individu[]" required>
+                          <option value="" selected disabled>
+                              ${cityDistrictProfileDefaultOption}
+                          </option>
+                      </select>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      `;
+    });
+
+    $("#form_individu").append(`
+      <div class="accordion" id="accordionParticipant">
+        ${content}
+      </div>
+    `);
+  };
+
+  const generateViewTeam = () => {
+    const dtTeam = window.dataTeam;
+
+    if (dtTeam.length < 1) {
+      return $("#team_section").addClass("d-none");
+    }
+
+    $("#team_section").removeClass("d-none");
+
+    dtTeam?.map((val, index) => {
+      console.log("valTeam:", val);
+      console.log("indexTeam:", index);
+    });
+  };
+
+  const generateViewMixTeam = () => {
+    const dtMixTeam = window.dataMixTeam;
+
+    if (dtMixTeam.length < 1) {
+      return $("#mix_team_section").addClass("d-none");
+    }
+
+    $("#mix_team_section").removeClass("d-none");
+
+    dtMixTeam?.map((val, index) => {
+      console.log("valMix:", val);
+      console.log("indexMix:", index);
+    });
+  };
+
+  const generateViewOfficial = () => {
+    const dtOfficial = window.dataOfficial;
+
+    if (dtOfficial.length < 1) {
+      return $("#official_section").addClass("d-none");
+    }
+
+    $("#official_section").removeClass("d-none");
+
+    let content = ``;
+
+    dtOfficial?.map((val, index) => {
+      console.log("valOfficial:", val);
+      console.log("indexOfficial:", index);
+      content += `
+        <div class="card">
+          <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
+              id="participant_individu${index}"
+              data-toggle="collapse"
+              data-target="#collapse_official_${index}"
+              aria-expanded="false"
+              aria-controls="collapse_official_${index}">
+              ${titleOfficialAccordion} ${index + 1}
+          </div>
+          <div id="collapse_official_${index}"
+              class='collapse ${index == 0 ? "show" : ""}'
+              aria-labelledby="participant_individu${index}"
+              data-parent="#accordionParticipant">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 form-group">
+                      <label for="name_official{{ $i }}">
+                          ${fullNameLabel}*
+                      </label>
+                      <input type="text" class="form-control" id="name_official${index}" name="name_official[]" placeholder="${fullNamePlaceholder}" required>
+                  </div>
+                  <div class="col-12 col-lg-6 form-group">
+                      <label
+                          for="gender_official${index}">
+                          ${genderLabel}*
+                      </label>
+                      <select class="form-select"
+                          id="gender_official${index}"
+                          name="gender_official[]">
+                          <option value="male" selected>
+                            ${genderMaleLang}
+                          </option>
+                          <option value="female">
+                            ${genderFemaleLang}
+                          </option>
+                      </select>
+                  </div>
+                  <div class="col-12 col-lg-6 form-group">
+                      <label
+                          for="birth_date_official${index}">
+                          ${birthDateLabel}*
+                      </label>
+                      <input type="date" class="form-control"
+                          id="birth_date_official${index}"
+                          name="birth_date_official[]"
+                          placeholder="${birthDatePlaceholder}"
+                          max="${
+                            new Date().toISOString().split("T")[0]
+                          }" required>
+                  </div>
+                  <div
+                      class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-${index}">
+                      <label
+                          for="profile_country_official${index}">
+                          ${countryProfileLabel}*
+                      </label>
+                      <select
+                          class="form-select js-example-basic-single"
+                          id="profile_country_official${index}"
+                          name="profile_country_official[]"
+                          onchange="handlerProfileCountry(${index})"
+                          required>
+                          <option value="" selected disabled>
+                              ${countryProfileDefaultOption}
+                          </option>
+                      </select>
+                  </div>
+                  <div
+                      class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-${index}">
+                      <label
+                          for="profile_city_official${index}">
+                          ${cityDistrictProfileLabel}*
+                      </label>
+                      <select
+                          class="form-select js-example-basic-single"
+                          id="profile_city_official${index}"
+                          name="profile_city_official[]" required>
+                          <option value="" selected disabled>
+                              ${cityDistrictProfileDefaultOption}
+                          </option>
+                      </select>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      `;
+    });
+
+    $("#form_official").append(`
+      <div class="accordion" id="accordionExampleOfficial">
+        ${content}
+      </div>
+    `);
+  };
 });
-const base_url = $("#base_url").val();
 
-const handlerDelegationIndividu = (i) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_individu${i}`
-  ).value;
-
-  $(`.content-delegation-country-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-country-individu-${i}`).empty();
-  $(`.content-delegation-province-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-province-individu-${i}`).empty();
-  $(`.content-delegation-city-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-city-individu-${i}`).empty();
-  $(`.content-delegation-school-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-school-individu-${i}`).empty();
-  $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-organization-individu-${i}`).empty();
-  $(`.content-delegation-club-individu-${i}`).addClass("d-none");
-  $(`.content-delegation-club-individu-${i}`).empty();
-  const contingentType = $("#contingent_type").val();
-
-  switch (getTypeDelegationInput.toLowerCase()) {
-    case "country":
-      handlerSetContentDelegationCountryIndividu(i);
-      break;
-    case "province":
-      contingentType.toLowerCase() === "open"
-        ? handlerSetContentDelegationCountryIndividu(i)
-        : handlerSetContentDelegationProvinceIndividu(i);
-      // handlerSetContentDelegationCountryIndividu(i);
-      break;
-    case "city/district":
-      contingentType.toLowerCase() === "open"
-        ? handlerSetContentDelegationCountryIndividu(i)
-        : handlerSetContentDelegationCityIndividu(i);
-      // handlerSetContentDelegationCountryIndividu(i);
-      break;
-    case "school/universities":
-      handlerSetContentDelegationSchoolIndividu(i);
-      break;
-    case "organization":
-      handlerSetContentDelegationOrganizationIndividu(i);
-      break;
-    default:
-      handlerSetContentDelegationClubIndividu(i);
-      break;
-  }
-};
-
-const handlerSetContentDelegationCountryIndividu = async (
-  i,
-  default_value = ""
-) => {
-  const dataCountry = await getCountry();
-  let countryOptions = "";
-  dataCountry?.data.map((val) => {
-    countryOptions += `
-      <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-  });
-
-  $(`.content-delegation-country-individu-${i}`).removeClass("d-none");
-  $(`.content-delegation-country-individu-${i}`).append(`
-    <div class="form-group d-flex flex-column gap-2">
-      <label for="country_delegation_individu${i}">
-        Delegation Country*
-      </label>
-      <select class="form-select js-select2-country-individu-delegation"
-          id="country_delegation_individu${i}"
-          name="country_delegation_individu[]"
-          onchange="handlerSetContentDelegationProvinceIndividu(${i})"
-          value="${!default_value ? "" : default_value}"
-          required>
-          <option value="" selected disabled>Choose Country</option>
-          ${countryOptions}
-      </select>
-    </div>
-  `);
-  $(".js-select2-country-individu-delegation").select2({
-    selectionCssClass: "form-select",
-  });
-};
-
-const handlerSetContentDelegationProvinceIndividu = async (
-  i,
-  default_value = ""
-) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_individu${i}`
-  ).value;
-  if (getTypeDelegationInput.toLowerCase() !== "country") {
-    const valueCountry = $(`#country_delegation_individu${i}`).val();
-    const getDataProvince = await getProvince(valueCountry);
-    let provinceOptions = "";
-    getDataProvince?.data.map((val) => {
-      provinceOptions += `
-      <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-    });
-
-    $(`.content-delegation-province-individu-${i}`).removeClass("d-none");
-    $(`.content-delegation-province-individu-${i}`).empty();
-    $(`.content-delegation-province-individu-${i}`).append(`
-      <div class="form-group d-flex flex-column gap-2">
-        <label for="province_delegation_individu${i}">
-          Delegation Province*
-        </label>
-        <select class="form-select js-select2-province-individu-delegation"
-            id="province_delegation_individu${i}"
-            name="province_delegation_individu[]"
-            onchange="handlerSetContentDelegationCityIndividu(${i})"
-            value="${!default_value ? "" : default_value}"
-            required>
-            <option value="" selected disabled>Choose Province</option>
-            ${provinceOptions}
-        </select>
-      </div>
-    `);
-    $(".js-select2-province-individu-delegation").select2({
-      selectionCssClass: "form-select",
-    });
-  }
-};
-
-const handlerSetContentDelegationCityIndividu = async (
-  i,
-  default_value = ""
-) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_individu${i}`
-  ).value;
-  if (
-    !["country", "province", "state"].includes(
-      getTypeDelegationInput.toLowerCase()
-    )
-  ) {
-    const valueCountry = $(`#country_delegation_individu${i}`).val();
-    const valueProvince = $(`#province_delegation_individu${i}`).val();
-    const getDataCity = await getCity(valueCountry, valueProvince);
-    let cityOptions = "";
-    getDataCity?.data?.map((val) => {
-      cityOptions += `
-        <option
-            value="${val.id}">
-            ${val.name}
-        </option>
-      `;
-    });
-    $(`.content-delegation-city-individu-${i}`).empty();
-    $(`.content-delegation-city-individu-${i}`).append(`
-      <div class="form-group d-flex flex-column gap-2">
-        <label for="city_delegation_individu${i}">
-          Delegation City*
-        </label>
-        <select class="form-select js-select2-city-individu-delegation"
-            id="city_delegation_individu${i}"
-            name="city_delegation_individu[]"
-            value="${!default_value ? "" : default_value}"
-            required>
-            <option value="" selected disabled>Choose City</option>
-            ${cityOptions}
-        </select>
-      </div>
-    `);
-    $(".js-select2-city-individu-delegation").select2({
-      selectionCssClass: "form-select",
-    });
-    $(`.content-delegation-city-individu-${i}`).removeClass("d-none");
-  }
-};
-
-const handlerSetContentDelegationSchoolIndividu = (i) => {
-  $(`.content-delegation-school-individu-${i}`).removeClass("d-none");
-  $(`.content-delegation-school-individu-${i}`).empty();
-  $(`.content-delegation-school-individu-${i}`).append(`
-    <label for="school_delegation_individu${i}">
-        Delegation School/Universities*
-    </label>
-    <input type="text" class="form-control" id="school_delegation_individu${i}" name="school_delegation_individu[]" placeholder="type school/universities">
-  `);
-};
-
-const handlerSetContentDelegationOrganizationIndividu = (i) => {
-  $(`.content-delegation-organization-individu-${i}`).removeClass("d-none");
-  $(`.content-delegation-organization-individu-${i}`).empty();
-  $(`.content-delegation-organization-individu-${i}`).append(`
-    <label for="organization_delegation_individu${i}">
-        Delegation Organization/Association*
-    </label>
-    <input type="text" class="form-control" id="organization_delegation_individu${i}" name="organization_delegation_individu[]" placeholder="type organization or association">
-  `);
-};
-
-const handlerAddNewClubDelegationIndividu = (i) => {
-  $(`.content-delegation-club-individu-${i}`).empty();
-  $(`.content-delegation-club-individu-${i}`).append(`
-    <label for="club_delegation_individu${i}">
-        Delegation Club*
-    </label>
-    <p>
-      <a href="javascript:void()" class="text-primary" onclick="handlerSetContentDelegationClubIndividu(${i})">
-        Select from existing list
-      </a>
-    </p>
-    <input type="text" class="form-control" id="club_delegation_individu${i}" name="club_delegation_individu[]" placeholder="Input new club">
-  `);
-};
-
-const handlerSetContentDelegationClubIndividu = async (
-  i,
-  default_value = ""
-) => {
-  const getDataClubs = await getClubs();
-  let clubOptions = "";
-  getDataClubs?.data?.map((val) => {
-    clubOptions += `
-       <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-  });
-  $(`.content-delegation-club-individu-${i}`).removeClass("d-none");
-  $(`.content-delegation-club-individu-${i}`).empty();
-  $(`.content-delegation-club-individu-${i}`).append(`
-    <label for="club_delegation_individu${i}">
-        Delegation Club*
-    </label>
-    <p>
-      <a href="javascript:void()" class="text-primary" onclick="handlerAddNewClubDelegationIndividu(${i})">Add New Club+</a>
-    </p>
-    <select class="form-select js-select2-club-individu-delegation"
-        id="club_delegation_individu${i}"
-        name="club_delegation_individu[]"
-        value="${!default_value ? "" : default_value}"
-        required>
-        <option value="" selected disabled>Choose Club</option>
-        ${clubOptions}
-    </select>
-  `);
-
-  $(".js-select2-club-individu-delegation").select2({
-    selectionCssClass: "form-select",
-  });
-};
-
-const handlerProfileCountry = async (i) => {
-  $(`#profile_city_individu${i}`).empty();
-  const getValueCountry = $(`#profile_country_individu${i}`).val();
-  let cityOptions = `
-    <option value="" selected disabled>
-        Select City/District
-    </option>
-  `;
-  const getDataCity = await getCity(getValueCountry);
-  getDataCity?.data?.map((val) => {
-    cityOptions += `
-        <option value="${val.id}">
-            ${val.name}
-        </option>
-    `;
-  });
-  $(`#profile_city_individu${i}`).append(cityOptions);
-};
-
-const handlerDelegationOfficial = (i) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_official${i}`
-  ).value;
-
-  $(`.content-delegation-country-official-${i}`).addClass("d-none");
-  $(`.content-delegation-country-official-${i}`).empty();
-  $(`.content-delegation-province-official-${i}`).addClass("d-none");
-  $(`.content-delegation-province-official-${i}`).empty();
-  $(`.content-delegation-city-official-${i}`).addClass("d-none");
-  $(`.content-delegation-city-official-${i}`).empty();
-  $(`.content-delegation-school-official-${i}`).addClass("d-none");
-  $(`.content-delegation-school-official-${i}`).empty();
-  $(`.content-delegation-organization-official-${i}`).addClass("d-none");
-  $(`.content-delegation-organization-official-${i}`).empty();
-  $(`.content-delegation-club-official-${i}`).addClass("d-none");
-  $(`.content-delegation-club-official-${i}`).empty();
-
-  const contingentType = $("#contingent_type").val();
-
-  switch (getTypeDelegationInput.toLowerCase()) {
-    case "country":
-      handlerSetContentDelegationCountryOfficial(i);
-      break;
-    case "province":
-      contingentType.toLowerCase() === "open"
-        ? handlerSetContentDelegationCountryOfficial(i)
-        : handlerSetContentDelegationProvinceOfficial(i);
-      break;
-    case "city/district":
-      contingentType.toLowerCase() === "open"
-        ? handlerSetContentDelegationCountryOfficial(i)
-        : handlerSetContentDelegationCityOfficial(i);
-      break;
-    case "school/universities":
-      handlerSetContentDelegationSchoolOfficial(i);
-      break;
-    case "organization":
-      handlerSetContentDelegationOrganizationOfficial(i);
-      break;
-    default:
-      handlerSetContentDelegationClubOfficial(i);
-      break;
-  }
-};
-
-const handlerSetContentDelegationCountryOfficial = async (
-  i,
-  default_value = ""
-) => {
-  const dataCountry = await getCountry();
-  let countryOptions = "";
-  dataCountry?.data.map((val) => {
-    countryOptions += `
-      <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-  });
-
-  $(`.content-delegation-country-official-${i}`).removeClass("d-none");
-  $(`.content-delegation-country-official-${i}`).append(`
-    <div class="form-group d-flex flex-column gap-2">
-      <label for="country_delegation_official${i}">
-        Delegation Country*
-      </label>
-      <select class="form-select js-select2-country-official-delegation"
-          id="country_delegation_official${i}"
-          name="country_delegation_official[]"
-          onchange="handlerSetContentDelegationProvinceOfficial(${i})"
-          value="${!default_value ? "" : default_value}"
-          required>
-          <option value="" selected disabled>Choose Country</option>
-          ${countryOptions}
-      </select>
-    </div>
-  `);
-  $(".js-select2-country-official-delegation").select2({
-    selectionCssClass: "form-select",
-  });
-};
-
-const handlerSetContentDelegationProvinceOfficial = async (
-  i,
-  default_value = ""
-) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_official${i}`
-  ).value;
-  if (getTypeDelegationInput.toLowerCase() !== "country") {
-    const valueCountry = $(`#country_delegation_official${i}`).val();
-    const getDataProvince = await getProvince(valueCountry);
-    let provinceOptions = "";
-    getDataProvince?.data.map((val) => {
-      provinceOptions += `
-      <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-    });
-
-    $(`.content-delegation-province-official-${i}`).removeClass("d-none");
-    $(`.content-delegation-province-official-${i}`).empty();
-    $(`.content-delegation-province-official-${i}`).append(`
-      <div class="form-group d-flex flex-column gap-2">
-        <label for="province_delegation_official${i}">
-          Delegation Province*
-        </label>
-        <select class="form-select js-select2-province-official-delegation"
-            id="province_delegation_official${i}"
-            name="province_delegation_official[]"
-            onchange="handlerSetContentDelegationCityOfficial(${i})"
-            value="${!default_value ? "" : default_value}"
-            required>
-            <option value="" selected disabled>Choose Province</option>
-            ${provinceOptions}
-        </select>
-      </div>
-    `);
-    $(".js-select2-province-official-delegation").select2({
-      selectionCssClass: "form-select",
-    });
-  }
-};
-
-const handlerSetContentDelegationCityOfficial = async (
-  i,
-  default_value = ""
-) => {
-  const getTypeDelegationInput = document.getElementById(
-    `delegation_official${i}`
-  ).value;
-  if (
-    !["country", "province", "state"].includes(
-      getTypeDelegationInput.toLowerCase()
-    )
-  ) {
-    const valueCountry = $(`#country_delegation_official${i}`).val();
-    const valueProvince = $(`#province_delegation_official${i}`).val();
-    const getDataCity = await getCity(valueCountry, valueProvince);
-    let cityOptions = "";
-    getDataCity?.data?.map((val) => {
-      cityOptions += `
-        <option
-            value="${val.id}">
-            ${val.name}
-        </option>
-      `;
-    });
-    $(`.content-delegation-city-official-${i}`).empty();
-    $(`.content-delegation-city-official-${i}`).append(`
-      <div class="form-group d-flex flex-column gap-2">
-        <label for="city_delegation_official${i}">
-          Delegation City*
-        </label>
-        <select class="form-select js-select2-city-official-delegation"
-            id="city_delegation_official${i}"
-            name="city_delegation_official[]"
-            value="${!default_value ? "" : default_value}"
-            required>
-            <option value="" selected disabled>Choose City</option>
-            ${cityOptions}
-        </select>
-      </div>
-    `);
-    $(".js-select2-city-official-delegation").select2({
-      selectionCssClass: "form-select",
-    });
-    $(`.content-delegation-city-official-${i}`).removeClass("d-none");
-  }
-};
-
-const handlerSetContentDelegationSchoolOfficial = (i) => {
-  $(`.content-delegation-school-official-${i}`).removeClass("d-none");
-  $(`.content-delegation-school-official-${i}`).empty();
-  $(`.content-delegation-school-official-${i}`).append(`
-    <label for="school_delegation_official${i}">
-        Delegation School/Universities*
-    </label>
-    <input type="text" class="form-control" id="school_delegation_official${i}" name="school_delegation_official[]" placeholder="type school/universities">
-  `);
-};
-
-const handlerSetContentDelegationOrganizationOfficial = (i) => {
-  $(`.content-delegation-organization-official-${i}`).removeClass("d-none");
-  $(`.content-delegation-organization-official-${i}`).empty();
-  $(`.content-delegation-organization-official-${i}`).append(`
-    <label for="organization_delegation_official${i}">
-        Delegation Organization/Association*
-    </label>
-    <input type="text" class="form-control" id="organization_delegation_official${i}" name="organization_delegation_official[]" placeholder="type organization or association">
-  `);
-};
-
-const handlerAddNewClubDelegationOfficial = (i) => {
-  $(`.content-delegation-club-official-${i}`).empty();
-  $(`.content-delegation-club-official-${i}`).append(`
-    <label for="club_delegation_official${i}">
-        Delegation Club*
-    </label>
-    <p>
-      <a href="javascript:void()" class="text-primary" onclick="handlerSetContentDelegationClubOfficial(${i})">
-        Select from existing list
-      </a>
-    </p>
-    <input type="text" class="form-control" id="club_delegation_official${i}" name="club_delegation_official[]" placeholder="Input new club">
-  `);
-};
-
-const handlerSetContentDelegationClubOfficial = async (
-  i,
-  default_value = ""
-) => {
-  const getDataClubs = await getClubs();
-  let clubOptions = "";
-  getDataClubs?.data?.map((val) => {
-    clubOptions += `
-       <option
-          value="${val.id}">
-          ${val.name}
-      </option>
-    `;
-  });
-  $(`.content-delegation-club-official-${i}`).removeClass("d-none");
-  $(`.content-delegation-club-official-${i}`).empty();
-  $(`.content-delegation-club-official-${i}`).append(`
-    <label for="club_delegation_official${i}">
-        Delegation Club*
-    </label>
-    <p>
-      <a href="javascript:void()" class="text-primary" onclick="handlerAddNewClubDelegationOfficial(${i})">Add New Club+</a>
-    </p>
-    <select class="form-select js-select2-club-official-delegation"
-        id="club_delegation_official${i}"
-        name="club_delegation_official[]"
-        value="${!default_value ? "" : default_value}"
-        required>
-        <option value="" selected disabled>Choose Club</option>
-        ${clubOptions}
-    </select>
-  `);
-
-  $(".js-select2-club-official-delegation").select2({
-    selectionCssClass: "form-select",
-  });
-};
-
-const handlerOfficialCountry = async (i) => {
-  $(`#profile_city_official${i}`).empty();
-  const getValueCountry = $(`#profile_country_official${i}`).val();
-
-  let cityOptions = `
-    <option value="" selected disabled>
-        Select City/District
-    </option>
-  `;
-  const getDataCity = await getCity(getValueCountry);
-  getDataCity?.data?.map((val) => {
-    cityOptions += `
-        <option value="${val.id}">
-            ${val.name}
-        </option>
-    `;
-  });
-  $(`#profile_city_official${i}`).append(cityOptions);
-};
-
-const getClubs = async () => {
-  return await $.ajax({
-    url: `${base_url}/api/get-clubs`,
-    method: "GET",
-    contentType: false,
-    success: function (response) {
-      try {
-        return response.data;
-      } catch (e) {
-        alert("error get country!");
-        return [];
-      }
-    },
-    error: function (error) {
-      alert(error.responseJSON.errors[x][0]);
-      return [];
-    },
-  });
-};
-
-const getCountry = async () => {
-  return await $.ajax({
-    url: `${base_url}/api/get-country`,
-    method: "GET",
-    contentType: false,
-    success: function (response) {
-      try {
-        return response.data;
-      } catch (e) {
-        alert("error get country!");
-        return [];
-      }
-    },
-    error: function (error) {
-      alert(error.responseJSON.errors[x][0]);
-      return [];
-    },
-  });
-};
-
-const getProvince = async (countryId) => {
-  return await $.ajax({
-    url: `${base_url}/api/get-state/${countryId}`,
-    method: "GET",
-    contentType: false,
-    success: function (response) {
-      try {
-        return response.data;
-      } catch (e) {
-        alert("error get province!");
-        return [];
-      }
-    },
-    error: function (error) {
-      alert(error.responseJSON.errors[x][0]);
-      return [];
-    },
-  });
-};
-
-const getCity = async (countryId = "", provinceID = "") => {
-  return await $.ajax({
-    url: `${base_url}/api/get-city/${countryId}${
-      !provinceID ? "" : "/" + provinceID
-    }`,
-    method: "GET",
-    contentType: false,
-    success: function (response) {
-      try {
-        return response.data;
-      } catch (e) {
-        alert("error get city!");
-        return [];
-      }
-    },
-    error: function (error) {
-      alert(error.responseJSON.errors[x][0]);
-      return [];
-    },
-  });
+const handlerBack = (slug, event_id) => {
+  location.replace(`${base_url}/event/${slug}/${event_id}`);
 };

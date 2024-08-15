@@ -1,7 +1,7 @@
 @extends('frontend.layout')
 
 @php
-    $og_title = $from_step_one['event_title'];
+    $og_title = $from_info_event['event_title'];
     if ($event->date_type == 'multiple') {
         $event_date = eventLatestDates($event->id);
         $date = strtotime(@$event_date->start_date);
@@ -11,7 +11,7 @@
 @endphp
 
 @section('pageHeading')
-    {{ $from_step_one['event_title'] }}
+    {{ $from_info_event['event_title'] }}
 @endsection
 
 @section('meta-keywords', "order $og_title")
@@ -58,9 +58,7 @@
 @section('content')
     <form id="bookingForm" action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" id="event_id" name="event_id" value="{{ $from_step_one['event_id'] }}">
-        <input type="hidden" id="base_url" value="{{ url('/') }}">
-        <input type="hidden" class="contingent_type" value="{{ $delegation_event['contingent_type'] }}" id="contingent_type">
+        <input type="hidden" id="event_id" name="event_id" value="{{ $from_info_event['event_id'] }}">
 
         <section class="event-details-section pt-110 rpt-90 pb-90 rpb-70">
             <div class="container">
@@ -89,7 +87,8 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td rows="2">{{ __('Info Phone Number Customer On Order Detail') }}</td>
+                                                    <td rows="2">
+                                                        {{ __('Info Phone Number Customer On Order Detail') }}</td>
                                                     <td rows="1">:</td>
                                                     <td rows="1">
                                                         {{ empty($customer->phone) ? '' : $customer->phone }}
@@ -106,420 +105,50 @@
                                         </table>
                                     </div>
                                 </div>
-                                @foreach ($category_tickets as $val_category_tickets)
-                                    @if (strtolower($val_category_tickets['name']) == 'individu' && $val_category_tickets['quantity'] > 0)
-                                        <section id="individu_section">
-                                            <div class="col-12 mt-3">
-                                                <h4 style="font-weight: bold">
-                                                    {{ __('Category Order Individu') }}
-                                                </h4>
-                                                <small>
-                                                    {{ __('Description Category Order Individu') }}
-                                                </small>
-                                            </div>
-                                            <div class="col-12 mt-3">
-                                                <div class="accordion" id="accordionParticipant">
-                                                    @for ($i = 0; $i < $val_category_tickets['quantity']; $i++)
-                                                        <div class="card">
-                                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                                id="participant_individu{{ $i }}"
-                                                                data-toggle="collapse"
-                                                                data-target="#collapse_participant_{{ $i }}"
-                                                                aria-expanded="false"
-                                                                aria-controls="collapse_participant_{{ $i }}">
-                                                                {{ __('Collapse Name Form Individu Category') }}
-                                                                {{ $i + 1 }}
-                                                            </div>
-                                                            <div id="collapse_participant_{{ $i }}"
-                                                                class="collapse {{ $i == 0 ? 'show' : '' }}"
-                                                                aria-labelledby="participant_individu{{ $i }}"
-                                                                data-parent="#accordionParticipant">
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-12 form-group">
-                                                                            <label for="name_individu{{ $i }}">
-                                                                                {{ __('Full Name') }}*
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="name_individu{{ $i }}"
-                                                                                name="name_individu[]"
-                                                                                placeholder="{{ __('Enter Your Full Name') }}"
-                                                                                required>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group">
-                                                                            <label for="gender_individu{{ $i }}">
-                                                                                {{ __('Gender') }}*
-                                                                            </label>
-                                                                            <select class="form-select"
-                                                                                id="gender_individu{{ $i }}"
-                                                                                name="gender_individu[]">
-                                                                                <option value="male" selected>
-                                                                                    {{ __('Male') }}</option>
-                                                                                <option value="female">{{ __('Female') }}
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group">
-                                                                            <label for="birth_date_individu{{ $i }}">
-                                                                                {{ __('Birth Date') }}*
-                                                                            </label>
-                                                                            <input type="date" class="form-control"
-                                                                                id="birth_date_individu{{ $i }}"
-                                                                                name="birth_date_individu[]"
-                                                                                placeholder="{{ __('Select Date') }}"
-                                                                                max="{{ date('Y-m-d') }}" required>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
-                                                                            <label for="profile_country_individu{{ $i }}">
-                                                                                {{ __('Country') }}*
-                                                                            </label>
-                                                                            <select class="custom-select js-example-basic-single"
-                                                                                id="profile_country_individu{{ $i }}"
-                                                                                name="profile_country_individu[]"
-                                                                                onchange="handlerProfileCountry({{ $i }})"
-                                                                                required>
-                                                                                <option value="" selected disabled>
-                                                                                    {{ __('Select Country') }}
-                                                                                </option>
-                                                                                @foreach ($countries as $val_countries)
-                                                                                    <option value="{{ $val_countries['id'] }}">
-                                                                                        {{ $val_countries['name'] }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
-                                                                            <label for="profile_city_individu{{ $i }}">
-                                                                                {{ __('City/District') }}*
-                                                                            </label>
-                                                                            <select class="form-select js-example-basic-single"
-                                                                                id="profile_city_individu{{ $i }}"
-                                                                                name="profile_city_individu[]" required>
-                                                                                <option value="" selected disabled>
-                                                                                    {{ __('Select City/District') }}
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                        @if (strtolower($delegation_event['contingent_type']) == 'open')
-                                                                            <div class="col-12 form-group d-flex flex-column gap-2 content-delegation-individu-{{ $i }}">
-                                                                                <label for="delegation_individu{{ $i }}">
-                                                                                    {{ __('Delegation Type') }}*
-                                                                                </label>
-                                                                                <select class="form-select js-example-basic-single"
-                                                                                    id="delegation_individu{{ $i }}"
-                                                                                    name="delegation_individu[]"
-                                                                                    onchange="handlerDelegationIndividu({{ $i }})"
-                                                                                    required>
-                                                                                    <option value="" selected disabled>
-                                                                                        {{ __('Select Delegation Type') }}
-                                                                                    </option>
-                                                                                    @foreach ($delegation_type as $val_delegation_type)
-                                                                                        <option value="{{ $val_delegation_type['name'] }}">
-                                                                                            {{ $val_delegation_type['name'] }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        @else
-                                                                            <input type="hidden"
-                                                                                name="delegation_individu[]"
-                                                                                value="{{ $delegation_event['select_type'] }}" />
-                                                                            @if (strtolower($delegation_event['select_type']) == 'province')
-                                                                                <input type="hidden"
-                                                                                    class="country_delegation_individu{{ $i }}"
-                                                                                    value="{{ $delegation_event['country_id'] }}"
-                                                                                    id="country_delegation_individu{{ $i }}">
-                                                                            @endif
-
-                                                                            @if (strtolower($delegation_event['select_type']) == 'city/district')
-                                                                                <input type="hidden"
-                                                                                    class="country_delegation_individu{{ $i }}"
-                                                                                    value="{{ $delegation_event['country_id'] }}"
-                                                                                    id="country_delegation_individu{{ $i }}">
-                                                                                <input type="hidden"
-                                                                                    class="province_delegation_individu{{ $i }}"
-                                                                                    value="{{ $delegation_event['province_id'] }}"
-                                                                                    id="province_delegation_individu{{ $i }}">
-                                                                            @endif
-                                                                            <input type="hidden"
-                                                                                class="delegation_individu_choosed{{ $i }}"
-                                                                                value="{{ $delegation_event['select_type'] }}"
-                                                                                id="delegation_individu{{ $i }}">
-                                                                        @endif
-                                                                        <div class="col-12 content-delegation-country-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-province-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-city-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-school-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-club-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-organization-individu-{{ $i }} d-none"></div>
-                                                                        <div class="col-12">
-                                                                            <label for="category_individu{{ $i }}">
-                                                                                {{ __('Category') }}*
-                                                                            </label>
-                                                                            <select class="form-select"
-                                                                                id="category_individu{{ $i }}"
-                                                                                name="category_individu[]">
-                                                                                <option value="" selected>
-                                                                                    {{ __('Select Category') }}</option>
-                                                                                @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                                    @if (strtolower($val_sub_cat_ticket['category_name']) == 'individu')
-                                                                                        <option value="{{ $val_sub_cat_ticket['id'] }}">
-                                                                                            {{ $val_sub_cat_ticket['title'] }}
-                                                                                        </option>
-                                                                                    @endif
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endfor
-                                                </div>
-                                            </div>
-                                        </section>
-                                    @endif
-
-                                    @if (strtolower($val_category_tickets['name']) == 'team' && $val_category_tickets['quantity'] > 0)
-                                        <section id="team_section">
-                                            <div class="col-12 mt-3">
-                                                <h4 style="font-weight: bold">
-                                                    {{ __('Category Order Team') }}
-                                                </h4>
-                                                <small>
-                                                    {{ __('Description Category Order Team') }}
-                                                </small>
-                                            </div>
-                                            <div class="col-12 mt-3">
-                                                <div class="accordion" id="accordionExampleTeam">
-                                                    @for ($i = 0; $i < $val_category_tickets['quantity']; $i++)
-                                                        <div class="card">
-                                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                                id="team{{ $i }}" data-toggle="collapse"
-                                                                data-target="#collapse_team{{ $i }}"
-                                                                aria-expanded="false"
-                                                                aria-controls="collapse_team{{ $i }}">
-                                                                {{ __('Collapse Name Form Team Category') }}
-                                                                {{ $i + 1 }}
-                                                            </div>
-                                                            <div id="collapse_team{{ $i }}"
-                                                                class="collapse {{ $i == 0 ? 'show' : '' }}"
-                                                                aria-labelledby="team{{ $i }}"
-                                                                data-parent="#accordionExampleTeam">
-                                                                <div class="card-body">
-                                                                    Some placeholder content for the second accordion panel.
-                                                                    This
-                                                                    panel is
-                                                                    hidden by default.
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endfor
-                                                </div>
-                                            </div>
-                                        </section>
-                                    @endif
-
-                                    @if (strtolower($val_category_tickets['name']) == 'mix team' && $val_category_tickets['quantity'] > 0)
-                                        <section id="mix_team_section">
-                                            <div class="col-12 mt-3">
-                                                <h4 style="font-weight: bold">
-                                                    {{ __('Category Order Mix Team') }}
-                                                </h4>
-                                                <small>
-                                                    {{ __('Description Category Order Mix Team') }}
-                                                </small>
-                                            </div>
-                                            <div class="col-12 mt-3">
-                                                <div class="accordion" id="accordionExampleMixTeam">
-                                                    @for ($i = 0; $i < $val_category_tickets['quantity']; $i++)
-                                                        <div class="card">
-                                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                                id="mix_team{{ $i }}" data-toggle="collapse"
-                                                                data-target="#collapse_mix_team{{ $i }}"
-                                                                aria-expanded="false"
-                                                                aria-controls="collapse_mix_team{{ $i }}">
-                                                                {{ __('Collapse Name Form Mix Team Category') }}
-                                                                {{ $i + 1 }}
-                                                            </div>
-                                                            <div id="collapse_mix_team{{ $i }}"
-                                                                class="collapse {{ $i == 0 ? 'show' : '' }}"
-                                                                aria-labelledby="mix_team{{ $i }}"
-                                                                data-parent="#accordionExampleMixTeam">
-                                                                <div class="card-body">
-                                                                    Some placeholder content for the second accordion panel.
-                                                                    This
-                                                                    panel is
-                                                                    hidden by default.
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endfor
-                                                </div>
-                                            </div>
-                                        </section>
-                                    @endif
-
-                                    @if (strtolower($val_category_tickets['name']) == 'official' && $val_category_tickets['quantity'] > 0)
-                                        <section id="official_section">
-                                            <div class="col-12 mt-3">
-                                                <h4 style="font-weight: bold">
-                                                    {{ __('Category Order Official') }}
-                                                </h4>
-                                                <small>
-                                                    {{ __('Description Category Order Official') }}
-                                                </small>
-                                            </div>
-                                            <div class="col-12 mt-3">
-                                                <div class="accordion" id="accordionExampleOfficial">
-                                                    @for ($i = 0; $i < $val_category_tickets['quantity']; $i++)
-                                                        <div class="card">
-                                                            <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
-                                                                id="official{{ $i }}" data-toggle="collapse"
-                                                                data-target="#collapse_official{{ $i }}"
-                                                                aria-expanded="false"
-                                                                aria-controls="collapse_official{{ $i }}">
-                                                                {{ __('Collapse Name Form Official Category') }}
-                                                                {{ $i + 1 }}
-                                                            </div>
-                                                            <div id="collapse_official{{ $i }}"
-                                                                class="collapse {{ $i == 0 ? 'show' : '' }}"
-                                                                aria-labelledby="official{{ $i }}"
-                                                                data-parent="#accordionExampleOfficial">
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-12 form-group">
-                                                                            <label for="name_official{{ $i }}">
-                                                                                {{ __('Full Name') }}*
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                id="name_official{{ $i }}"
-                                                                                name="name_official[]"
-                                                                                placeholder="{{ __('Enter Your Full Name') }}"
-                                                                                required>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group">
-                                                                            <label for="gender_official{{ $i }}">
-                                                                                {{ __('Gender') }}*
-                                                                            </label>
-                                                                            <select class="form-select"
-                                                                                id="gender_official{{ $i }}"
-                                                                                name="gender_official[]">
-                                                                                <option value="male" selected>
-                                                                                    {{ __('Male') }}</option>
-                                                                                <option value="female">{{ __('Female') }}
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group">
-                                                                            <label for="birth_date_official{{ $i }}">
-                                                                                {{ __('Birth Date') }}*
-                                                                            </label>
-                                                                            <input type="date" class="form-control"
-                                                                                id="birth_date_official{{ $i }}"
-                                                                                name="birth_date_official[]"
-                                                                                placeholder="{{ __('Select Date') }}"
-                                                                                max="{{ date('Y-m-d') }}" required>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2 content-profile-country-individu-{{ $i }}">
-                                                                            <label for="profile_country_official{{ $i }}">
-                                                                                {{ __('Country') }}*
-                                                                            </label>
-                                                                            <select class="custom-select js-example-basic-single"
-                                                                                id="profile_country_official{{ $i }}"
-                                                                                name="profile_country_official[]"
-                                                                                onchange="handlerOfficialCountry({{ $i }})"
-                                                                                required>
-                                                                                <option value="" selected disabled>
-                                                                                    {{ __('Select Country') }}
-                                                                                </option>
-                                                                                @foreach ($countries as $val_countries)
-                                                                                    <option value="{{ $val_countries['id'] }}">
-                                                                                        {{ $val_countries['name'] }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-12 col-lg-6 d-flex flex-column gap-2 form-group content-profile-city-individu-{{ $i }}">
-                                                                            <label for="profile_city_official{{ $i }}">
-                                                                                {{ __('City/District') }}*
-                                                                            </label>
-                                                                            <select class="form-select js-example-basic-single"
-                                                                                id="profile_city_official{{ $i }}"
-                                                                                name="profile_city_official[]" required>
-                                                                                <option value="" selected disabled>
-                                                                                    {{ __('Select City/District') }}
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                        @if (strtolower($delegation_event['contingent_type']) == 'open')
-                                                                            <div class="col-12 form-group d-flex flex-column gap-2 content-delegation-official-{{ $i }}">
-                                                                                <label for="delegation_official{{ $i }}">
-                                                                                    {{ __('Delegation Type') }}*
-                                                                                </label>
-                                                                                <select class="form-select js-example-basic-single"
-                                                                                    id="delegation_official{{ $i }}"
-                                                                                    name="delegation_official[]"
-                                                                                    onchange="handlerDelegationOfficial({{ $i }})"
-                                                                                    required>
-                                                                                    <option value="" selected disabled>
-                                                                                        {{ __('Select Delegation Type') }}
-                                                                                    </option>
-                                                                                    @foreach ($delegation_type as $val_delegation_type)
-                                                                                        <option value="{{ $val_delegation_type['name'] }}">
-                                                                                            {{ $val_delegation_type['name'] }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        @else
-                                                                            <input type="hidden"
-                                                                                name="delegation_official[]"
-                                                                                value="{{ $delegation_event['select_type'] }}" />
-                                                                            @if (strtolower($delegation_event['select_type']) == 'province')
-                                                                                <input type="hidden"
-                                                                                    class="country_delegation_official{{ $i }}"
-                                                                                    value="{{ $delegation_event['country_id'] }}"
-                                                                                    id="country_delegation_official{{ $i }}">
-                                                                            @endif
-
-                                                                            @if (strtolower($delegation_event['select_type']) == 'city/district')
-                                                                                <input type="hidden"
-                                                                                    class="country_delegation_official{{ $i }}"
-                                                                                    value="{{ $delegation_event['country_id'] }}"
-                                                                                    id="country_delegation_official{{ $i }}">
-                                                                                <input type="hidden"
-                                                                                    class="province_delegation_official{{ $i }}"
-                                                                                    value="{{ $delegation_event['province_id'] }}"
-                                                                                    id="province_delegation_official{{ $i }}">
-                                                                            @endif
-                                                                            <input type="hidden"
-                                                                                class="delegation_official_choosed{{ $i }}"
-                                                                                value="{{ $delegation_event['select_type'] }}"
-                                                                                id="delegation_official{{ $i }}">
-                                                                        @endif
-                                                                        <div class="col-12 content-delegation-country-official-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-province-official-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-city-official-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-school-official-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-club-official-{{ $i }} d-none"></div>
-                                                                        <div class="col-12 content-delegation-organization-official-{{ $i }} d-none"></div>
-                                                                        @foreach ($sub_category_tickets as $val_sub_cat_ticket)
-                                                                            @if (strtolower($val_sub_cat_ticket['category_name']) == 'official')
-                                                                                <input type="hidden"name="category_official[]"
-                                                                                    value="{{ $val_sub_cat_ticket['id'] }}">
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endfor
-                                                </div>
-                                            </div>
-                                        </section>
-                                    @endif
-                                @endforeach
+                                <section id="individu_section" class="d-none">
+                                    <div class="col-12 mt-3">
+                                        <h4 style="font-weight: bold">
+                                            {{ __('Category Order Individu') }}
+                                        </h4>
+                                        <small>
+                                            {{ __('Description Category Order Individu') }}
+                                        </small>
+                                    </div>
+                                    <div class="col-12 mt-3" id="form_individu"></div>
+                                </section>
+                                <section id="team_section" class="d-none">
+                                    <div class="col-12 mt-3">
+                                        <h4 style="font-weight: bold">
+                                            {{ __('Category Order Team') }}
+                                        </h4>
+                                        <small>
+                                            {{ __('Description Category Order Team') }}
+                                        </small>
+                                    </div>
+                                    <div class="col-12 mt-3" id="form_team"></div>
+                                </section>
+                                <section id="mix_team_section" class="d-none">
+                                    <div class="col-12 mt-3">
+                                        <h4 style="font-weight: bold">
+                                            {{ __('Category Order Mix Team') }}
+                                        </h4>
+                                        <small>
+                                            {{ __('Description Category Order Mix Team') }}
+                                        </small>
+                                    </div>
+                                    <div class="col-12 mt-3" id="form_mix_team"></div>
+                                </section>
+                                <section id="official_section" class="d-none">
+                                    <div class="col-12 mt-3">
+                                        <h4 style="font-weight: bold">
+                                            {{ __('Category Order Official') }}
+                                        </h4>
+                                        <small>
+                                            {{ __('Description Category Order Official') }}
+                                        </small>
+                                    </div>
+                                    <div class="col-12 mt-3" id="form_official"></div>
+                                </section>
                             </div>
                         </div>
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
@@ -565,33 +194,13 @@
                                 <div class="col-12">
                                     <p class="font-weight-bold">Tickets Info</p>
                                 </div>
-                                @php
-                                    $total_tickets_quantity = 0;
-                                @endphp
-                                @foreach ($category_tickets as $val_category_tickets)
-                                    @if ($val_category_tickets['quantity'] > 0)
-                                        @php
-                                            $total_tickets_quantity = $total_tickets_quantity + $val_category_tickets['quantity'];
-                                        @endphp
-                                        <div class="col-12 d-flex justify-content-between">
-                                            <p class="font-weight-medium mb-0">
-                                                {{ ucfirst($val_category_tickets['name']) }}
-                                            </p>
-                                            <p class="font-weight-medium mb-0">
-                                                {{ $val_category_tickets['quantity'] }}
-                                            </p>
-                                        </div>
-                                        <div class="col-12 mt-0">
-                                            <hr style="width:100%;text-align:left;margin-left:0">
-                                        </div>
-                                    @endif
-                                @endforeach
+                                <section class="list-category-tickets"></section>
                                 <div class="col-12 d-flex justify-content-between">
                                     <p class="font-weight-medium mb-0">
                                         Total Tickets
                                     </p>
-                                    <p class="font-weight-medium mb-0">
-                                        {{ $total_tickets_quantity }}
+                                    <p class="font-weight-medium mb-0 total-tickets">
+                                        0
                                     </p>
                                 </div>
                                 @if (!empty($event->code))
@@ -601,28 +210,20 @@
                                     <div class="col-12">
                                         <div class="input-group mb-3">
                                             <div class="status_code"></div>
-                                            <input type="text" name="code_access" id="code_access"
-                                                class="form-control" placeholder="type your code"
+                                            <input type="text" name="code_access" id="code_access" class="form-control"
+                                                placeholder="{{ __('Type your code access') }}"
                                                 aria-label="Example text with button addon"
                                                 aria-describedby="button-addon1">
-                                            <div class="input-group-prepend">
-                                                <button class="theme-btn w-100"
-                                                    onclick="handleCheckCodeEvent({{ $event->id }})" type="button"
-                                                    id="button-addon1">
-                                                    {{ __('Apply') }}
-                                                </button>
-                                            </div>
                                         </div>
-                                        <div id="code_status_message" class="text-center mt-2"></div>
                                     </div>
                                 @endif
                                 <div class="col-12 mt-3">
-                                    <button class="theme-btn w-100" type="submit" id="submitBooking">
+                                    <button class="theme-btn w-100" type="submit">
                                         {{ __('Continue') }}
                                     </button>
                                 </div>
                                 <div class="col-12 mt-3">
-                                    <a href="{{ route('event.details', [$event['slug'], $from_step_one['event_id']]) }}"
+                                    <a onClick="handlerBack('{{ $event['slug'] }}','{{ $from_info_event['event_id'] }}')"
                                         class="theme-btn-outline-primary-1 w-100" type="button">
                                         {{ __('Back') }}
                                     </a>
@@ -636,54 +237,24 @@
     </form>
 @endsection
 @section('custom-script')
-    <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
     <script>
-        let isCodeValid = false;
-
-        document.getElementById('button-addon1').addEventListener('click', function(event) {
-            var eventId = document.getElementById('event_id').value;
-            var codeAccess = document.getElementById('code_access').value;
-
-            if (codeAccess.trim() === '') {
-                alert('Please enter a code access.');
-                return;
-            }
-
-            fetch('{{ route("validate.code.access") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    event_id: eventId,
-                    code_access: codeAccess
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                var codeStatusMessage = document.getElementById('code_status_message');
-                if (data.status === 'approved') {
-                    codeStatusMessage.textContent = 'Code Accepted';
-                    codeStatusMessage.style.color = 'green';
-                    isCodeValid = true;
-                } else {
-                    codeStatusMessage.textContent = 'Wrong Access Code';
-                    codeStatusMessage.style.color = 'red';
-                    isCodeValid = false;
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        });
-
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            var codeAccessField = document.getElementById('code_access');
-            var codeAccessValue = codeAccessField ? codeAccessField.value : '';
-
-            if (codeAccessField && codeAccessValue.trim() === '' || !isCodeValid) {
-                event.preventDefault();
-                alert('Please input the correct code.');
-            }
-        });
+        const base_url = "{{ url('/') }}";
+        const checkoutID = "{{ $checkoutID }}";
+        const titleIndividuAccordion = "{{ __('Collapse Name Form Individu Category') }}";
+        const titleTeamAccordion = "{{ __('Collapse Name Form Team Category') }}";
+        const titleMixTeamAccordion = "{{ __('Collapse Name Form Mix Team Category') }}";
+        const titleOfficialAccordion = "{{ __('Collapse Name Form Official Category') }}";
+        const fullNameLabel = "{{ __('Full Name') }}";
+        const fullNamePlaceholder = "{{ __('Enter Your Full Name') }}";
+        const genderLabel = "{{ __('Gender') }}";
+        const genderMaleLang = "{{ __('Male') }}";
+        const genderFemaleLang = "{{ __('Female') }}";
+        const birthDateLabel = "{{ __('Birth Date') }}";
+        const birthDatePlaceholder = "{{ __('Select Date') }}";
+        const countryProfileLabel = "{{ __('Country') }}";
+        const countryProfileDefaultOption = "{{ __('Select Country') }}";
+        const cityDistrictProfileLabel = "{{ __('City/District') }}";
+        const cityDistrictProfileDefaultOption = " {{ __('Select City/District') }}";
     </script>
+    <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
 @endsection

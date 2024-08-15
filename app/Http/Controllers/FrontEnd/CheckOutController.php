@@ -1103,4 +1103,301 @@ class CheckOutController extends Controller
 
     return response()->json(['status' => 'error'], 400);
   }
+
+  // checkout tournament
+  public function formOrderView(Request $request)
+  {
+    //check customer logged in or not ?
+    if (Auth::guard('customer')->check() == false) {
+      return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+    }
+
+    $event = Session::get('event_' . $request->checkoutID);
+
+    if (empty($event)) {
+      return redirect()->route('events')->with(['alert-type' => 'error', 'message' => 'Not Found Checkout ID']);
+    }
+
+    $information['customer'] = Auth::guard('customer')->user();
+    $information['event'] = $event;
+    $information['event_date'] = Session::get('event_date_' . $request->checkoutID);
+    $information['checkoutID'] = $request->checkoutID;
+    $information['organizer'] = Session::get('organizer_' . $request->checkoutID);
+    $information['from_info_event'] = Session::get('from_info_event_' . $request->checkoutID);
+    return view('frontend.event.event-form-order-detail', $information);
+  }
+
+  public function formOrderProcess(Request $request)
+  {
+    $basic = Basic::select('event_guest_checkout_status')->first();
+    $event_guest_checkout_status = $basic->event_guest_checkout_status;
+    if ($event_guest_checkout_status != 1) {
+      if (!Auth::guard('customer')->user()) {
+        return response()->json(['status' => 'error', 'message' => __('Please Login Customer')], 403);
+      }
+    }
+
+    $quantityTournament = array_filter($request->quantity, function ($param) {
+      if ($param > 0) {
+        return $param;
+      }
+    });
+
+    if (empty($quantityTournament)) {
+      return response()->json(['status' => 'error', 'message' => __('Error Minimum Quantity Ticket Tournament')], 400);
+    }
+
+    $select = false;
+    $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
+    if ($event_type->event_type == 'venue') {
+      foreach ($request->quantity as $qty) {
+        if ($qty > 0) {
+          $select = true;
+          break;
+        }
+        continue;
+      }
+    } else {
+      if ($request->pricing_type == 'free') {
+        $select = true;
+      } elseif ($request->pricing_type == 'normal') {
+        if ($request->quantity == 0) {
+          $select = false;
+        } else {
+          $select = true;
+        }
+      } else {
+        foreach ($request->quantity as $qty) {
+          if ($qty > 0) {
+            $select = true;
+            break;
+          }
+          continue;
+        }
+      }
+    }
+
+    if ($select == false) {
+      return response()->json(['status' => 'error', 'message' => __('Error Minimum Quantity Ticket Tournament')], 400);
+    }
+
+    $event = EventContent::join('events', 'events.id', 'event_contents.event_id')
+      ->join('event_type', 'event_type.event_id', 'events.id')
+      ->where('events.id', $request->event_id)
+      ->select('events.*', 'event_contents.*', 'event_type.code', 'event_type.event_type', 'event_type.id')
+      ->first();
+
+    if (empty($event)) {
+      return response()->json(['status' => 'error', 'message' => __('No Event Found')], 404);
+    }
+
+    //check customer logged in or not ?
+    if (Auth::guard('customer')->check() == false) {
+      return response()->json(['status' => 'error', 'message' => __('Please Login Customer')], 403);
+    }
+
+    $online_gateways = OnlineGateway::where('status', 1)->get();
+    $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+
+    Session::put('online_gateways', $online_gateways);
+    Session::put('offline_gateways', $offline_gateways);
+    Session::put('event_' . $request->checkoutId, $event);
+    Session::put('event_date_' . $request->checkoutId, $request->event_date);
+    Session::put('selTickets_' . $request->checkoutId, '');
+
+    $organizer = Organizer::join('organizer_infos', 'organizer_infos.organizer_id', 'organizers.id')
+      ->where('organizers.id', '=', $event->organizer_id)
+      ->select('organizers.id', 'organizers.email', 'organizers.phone', 'organizer_infos.*')
+      ->first();
+
+    // if event create from role admin and cannot organizer id
+    if (!$organizer) {
+      $organizer = Admin::select('id', 'first_name as name', 'email', 'phone')->first();
+    }
+    Session::put("organizer_" . $request->checkoutId, $organizer);
+    Session::put('from_info_event_' . $request->checkoutId, $request->all());
+
+    $get_contingent_type = ContingentType::where('event_id', $request->event_id)->first();
+
+    Session::put('delegation_event_' . $request->checkoutId, $get_contingent_type->toArray());
+
+    $tickets = $request->category_ticket;
+    $quantity = $request->quantity;
+    foreach ($tickets as $key => $value) {
+      $ticket[$key] = $value;
+    }
+
+    $ticket_detail_individu_order = [];
+    $ticket_detail_team_order = [];
+    $ticket_detail_mix_team_order = [];
+    $ticket_detail_official_order = [];
+
+    foreach ($quantity as $k => $v) {
+      if (strtolower($ticket[$k]) == 'individu') {
+        if ($v > 0) {
+          for ($x = 0; $x < $v; $x++) {
+            $ticket_detail_individu_order[] = [
+              "id" => null, //id from category ticket id or ticket id
+
+              // participant
+              "user_id" => null,
+              "user_full_name" => null,
+              "user_gender" => null,
+              "birthdate" => null,
+              "country_id" => null,
+              "country_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              // end participant
+
+              // delegation
+              "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
+              "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
+              'country' => null,
+              'country_delegation_individu' => null,
+              'country_delegation_individu_name' => null,
+              'province_delegation_individu' => null,
+              'province_delegation_individu_name' => null,
+              'city_delegation_individu' => null,
+              'city_delegation_individu_name' => null,
+              "club_id" => null,
+              "club_name" => null,
+              "school_id" => null,
+              "school_name" => null,
+              "organization_id" => null,
+              "organization_name" => null,
+              // end delegation
+
+              "sub_category_ticket_id" => null,
+              "sub_category_ticket" => null,
+              "category_ticket"  => $k
+            ];
+          }
+        }
+      }
+
+      if (strtolower($ticket[$k]) == 'team') {
+      }
+
+      if (strtolower($ticket[$k]) == 'mix team') {
+        if ($v > 0) {
+          for ($x = 0; $x < $v; $x++) {
+            $ticket_detail_mix_team_order[] = [
+              "id" => null,
+              "user_full_name" => null,
+              "user_gender" => null,
+              "birthdate" => null,
+              "delegation_type" => null,
+              "country_id" => null,
+              "country_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              'country' => null,
+              'country_delegation_official' => null,
+              'country_delegation_official_name' => null,
+              'province_delegation_official' => null,
+              'province_delegation_official_name' => null,
+              'city_delegation_official' => null,
+              'city_delegation_official_name' => null,
+              "club_id" => null,
+              "club_name" => null,
+              "school_id" => null,
+              "school_name" => null,
+              "organization_id" => null,
+              "organization_name" => null,
+              "sub_category_ticket_id" => null,
+              "sub_category_ticket" => null,
+              "category_ticket"  => $k
+            ];
+          }
+        }
+      }
+
+      if (strtolower($ticket[$k]) == 'official') {
+        if ($v > 0) {
+          for ($x = 0; $x < $v; $x++) {
+            $ticket_detail_official_order[] = [
+              "id" => $k, //id from category ticket id or ticket id
+
+              // participant
+              "user_id" => null,
+              "user_full_name" => null,
+              "user_gender" => null,
+              "birthdate" => null,
+              "country_id" => null,
+              "country_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              // end participant
+
+              // delegation
+              "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
+              "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
+              'country' => null,
+              'country_delegation_individu' => null,
+              'country_delegation_individu_name' => null,
+              'province_delegation_individu' => null,
+              'province_delegation_individu_name' => null,
+              'city_delegation_individu' => null,
+              'city_delegation_individu_name' => null,
+              "club_id" => null,
+              "club_name" => null,
+              "school_id" => null,
+              "school_name" => null,
+              "organization_id" => null,
+              "organization_name" => null,
+              // end delegation
+
+              "sub_category_ticket_id" => null,
+              "sub_category_ticket" => null,
+              "category_ticket"  => $k
+            ];
+          }
+        }
+      }
+    }
+
+    Session::put('ticket_detail_individu_order_' . $request->checkoutId, $ticket_detail_individu_order);
+    Session::put('ticket_detail_official_order_' . $request->checkoutId, $ticket_detail_official_order);
+    Session::put('ticket_detail_team_order' . $request->checkoutId, $ticket_detail_team_order);
+    Session::put('ticket_detail_mix_team_order' . $request->checkoutId, $ticket_detail_mix_team_order);
+
+    return response()->json(['status' => 'success', 'message' => 'oke'], 200);
+  }
+
+  public function getDataFormOrderTournament(Request $request)
+  {
+    $event = Session::get('event_' . $request->checkoutID);
+    if (empty($event)) {
+      return response()->json(['status' => 'error', 'message' => 'checkout id not found'], 404);
+    }
+
+    $delegation_event = Session::get('delegation_event_' . $request->checkoutID);
+    $category_tickets = Session::get('category_tickets_' . $request->checkoutID);
+    $ticket_detail_individu_order = Session::get('ticket_detail_individu_order_' . $request->checkoutID);
+    $ticket_detail_official_order = Session::get('ticket_detail_official_order_' . $request->checkoutID);
+    $ticket_detail_team_order = Session::get('ticket_detail_team_order' . $request->checkoutID);
+    $ticket_detail_mix_team_order = Session::get('ticket_detail_mix_team_order' . $request->checkoutID);
+    $from_info_event = Session::get('from_info_event_' . $request->checkoutID);
+    $organizer = Session::get('organizer_' . $request->checkoutID);
+
+    return response()->json(
+      [
+        'data' => [
+          'event' => $event,
+          'delegation_event' => $delegation_event,
+          'category_tickets' => $category_tickets,
+          'ticket_detail_individu_order' => $ticket_detail_individu_order,
+          'ticket_detail_official_order' => $ticket_detail_official_order,
+          'ticket_detail_team_order' => $ticket_detail_team_order,
+          'ticket_detail_mix_team_order' => $ticket_detail_mix_team_order,
+          'from_info_event' => $from_info_event,
+          'organizer' => $organizer,
+        ],
+        'status' => 'success'
+      ],
+      200
+    );
+  }
+  // end checkout tournament
 }

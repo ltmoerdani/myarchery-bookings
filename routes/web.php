@@ -111,7 +111,7 @@ Route::middleware('change.lang')->group(function () {
   // tournament
   Route::post('/ticket-booking-tournament/{id}', 'FrontEnd\Event\BookingController@booking_tournament')->name('ticket.booking.tournament');
   Route::post('/booking-tournament-pending/{id}', 'FrontEnd\Event\BookingController@booking_tournament_pending')->name('ticket.booking.tournament.pending');
-  
+
   // Validasi kode akses
   Route::post('/validate-code-access', 'FrontEnd\CheckOutController@validateCodeAccess')->name('validate.code.access');
 });
@@ -195,10 +195,15 @@ Route::middleware('change.lang')->group(function () {
   Route::get('remove/wishlist/{id}', 'FrontEnd\CustomerController@remove_wishlist')->name('remove.wishlist');
 
   // Checkout Tournament
-  Route::post('/detail-check-out-tournament','FrontEnd\CheckOutController@detailCheckout2Tournament')->name('detail-check-out-tournament');
-  Route::post('/check-out-tournament','FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
-  Route::get('/check-out-tournament','FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
+  Route::post('/detail-check-out-tournament', 'FrontEnd\CheckOutController@detailCheckout2Tournament')->name('detail-check-out-tournament');
+  Route::post('/check-out-tournament', 'FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
+  Route::get('/check-out-tournament', 'FrontEnd\CheckOutController@checkout2Tournament')->name('check-out-tournament');
   Route::post('/check-out3', 'FrontEnd\CheckOutController@checkout3Tournament')->name('check-out3-tournament');
+
+  // Checkout Tournament For Ajax Method
+  Route::post('/process-form-order-tournament', 'FrontEnd\CheckOutController@formOrderProcess')->name('processing_to_form_order_tournament');
+  Route::get('/process-form-order-tournament', 'FrontEnd\CheckOutController@formOrderView')->name('processing_to_form_order_tournament');
+  Route::get('/get-data-form-order-tournament', 'FrontEnd\CheckOutController@getDataFormOrderTournament')->name('get_data_form_order_tournament');
 
   Route::post('/check-out2', 'FrontEnd\CheckOutController@checkout2')->name('check-out2');
   Route::get('/checkout', 'FrontEnd\CheckOutController@checkout')->name('check-out');

@@ -913,6 +913,7 @@ class EventController extends Controller
             $ticket['early_bird_discount_type'] = 'fixed';
             $ticket['late_price_discount'] = 'disable';
             $ticket['late_price_discount_type'] = 'fixed';
+            $ticket['status'] = 0;
             $t = Ticket::create($ticket);
 
             $languages = Language::all();
@@ -960,6 +961,7 @@ class EventController extends Controller
           $ticket['early_bird_discount_type'] = 'fixed';
           $ticket['late_price_discount'] = 'disable';
           $ticket['late_price_discount_type'] = 'fixed';
+          $ticket['status'] = 0;
           $t = Ticket::create($ticket);
 
           $languages = Language::all();
@@ -993,6 +995,7 @@ class EventController extends Controller
         $ticket['early_bird_discount_type'] = 'fixed';
         $ticket['late_price_discount'] = 'disable';
         $ticket['late_price_discount_type'] = 'fixed';
+        $ticket['status'] = 0;
         $t = Ticket::create($ticket);
 
         $languages = Language::all();
@@ -1045,6 +1048,7 @@ class EventController extends Controller
 
     return redirect()->back();
   }
+
   /**
    * Update featured status of a specified resource.
    *

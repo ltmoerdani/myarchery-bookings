@@ -285,10 +285,10 @@
                     </div>
                     <div class="col-12 col-lg-5">
                         <div class="sidebar-sticky mt-5">
-                            <form action="{{ route('check-out-tournament', ['reqId' => time() . $content->id]) }}"
-                                method="post" @if ($over == true) onsubmit="return false" @endif>
+                            <form id="eventForm" action="{{ route('processing_to_form_order_tournament') }}"
+                                method="post">
                                 @csrf
-                                <input type="hidden" name="event_id" value="{{ $content->id }}" id="">
+                                <input type="hidden" name="event_id" value="{{ $content->id }}" id="event_id">
                                 <input type="hidden" name="event_title" value="{{ $content->title }}" id="">
                                 <input type="hidden" name="pricing_type" value="{{ $content->pricing_type }}">
                                 <input type="hidden" name="event_type" value="{{ $content->event_type }}"
@@ -436,8 +436,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -526,13 +526,17 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
                                                         </h6>
                                                     </div>
                                                     <div class="quantity-input">
-                                                        <input type="hidden" name="category_ticket[{{ $ticket->id }}]"
+                                                        <input type="hidden" class="ticket_id"
+                                                            value="{{ $ticket->id }}">
+                                                        <input type="hidden" id="ticket_title_{{ $ticket->id }}"
+                                                            name="category_ticket[{{ $ticket->id }}]"
                                                             value="{{ $ticket->title }}">
                                                         <button class="quantity-down" type="button" id="quantityDown">
                                                             -
                                                         </button>
-                                                        <input class="quantity" readonly type="number" value="0"
-                                                            data-price="10000" data-max_buy_ticket="10"
+                                                        <input class="quantity" id="ticket_quantity_{{ $ticket->id }}"
+                                                            readonly type="number" value="0" data-price="10000"
+                                                            data-max_buy_ticket="10"
                                                             name="quantity[{{ $ticket->id }}]"
                                                             data-ticket_id="{{ $ticket->id }}" data-stock="100"
                                                             data-purchase="false" data-p_qty="0">
@@ -542,82 +546,7 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
                                                     </div>
                                                     <small>{{ $competitons[0]->name }}</small>
                                                 </div>
-                                                {{-- <div class="price-count">
-                                                    <h6 dir="ltr">
-                                                        @if ($ticket->early_bird_discount == 'enable')
-                                                            @php
-                                                                $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-                                                            @endphp
-
-                                                            @if ($ticket->early_bird_discount_type == 'fixed' && !$discount_date->isPast())
-                                                                @php
-                                                                    $calculate_price = $ticket->price - $ticket->early_bird_discount_amount;
-                                                                @endphp
-                                                                {{ symbolPrice($calculate_price) }}
-                                                                <del>
-
-                                                                    {{ symbolPrice($ticket->price) }}
-                                                                </del>
-                                                            @elseif ($ticket->early_bird_discount_type == 'percentage' && !$discount_date->isPast())
-                                                                @php
-                                                                    $c_price = ($ticket->price * $ticket->early_bird_discount_amount) / 100;
-                                                                    $calculate_price = $ticket->price - $c_price;
-                                                                @endphp
-                                                                {{ symbolPrice($calculate_price) }}
-
-                                                                <del>
-                                                                    {{ symbolPrice($ticket->price) }}
-                                                                </del>
-                                                            @else
-                                                                @php
-                                                                    $calculate_price = $ticket->price;
-                                                                @endphp
-                                                                {{ symbolPrice($calculate_price) }}
-                                                            @endif
-                                                        @else
-                                                            @php
-                                                                $calculate_price = $ticket->price;
-                                                            @endphp
-                                                            {{ symbolPrice($calculate_price) }}
-                                                        @endif
-
-
-                                                    </h6>
-                                                    <div class="quantity-input">
-                                                        <button class="quantity-down" type="button" id="quantityDown">
-                                                            -
-                                                        </button>
-                                                        <input class="quantity" readonly type="number" value="0"
-                                                            data-price="{{ $calculate_price }}"
-                                                            data-max_buy_ticket="{{ $ticket->max_buy_ticket }}"
-                                                            name="quantity[]" data-ticket_id="{{ $ticket->id }}"
-                                                            data-stock="{{ $stock }}"
-                                                            data-purchase="{{ $purchase['status'] }}"
-                                                            data-p_qty="{{ $purchase['p_qty'] }}">
-                                                        <button class="quantity-up" type="button" id="quantityUP">
-                                                            +
-                                                        </button>
-                                                    </div>
-
-
-                                                    @if ($ticket->early_bird_discount == 'enable')
-                                                        @php
-                                                            $discount_date = Carbon\Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
-                                                        @endphp
-                                                        @if (!$discount_date->isPast())
-                                                            <p>{{ __('Discount available') . ' ' }} :
-                                                                ({{ __('till') . ' ' }} :
-                                                                <span
-                                                                    dir="ltr">{{ \Carbon\Carbon::parse($discount_date)->timezone($websiteInfo->timezone)->translatedFormat('Y/m/d h:i a') }}</span>)
-                                                            </p>
-                                                        @endif
-                                                    @endif
-
-                                                </div>
-                                                <p
-                                                    class="text-warning max_error_{{ $ticket->id }}{{ $ticket->max_ticket_buy_type == 'limited' ? $ticket->max_buy_ticket : '' }} ">
-                                                </p> --}}
-                                            @elseif($ticket->pricing_type == 'variation')
+                                                {{-- @elseif($ticket->pricing_type == 'variation')
                                                 @php
                                                     $variations = json_decode($ticket->variations);
 
@@ -802,7 +731,7 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
                                                 </div>
                                                 <p
                                                     class="text-warning max_error_{{ $ticket->id }}{{ $ticket->max_ticket_buy_type == 'limited' ? $ticket->max_buy_ticket : '' }} ">
-                                                </p>
+                                                </p> --}}
                                             @endif
                                         @endforeach
                                     @endif
@@ -822,7 +751,9 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
                                         <button class="theme-btn w-100 mt-20"
                                             type="submit">{{ __('Book Now') }}</button>
                                     @endif --}}
-                                    <button class="theme-btn w-100 mt-20" type="submit">{{ __('Book Now') }}</button>
+                                    <button class="theme-btn w-100 mt-20" type="button" id="NextFormOrder">
+                                        {{ __('Book Now') }}
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -1116,7 +1047,6 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
                                     </div>
                                 @endforeach
                             </div>
-
                         @endif
                     </div>
                 </div>
@@ -1124,10 +1054,13 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
         </div>
     </section>
 @endsection
+
 @section('modals')
     @includeIf('frontend.partials.modals')
 @endsection
+
 @section('custom-script')
+    <script type="text/javascript" src="{{ asset('assets/front/js/event-detail.js?' . time()) }}"></script>
     <!-- <script>
         $(document).ready(function() {
             $(".first-info-detail-quota-ticket").trigger('click');
