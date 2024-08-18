@@ -28,6 +28,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\InternationalCountries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\Participant;
 
 class CustomerController extends Controller
 {
@@ -635,5 +636,17 @@ class CustomerController extends Controller
       }
     } catch (Exception $e) {
     }
+  }
+
+  public static function list_participant(Request $request)
+  {
+    $term = $request->q;
+    $query = Participant::query()
+      ->selectRaw('fname as text, id, username, city, city_id, gender, birthdate, county_id, country')
+      ->where(function ($q) use ($term) {
+        $q->where('fname', 'like', '%' . $term . '%');
+      });
+
+    return $query->get();
   }
 }

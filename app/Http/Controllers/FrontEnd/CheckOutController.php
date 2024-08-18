@@ -1244,7 +1244,7 @@ class CheckOutController extends Controller
               "user_full_name" => null,
               "user_gender" => null,
               "birthdate" => null,
-              "country_id" => null,
+              "county_id" => null,
               "country_name" => null,
               "city_id" => null,
               "city_name" => null,
@@ -1288,7 +1288,7 @@ class CheckOutController extends Controller
               "user_gender" => null,
               "birthdate" => null,
               "delegation_type" => null,
-              "country_id" => null,
+              "county_id" => null,
               "country_name" => null,
               "city_id" => null,
               "city_name" => null,
@@ -1324,7 +1324,7 @@ class CheckOutController extends Controller
               "user_full_name" => null,
               "user_gender" => null,
               "birthdate" => null,
-              "country_id" => null,
+              "county_id" => null,
               "country_name" => null,
               "city_id" => null,
               "city_name" => null,
@@ -1357,6 +1357,7 @@ class CheckOutController extends Controller
       }
     }
 
+    // return response()->json(['status' => 'success', 'data' => $ticket_detail_individu_order]);
     Session::put('ticket_detail_individu_order_' . $request->checkoutId, $ticket_detail_individu_order);
     Session::put('ticket_detail_official_order_' . $request->checkoutId, $ticket_detail_official_order);
     Session::put('ticket_detail_team_order' . $request->checkoutId, $ticket_detail_team_order);
@@ -1372,6 +1373,7 @@ class CheckOutController extends Controller
       return response()->json(['status' => 'error', 'message' => 'checkout id not found'], 404);
     }
 
+    // return response()->json(['status' => 'success', 'data' => $request->all()]);
     $delegation_event = Session::get('delegation_event_' . $request->checkoutID);
     $category_tickets = Session::get('category_tickets_' . $request->checkoutID);
     $ticket_detail_individu_order = Session::get('ticket_detail_individu_order_' . $request->checkoutID);

@@ -53,4 +53,49 @@ class RegionController extends Controller
     }
     return HelperResponse::Success($data->get(), "Get Data Success");
   }
+
+  public function s2GetCountry(Request $request)
+  {
+    $term = $request->q;
+    $query = InternationalCountries::query()
+      ->select('id', 'name')
+      ->where(function ($q) use ($term) {
+        $q->where('name', 'like', '%' . $term . '%');
+      });
+
+    return $query->get();
+  }
+
+  public function s2GetCity(Request $request)
+  {
+    $id_country = $request->id_country;
+    $id_state = $request->id_state;
+    $term = $request->q;
+
+    if (empty($id_country)) {
+      return [];
+    }
+
+    if ($id_country == "102") {
+      $data = IndonesianCities::query()
+        ->select('id', 'name');
+      if (!empty($id_state)) {
+        $data = $data->where('province_id', $id_state);
+      }
+    } else {
+      // $data = InternationalCities::select('id','name')->where('state_id', $id_state)->get();
+      $data = InternationalCities::query()
+        ->select('id', 'name')
+        ->where('country_id', $id_country);
+      if (!empty($id_state)) {
+        $data =   $data->where('state_id', $id_state);
+      }
+    }
+
+    $data = $data->where(function ($q) use ($term) {
+      $q->where('name', 'like', '%' . $term . '%');
+    });
+
+    return $data->get();
+  }
 }

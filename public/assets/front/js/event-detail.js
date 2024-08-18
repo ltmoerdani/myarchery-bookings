@@ -7,7 +7,7 @@ $("#NextFormOrder").on("click", function (e) {
 
   let eventForm = document.getElementById("eventForm");
   let fd = new FormData(eventForm);
-  const checkoutID = time + $("#event_id").val();
+  const checkoutID = time + getRandomNumber(999, 99999) + $("#event_id").val();
   fd.append("checkoutId", checkoutID);
 
   let url = $("#eventForm").attr("action");
@@ -20,7 +20,6 @@ $("#NextFormOrder").on("click", function (e) {
     contentType: false,
     processData: false,
     success: function (response) {
-      // console.log("response:", response);
       location.href = `${baseUrl}/process-form-order-tournament?checkoutID=${checkoutID}`;
       $(e.target).attr("disabled", false);
       $(".request-loader").removeClass("show");

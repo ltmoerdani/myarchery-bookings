@@ -436,8 +436,8 @@
                                     {{-- location --}}
                                     @if ($content->address != null)
                                         <!-- <hr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <hr> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <b><i class="fas fa-map-marker-alt"></i> {{ $content->address }}</b>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <hr> -->
                                     @endif
                                     {{-- end location --}}
 
@@ -1060,6 +1060,7 @@ AS competition_type  FROM `competitions`, competition_categories WHERE competiti
 @endsection
 
 @section('custom-script')
+    <script type="text/javascript" src="{{ asset('assets/admin/js/helpers/global-helpers.js?' . time()) }}"></script>
     <script type="text/javascript" src="{{ asset('assets/front/js/event-detail.js?' . time()) }}"></script>
     <!-- <script>
         $(document).ready(function() {

@@ -236,6 +236,12 @@
         </section>
     </form>
 @endsection
+
+@section('script')
+    <script src="{{ asset('assets/admin/js/helpers/select2-helpers.js?' . time()) }}"></script>
+    <script src="{{ asset('assets/admin/js/helpers/global-helpers.js?' . time()) }}"></script>
+@endsection
+
 @section('custom-script')
     <script>
         const base_url = "{{ url('/') }}";
@@ -256,5 +262,6 @@
         const cityDistrictProfileLabel = "{{ __('City/District') }}";
         const cityDistrictProfileDefaultOption = " {{ __('Select City/District') }}";
     </script>
-    <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
+    <script src="{{ asset('assets/front/js/order-detail.js?' . rand()) }}"></script>
+    {{-- <script src="{{ asset('assets/front/js/order-detail.min.js') }}"></script> --}}
 @endsection

@@ -89,6 +89,8 @@ Route::prefix('/customer')->middleware('auth:customer', 'Deactive:customer', 'ch
 
   Route::get('/my-orders', 'FrontEnd\Shop\CustomerOrderController@index')->name('customer.my_orders');
   Route::get('/my-orders/details/{id}', 'FrontEnd\Shop\CustomerOrderController@details')->name('customer.order_details');
+
+  Route::get('/list-participants', 'FrontEnd\CustomerController@list_participant')->name('customer.list_participant');
 });
 
 

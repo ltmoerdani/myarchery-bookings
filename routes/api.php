@@ -21,9 +21,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // API Data Master
 Route::get('get-country', 'BackEnd\Region\RegionController@getCountry')->name('get.region.country');
+Route::get('s2-get-country', 'BackEnd\Region\RegionController@s2GetCountry')->name('get.region.s2-country');
 Route::get('get-state/{id}', 'BackEnd\Region\RegionController@getState')->name('get.region.state');
 Route::get('get-city/{id_country}/{id_state}', 'BackEnd\Region\RegionController@getCity')->name('get.region.city');
 Route::get('get-city/{id_country}', 'BackEnd\Region\RegionController@getCity')->name('get.region.city');
+Route::get('s2-get-city', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
+Route::get('s2-get-city/{id_country}', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
+Route::get('s2-get-city/{id_country}/{id_state}', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
 
 Route::get('get-clubs', 'BackEnd\ClubController@getClubs')->name('get.clubs');
 Route::get('get-comp-type', 'BackEnd\Event\EventController@getCompetitionType')->name('get.competition.type');
