@@ -104,6 +104,7 @@ const handlerMapSelect2Individu = (data) => {
       fullNamePlaceholder,
       ["text"],
       function (e) {
+        console.log("data:", e.params.data);
         let gender = "M";
 
         if (e?.params?.data?.gender) {
@@ -129,9 +130,9 @@ const handlerMapSelect2Individu = (data) => {
         window.dataIndividu[e.target.dataset.idx].user_full_name =
           e.params.data.text;
         window.dataIndividu[e.target.dataset.idx].country =
-          e.params.data.country_name;
+          e.params.data.country;
         window.dataIndividu[e.target.dataset.idx].country_name =
-          e.params.data.country_name;
+          e.params.data.country;
         window.dataIndividu[e.target.dataset.idx].county_id =
           e.params.data.county_id;
         window.dataIndividu[e.target.dataset.idx].user_gender = gender;
@@ -162,7 +163,7 @@ const handlerMapSelect2Individu = (data) => {
             {
               data: {
                 id: e.params.data.county_id,
-                text: e.params.data.country_name,
+                text: e.params.data.country,
               },
             }
           );
@@ -257,9 +258,9 @@ const handlerMapSelect2Official = (data) => {
         window.dataOfficial[e.target.dataset.idx].user_full_name =
           e.params.data.text;
         window.dataOfficial[e.target.dataset.idx].country =
-          e.params.data.country_name;
+          e.params.data.country;
         window.dataOfficial[e.target.dataset.idx].country_name =
-          e.params.data.country_name;
+          e.params.data.country;
         window.dataOfficial[e.target.dataset.idx].county_id =
           e.params.data.county_id;
         window.dataOfficial[e.target.dataset.idx].user_gender = gender;
@@ -290,7 +291,7 @@ const handlerMapSelect2Official = (data) => {
             {
               data: {
                 id: e.params.data.county_id,
-                text: e.params.data.country_name,
+                text: e.params.data.country,
               },
             }
           );

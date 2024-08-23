@@ -640,9 +640,14 @@ class CustomerController extends Controller
 
   public static function list_participant(Request $request)
   {
+    if (!Auth::guard('customer')->check()) {
+      return [];
+    }
+
     $term = $request->q;
     $query = Participant::query()
       ->selectRaw('fname as text, id, username, city, city_id, gender, birthdate, county_id, country')
+      ->whereHas('customers', fn ($record) => $record->where('customers.id', Auth::guard('customer')->user()->id))
       ->where(function ($q) use ($term) {
         $q->where('fname', 'like', '%' . $term . '%');
       });

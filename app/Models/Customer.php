@@ -90,4 +90,9 @@ class Customer extends Model implements AuthenticatableContract
   {
     return $this->hasMany(Wishlist::class, 'customer_id', 'id');
   }
+
+  public function participants()
+  {
+    return $this->belongsToMany(Participant::class, 'participant_by_customer');
+  }
 }
