@@ -420,5 +420,7 @@
   "Enter Descritpion Club": "Enter Descritpion Club",
   "Enter Address Club": "Enter Address Club",
   "Please Login Customer": "Please log in first as a customer",
-  "Type your code access": "Type your code access"
+  "Type your code access": "Type your code access",
+  "Placeholder Team Name": "Enter Team Name",
+  "Label Input Team Name": "Team Name"
 }

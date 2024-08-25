@@ -28,6 +28,7 @@ Route::get('get-city/{id_country}', 'BackEnd\Region\RegionController@getCity')->
 Route::get('s2-get-city', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
 Route::get('s2-get-city/{id_country}', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
 Route::get('s2-get-city/{id_country}/{id_state}', 'BackEnd\Region\RegionController@s2GetCity')->name('get.region.s2-city');
+Route::get('s2-get-delegation-type', 'FrontEnd\DelegationTypeController@s2GetDelagationType')->name('get.s2-delegation-type');
 
 Route::get('get-clubs', 'BackEnd\ClubController@getClubs')->name('get.clubs');
 Route::get('get-comp-type', 'BackEnd\Event\EventController@getCompetitionType')->name('get.competition.type');

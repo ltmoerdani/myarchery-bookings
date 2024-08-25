@@ -1248,6 +1248,7 @@ class CheckOutController extends Controller
               "country_name" => null,
               "city_id" => null,
               "city_name" => null,
+              "team_name" => null,
               // end participant
 
               // delegation
@@ -1268,56 +1269,23 @@ class CheckOutController extends Controller
               "organization_name" => null,
               // end delegation
 
+              // ticket
+              "ticket_id" => null,
+              "ticket_name" => null,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
-              "category_ticket"  => $k
+              "category_ticket"  => $k,
+              "type_data" => 'individu'
             ];
           }
         }
       }
 
       if (strtolower($ticket[$k]) == 'team') {
-      }
-
-      if (strtolower($ticket[$k]) == 'mix team') {
         if ($v > 0) {
           for ($x = 0; $x < $v; $x++) {
-            $ticket_detail_mix_team_order[] = [
-              "id" => null,
-              "user_full_name" => null,
-              "user_gender" => null,
-              "birthdate" => null,
-              "delegation_type" => null,
-              "county_id" => null,
-              "country_name" => null,
-              "city_id" => null,
-              "city_name" => null,
-              'country' => null,
-              'country_delegation_official' => null,
-              'country_delegation_official_name' => null,
-              'province_delegation_official' => null,
-              'province_delegation_official_name' => null,
-              'city_delegation_official' => null,
-              'city_delegation_official_name' => null,
-              "club_id" => null,
-              "club_name" => null,
-              "school_id" => null,
-              "school_name" => null,
-              "organization_id" => null,
-              "organization_name" => null,
-              "sub_category_ticket_id" => null,
-              "sub_category_ticket" => null,
-              "category_ticket"  => $k
-            ];
-          }
-        }
-      }
-
-      if (strtolower($ticket[$k]) == 'official') {
-        if ($v > 0) {
-          for ($x = 0; $x < $v; $x++) {
-            $ticket_detail_official_order[] = [
-              "id" => $k, //id from category ticket id or ticket id
+            $ticket_detail_team_order[] = [
+              "id" => null, //id from category ticket id or ticket id
 
               // participant
               "user_id" => null,
@@ -1328,6 +1296,7 @@ class CheckOutController extends Controller
               "country_name" => null,
               "city_id" => null,
               "city_name" => null,
+              "team_name" => null,
               // end participant
 
               // delegation
@@ -1348,9 +1317,109 @@ class CheckOutController extends Controller
               "organization_name" => null,
               // end delegation
 
+              // ticket
+              "ticket_id" => null,
+              "ticket_name" => null,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
-              "category_ticket"  => $k
+              "category_ticket"  => $k,
+              "type_data" => 'team'
+            ];
+          }
+        }
+      }
+
+      if (strtolower($ticket[$k]) == 'mix team') {
+        if ($v > 0) {
+          for ($x = 0; $x < $v; $x++) {
+            $ticket_detail_mix_team_order[] = [
+              "id" => null,
+
+              // participant
+              "user_id" => null,
+              "user_full_name" => null,
+              "user_gender" => null,
+              "birthdate" => null,
+              "county_id" => null,
+              "country_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              "team_name" => null,
+              // end participant
+
+              // delegation
+              "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
+              "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
+              'country' => null,
+              'country_delegation_individu' => null,
+              'country_delegation_individu_name' => null,
+              'province_delegation_individu' => null,
+              'province_delegation_individu_name' => null,
+              'city_delegation_individu' => null,
+              'city_delegation_individu_name' => null,
+              "club_id" => null,
+              "club_name" => null,
+              "school_id" => null,
+              "school_name" => null,
+              "organization_id" => null,
+              "organization_name" => null,
+              // end delegation
+
+              // ticket
+              "ticket_id" => null,
+              "ticket_name" => null,
+              "sub_category_ticket_id" => null,
+              "sub_category_ticket" => null,
+              "category_ticket"  => $k,
+              "type_data" => 'mix team'
+            ];
+          }
+        }
+      }
+
+      if (strtolower($ticket[$k]) == 'official') {
+        if ($v > 0) {
+          for ($x = 0; $x < $v; $x++) {
+            $ticket_detail_official_order[] = [
+              "id" => null, //id from category ticket id or ticket id
+
+              // participant
+              "user_id" => null,
+              "user_full_name" => null,
+              "user_gender" => null,
+              "birthdate" => null,
+              "county_id" => null,
+              "country_name" => null,
+              "city_id" => null,
+              "city_name" => null,
+              "team_name" => null,
+              // end participant
+
+              // delegation
+              "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
+              "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
+              'country' => null,
+              'country_delegation_individu' => null,
+              'country_delegation_individu_name' => null,
+              'province_delegation_individu' => null,
+              'province_delegation_individu_name' => null,
+              'city_delegation_individu' => null,
+              'city_delegation_individu_name' => null,
+              "club_id" => null,
+              "club_name" => null,
+              "school_id" => null,
+              "school_name" => null,
+              "organization_id" => null,
+              "organization_name" => null,
+              // end delegation
+
+              // ticket
+              "ticket_id" => null,
+              "ticket_name" => null,
+              "sub_category_ticket_id" => null,
+              "sub_category_ticket" => null,
+              "category_ticket"  => $k,
+              "type_data" => 'official'
             ];
           }
         }

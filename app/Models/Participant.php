@@ -30,4 +30,9 @@ class Participant extends Model
   {
     return $this->belongsToMany(Customer::class, 'participant_by_customer');
   }
+
+  public function teams()
+  {
+    return $this->belongsToMany(ParticipantTeam::class);
+  }
 }

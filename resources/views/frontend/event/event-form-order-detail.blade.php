@@ -261,6 +261,9 @@
         const countryProfileDefaultOption = "{{ __('Select Country') }}";
         const cityDistrictProfileLabel = "{{ __('City/District') }}";
         const cityDistrictProfileDefaultOption = " {{ __('Select City/District') }}";
+        const labelDelegationType = "{{ __('Delegation Type') }}";
+        const labelTeamName = "{{ __('Label Input Team Name') }}";
+        const placeholderTeamName = "{{ __('Placeholder Team Name') }}";
     </script>
     <script src="{{ asset('assets/front/js/order-detail.js?' . rand()) }}"></script>
     {{-- <script src="{{ asset('assets/front/js/order-detail.min.js') }}"></script> --}}
