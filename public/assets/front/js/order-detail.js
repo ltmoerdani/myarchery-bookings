@@ -778,6 +778,7 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-organization-individu-${i}`).empty();
     $(`.content-delegation-club-individu-${i}`).empty();
 
+    console.log("wdData:", window.dataIndividu[i]);
     setTimeout(() => {
       if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
         switch (window.dataIndividu[i].delegation_type.toLowerCase()) {
@@ -785,7 +786,7 @@ const handlerMapSelect2Individu = (data) => {
             createS2CountryDelegation(i, "individu");
             break;
           case "province":
-            createS2CityDelegation(
+            createS2ProvinceDelegation(
               "individu",
               i,
               "",
@@ -983,7 +984,7 @@ const handlerMapSelect2Official = (data) => {
             createS2CountryDelegation(i, "official");
             break;
           case "province":
-            createS2CityDelegation(
+            createS2ProvinceDelegation(
               "official",
               i,
               "",
@@ -1051,7 +1052,7 @@ const handlerMapSelect2Team = (data) => {
             createS2CountryDelegation(i, "team");
             break;
           case "province":
-            createS2CityDelegation(
+            createS2ProvinceDelegation(
               "team",
               i,
               "",
@@ -1119,7 +1120,7 @@ const handlerMapSelect2MixTeam = (data) => {
             createS2CountryDelegation(i, "mix");
             break;
           case "province":
-            createS2CityDelegation(
+            createS2ProvinceDelegation(
               "mix",
               i,
               "",

@@ -1231,6 +1231,43 @@ class CheckOutController extends Controller
     $ticket_detail_team_order = [];
     $ticket_detail_mix_team_order = [];
     $ticket_detail_official_order = [];
+    $contingent_country_id = null;
+    $contingent_country_name = null;
+    $contingent_province_id = null;
+    $contingent_province_name = null;
+
+    if (strtolower($get_contingent_type->select_type) == 'city/district' || strtolower($get_contingent_type->select_type) == 'province') {
+      if (!empty($get_contingent_type->country_id)) {
+        $getCountry = InternationalCountries::query()
+          ->select('id', 'name')
+          ->where('id', $get_contingent_type->country_id)
+          ->first();
+
+        $contingent_country_id = empty($getCountry->id) ? null : $getCountry->id;
+        $contingent_country_name = empty($getCountry->name) ? null : $getCountry->name;
+
+        if (strtolower($get_contingent_type->select_type) == 'city/district') {
+          if ($getCountry->id == '102') {
+            $getProvince = IndonesianProvince::query()
+              ->select('id', 'name')
+              ->where('id', $get_contingent_type->province_id)
+              ->first();
+
+            $contingent_province_id = empty($getProvince->id) ? null : $getProvince->id;
+            $contingent_province_name = empty($getProvince->name) ? null : $getProvince->name;
+          } else {
+            $getProvince = InternationalStates::query()
+              ->select('id', 'name')
+              ->where('country_id', $getCountry->id)
+              ->where('id', $get_contingent_type->province_id)
+              ->first();
+
+            $contingent_province_id = empty($getProvince->id) ? null : $getProvince->id;
+            $contingent_province_name = empty($getProvince->name) ? null : $getProvince->name;
+          }
+        }
+      }
+    }
 
     foreach ($quantity as $k => $v) {
       if (strtolower($ticket[$k]) == 'individu') {
@@ -1249,16 +1286,16 @@ class CheckOutController extends Controller
               "city_id" => null,
               "city_name" => null,
               "team_name" => null,
+              'country' => null,
               // end participant
 
               // delegation
               "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
               "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
-              'country' => null,
-              'country_delegation' => null,
-              'country_delegation_name' => null,
-              'province_delegation' => null,
-              'province_delegation_name' => null,
+              'country_delegation' => $contingent_country_id,
+              'country_delegation_name' => $contingent_country_name,
+              'province_delegation' => $contingent_province_id,
+              'province_delegation_name' => $contingent_province_name,
               'city_delegation' => null,
               'city_delegation_name' => null,
               "club_id" => null,
@@ -1297,16 +1334,16 @@ class CheckOutController extends Controller
               "city_id" => null,
               "city_name" => null,
               "team_name" => null,
+              'country' => null,
               // end participant
 
               // delegation
               "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
               "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
-              'country' => null,
-              'country_delegation' => null,
-              'country_delegation_name' => null,
-              'province_delegation' => null,
-              'province_delegation_name' => null,
+              'country_delegation' => $contingent_country_id,
+              'country_delegation_name' => $contingent_country_name,
+              'province_delegation' => $contingent_province_id,
+              'province_delegation_name' => $contingent_province_name,
               'city_delegation' => null,
               'city_delegation_name' => null,
               "club_id" => null,
@@ -1333,7 +1370,7 @@ class CheckOutController extends Controller
         if ($v > 0) {
           for ($x = 0; $x < $v; $x++) {
             $ticket_detail_mix_team_order[] = [
-              "id" => null,
+              "id" => null, //id from category ticket id or ticket id
 
               // participant
               "user_id" => null,
@@ -1345,16 +1382,16 @@ class CheckOutController extends Controller
               "city_id" => null,
               "city_name" => null,
               "team_name" => null,
+              'country' => null,
               // end participant
 
               // delegation
               "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
               "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
-              'country' => null,
-              'country_delegation' => null,
-              'country_delegation_name' => null,
-              'province_delegation' => null,
-              'province_delegation_name' => null,
+              'country_delegation' => $contingent_country_id,
+              'country_delegation_name' => $contingent_country_name,
+              'province_delegation' => $contingent_province_id,
+              'province_delegation_name' => $contingent_province_name,
               'city_delegation' => null,
               'city_delegation_name' => null,
               "club_id" => null,
@@ -1393,16 +1430,16 @@ class CheckOutController extends Controller
               "city_id" => null,
               "city_name" => null,
               "team_name" => null,
+              'country' => null,
               // end participant
 
               // delegation
               "contingent_type" => $get_contingent_type->contingent_type, //reference from table contingent by event
               "delegation_type" => empty($get_contingent_type->select_type) ? null : $get_contingent_type->select_type, //delegation_type = select_type in table contingent
-              'country' => null,
-              'country_delegation' => null,
-              'country_delegation_name' => null,
-              'province_delegation' => null,
-              'province_delegation_name' => null,
+              'country_delegation' => $contingent_country_id,
+              'country_delegation_name' => $contingent_country_name,
+              'province_delegation' => $contingent_province_id,
+              'province_delegation_name' => $contingent_province_name,
               'city_delegation' => null,
               'city_delegation_name' => null,
               "club_id" => null,
