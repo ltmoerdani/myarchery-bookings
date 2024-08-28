@@ -44,9 +44,9 @@ const createS2CityDelegation = (
         e.target.dataset.contentfor
       )}`;
 
-      window[contentFor][e.target.dataset.idx].city_delegation_individu =
+      window[contentFor][e.target.dataset.idx].city_delegation =
         e.params.data.id;
-      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
+      window[contentFor][e.target.dataset.idx].city_delegation_name =
         e.params.data.name;
     },
     function (param) {
@@ -59,6 +59,16 @@ const createS2CityDelegation = (
     null,
     false
   );
+
+  if (defaultValue) {
+    $(`#delegation_city_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
 };
 
 // automatic create list province for delegation with select2 search
@@ -96,14 +106,12 @@ const createS2ProvinceDelegation = (
       const contentFor = `data${capitalizeFirstLetter(
         e.target.dataset.contentfor
       )}`;
-      window[contentFor][e.target.dataset.idx].province_delegation_individu =
+      window[contentFor][e.target.dataset.idx].province_delegation =
         e.params.data.id;
-      window[contentFor][
-        e.target.dataset.idx
-      ].province_delegation_individu_name = e.params.data.name;
-      window[contentFor][e.target.dataset.idx].city_delegation_individu = null;
-      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
-        null;
+      window[contentFor][e.target.dataset.idx].province_delegation_name =
+        e.params.data.name;
+      window[contentFor][e.target.dataset.idx].city_delegation = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_name = null;
 
       $(
         `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
@@ -186,19 +194,14 @@ const createS2CountryDelegation = (
         e.target.dataset.contentfor
       )}`;
 
-      window[contentFor][
-        e.target.dataset.idx
-      ].country_delegation_individu_name = e.params.data.name;
-      window[contentFor][e.target.dataset.idx].country_delegation_individu =
+      window[contentFor][e.target.dataset.idx].country_delegation_name =
+        e.params.data.name;
+      window[contentFor][e.target.dataset.idx].country_delegation =
         e.params.data.id;
-      window[contentFor][e.target.dataset.idx].province_delegation_individu =
-        null;
-      window[contentFor][
-        e.target.dataset.idx
-      ].province_delegation_individu_name = null;
-      window[contentFor][e.target.dataset.idx].city_delegation_individu = null;
-      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
-        null;
+      window[contentFor][e.target.dataset.idx].province_delegation = null;
+      window[contentFor][e.target.dataset.idx].province_delegation_name = null;
+      window[contentFor][e.target.dataset.idx].city_delegation = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_name = null;
 
       $(
         `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
@@ -759,10 +762,6 @@ const handlerMapSelect2Individu = (data) => {
       );
     }
 
-    if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
-      console.log("tidak open data:", window.dataIndividu[i]);
-    }
-
     // hide all content delegation
     $(`.content-delegation-country-individu-${i}`).addClass("d-none");
     $(`.content-delegation-province-individu-${i}`).addClass("d-none");
@@ -778,6 +777,42 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-school-individu-${i}`).empty();
     $(`.content-delegation-organization-individu-${i}`).empty();
     $(`.content-delegation-club-individu-${i}`).empty();
+
+    setTimeout(() => {
+      if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataIndividu[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "individu");
+            break;
+          case "province":
+            createS2CityDelegation(
+              "individu",
+              i,
+              "",
+              window.dataIndividu[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "individu",
+              i,
+              "",
+              window.dataIndividu[i].country_delegation,
+              window.dataIndividu[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "individu");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "individu");
+            break;
+          default:
+            createS2ClubDelegation(i, "individu");
+            break;
+        }
+      }
+    }, 500);
   }
 };
 
@@ -941,6 +976,41 @@ const handlerMapSelect2Official = (data) => {
     $(`.content-delegation-school-official-${i}`).empty();
     $(`.content-delegation-organization-official-${i}`).empty();
     $(`.content-delegation-club-official-${i}`).empty();
+    setTimeout(() => {
+      if (window.dataOfficial[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataOfficial[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "official");
+            break;
+          case "province":
+            createS2CityDelegation(
+              "official",
+              i,
+              "",
+              window.dataOfficial[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "official",
+              i,
+              "",
+              window.dataOfficial[i].country_delegation,
+              window.dataOfficial[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "official");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "official");
+            break;
+          default:
+            createS2ClubDelegation(i, "official");
+            break;
+        }
+      }
+    }, 500);
   }
 };
 
@@ -949,10 +1019,10 @@ const handlerMapSelect2Team = (data) => {
     if ($(`#delegation_team${i}`)) {
       createS2ListDelegation(
         `#delegation_team${i}`,
-        window.dataIndividu[i].delegation_type
+        window.dataTeam[i].delegation_type
           ? {
-              id: window.dataIndividu[i].delegation_type,
-              text: window.dataIndividu[i].delegation_type,
+              id: window.dataTeam[i].delegation_type,
+              text: window.dataTeam[i].delegation_type,
             }
           : ""
       );
@@ -973,6 +1043,42 @@ const handlerMapSelect2Team = (data) => {
     $(`.content-delegation-school-team-${i}`).empty();
     $(`.content-delegation-organization-team-${i}`).empty();
     $(`.content-delegation-club-team-${i}`).empty();
+
+    setTimeout(() => {
+      if (window.dataTeam[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataTeam[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "team");
+            break;
+          case "province":
+            createS2CityDelegation(
+              "team",
+              i,
+              "",
+              window.dataTeam[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "team",
+              i,
+              "",
+              window.dataTeam[i].country_delegation,
+              window.dataTeam[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "team");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "team");
+            break;
+          default:
+            createS2ClubDelegation(i, "team");
+            break;
+        }
+      }
+    }, 500);
   }
 };
 
@@ -981,10 +1087,10 @@ const handlerMapSelect2MixTeam = (data) => {
     if ($(`#delegation_mix${i}`)) {
       createS2ListDelegation(
         `#delegation_mix${i}`,
-        window.dataIndividu[i].delegation_type
+        window.dataMix[i].delegation_type
           ? {
-              id: window.dataIndividu[i].delegation_type,
-              text: window.dataIndividu[i].delegation_type,
+              id: window.dataMix[i].delegation_type,
+              text: window.dataMix[i].delegation_type,
             }
           : ""
       );
@@ -1005,6 +1111,42 @@ const handlerMapSelect2MixTeam = (data) => {
     $(`.content-delegation-school-mix-${i}`).empty();
     $(`.content-delegation-organization-mix-${i}`).empty();
     $(`.content-delegation-club-mix-${i}`).empty();
+
+    setTimeout(() => {
+      if (window.dataMix[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataMix[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "mix");
+            break;
+          case "province":
+            createS2CityDelegation(
+              "mix",
+              i,
+              "",
+              window.dataMix[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "mix",
+              i,
+              "",
+              window.dataMix[i].country_delegation,
+              window.dataMix[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "mix");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "mix");
+            break;
+          default:
+            createS2ClubDelegation(i, "mix");
+            break;
+        }
+      }
+    }, 500);
   }
 };
 
@@ -1243,12 +1385,12 @@ const generateViewTeam = () => {
                   }" onchange="handlerNameTeam('team',${index})" required>
               </div>
               ${contentDelegation}
-              <section class="content-delegation-country-team-${index}"></section>
-              <section class="content-delegation-province-team-${index}"></section>
-              <section class="content-delegation-city-team-${index}"></section>
-              <section class="content-delegation-school-team-${index}"></section>
-              <section class="content-delegation-club-team-${index}"></section>
-              <section class="content-delegation-organization-team-${index}"></section>
+              <div class="content-delegation-country-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-province-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-city-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-school-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-club-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-organization-team-${index} col-12 col-md-6 d-none"></div>
             </div>
           </div>
         </div>
@@ -1297,7 +1439,7 @@ const generateViewMixTeam = () => {
 
     if (val.contingent_type.toLowerCase() !== "open") {
       contentDelegation = `
-        <input type="hidden" name="delegation_mix[]"  value="${val.delegation_type}" />
+        <input type="hidden" name="delegation_mix[]" value="${val.delegation_type}" />
       `;
     }
 
@@ -1327,12 +1469,12 @@ const generateViewMixTeam = () => {
                   }" onchange="handlerNameTeam('mix',${index})" required>
               </div>
               ${contentDelegation}
-              <section class="content-delegation-country-mix-${index}"></section>
-              <section class="content-delegation-province-mix-${index}"></section>
-              <section class="content-delegation-city-mix-${index}"></section>
-              <section class="content-delegation-school-mix-${index}"></section>
-              <section class="content-delegation-club-mix-${index}"></section>
-              <section class="content-delegation-organization-mix-${index}"></section>
+              <div class="content-delegation-country-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-province-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-city-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-school-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-club-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-organization-mix-${index} col-12 col-md-6 d-none"></div>
             </div>
           </div>
         </div>
