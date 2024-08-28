@@ -263,7 +263,17 @@
         const cityDistrictProfileDefaultOption = " {{ __('Select City/District') }}";
         const labelDelegationType = "{{ __('Delegation Type') }}";
         const labelTeamName = "{{ __('Label Input Team Name') }}";
+        const placeholderProvince = "{{ __('Placeholder Option Select Province') }}";
         const placeholderTeamName = "{{ __('Placeholder Team Name') }}";
+        const placeholderClub = "{{ __('Placeholder Option Select Club') }}";
+        const placeholderOrganization = "{{ __('Placeholder Option Select Organization') }}";
+        const placeholderSchool = "{{ __('Enter Your School/University') }}";
+        const labelDelegationClub = "{{ __('Label Delegation Club') }}";
+        const labelDelegationSchool = "{{ __('Label Delegation School') }}";
+        const labelDelegationOrganization = "{{ __('Label Delegation Organization') }}";
+        const labelDelegationCountry = "{{ __('Label Delegation Country') }}";
+        const labelDelegationProvince = "{{ __('Label Delegation Province') }}";
+        const labelDelegationCity = "{{ __('Label Delegation City') }}";
     </script>
     <script src="{{ asset('assets/front/js/order-detail.js?' . rand()) }}"></script>
     {{-- <script src="{{ asset('assets/front/js/order-detail.min.js') }}"></script> --}}

@@ -7,6 +7,425 @@ window.dataTeam = [];
 window.dataMix = [];
 window.dataOfficial = [];
 
+// automatic create list city for delegation with select2 search
+const createS2CityDelegation = (
+  contentFor,
+  contentIdx,
+  defaultValue = "",
+  countryId = "",
+  stateId = ""
+) => {
+  $(`.content-delegation-city-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-city-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+
+  $(`.content-delegation-city-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_city_${contentFor}${contentIdx}">
+        ${labelDelegationCity}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_city_${contentFor}${contentIdx}"
+          name="delegation_city_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateS2(
+    `#delegation_city_${contentFor}${contentIdx}`,
+    `${base_url}/api/s2-get-city/${countryId}/${stateId}`,
+    0,
+    cityDistrictProfileDefaultOption,
+    ["name"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].city_delegation_individu =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
+        e.params.data.name;
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+};
+
+// automatic create list province for delegation with select2 search
+const createS2ProvinceDelegation = (
+  contentFor,
+  contentIdx,
+  defaultValue = "",
+  countryId = ""
+) => {
+  $(`.content-delegation-province-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-province-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+
+  $(`.content-delegation-province-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_province_${contentFor}${contentIdx}">
+        ${labelDelegationProvince}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_province_${contentFor}${contentIdx}"
+          name="delegation_province_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateS2(
+    `#delegation_province_${contentFor}${contentIdx}`,
+    `${base_url}/api/s2-get-province/${countryId}`,
+    0,
+    placeholderProvince,
+    ["name"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+      window[contentFor][e.target.dataset.idx].province_delegation_individu =
+        e.params.data.id;
+      window[contentFor][
+        e.target.dataset.idx
+      ].province_delegation_individu_name = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].city_delegation_individu = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
+        null;
+
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+
+      if (
+        ["city/district"].includes(
+          window[contentFor][e.target.dataset.idx].delegation_type.toLowerCase()
+        )
+      ) {
+        setTimeout(
+          createS2CityDelegation(
+            e.target.dataset.contentfor,
+            e.target.dataset.idx,
+            "",
+            countryId,
+            e.params.data.id
+          ),
+          300
+        );
+      }
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#delegation_province_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
+};
+
+// automatic create list country for delegation with select2 search
+const createS2CountryDelegation = (
+  contentIdx,
+  contentFor,
+  defaultValue = ""
+) => {
+  $(`.content-delegation-country-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-country-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+
+  $(`.content-delegation-country-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_country_${contentFor}${contentIdx}">
+        ${labelDelegationCountry}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_country_${contentFor}${contentIdx}"
+          name="delegation_country_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateS2(
+    `#delegation_country_${contentFor}${contentIdx}`,
+    `${base_url}/api/s2-get-country`,
+    0,
+    countryProfileDefaultOption,
+    ["name"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][
+        e.target.dataset.idx
+      ].country_delegation_individu_name = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].country_delegation_individu =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].province_delegation_individu =
+        null;
+      window[contentFor][
+        e.target.dataset.idx
+      ].province_delegation_individu_name = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_individu = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_individu_name =
+        null;
+
+      $(
+        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+
+      if (
+        ["city/district", "province"].includes(
+          window[contentFor][e.target.dataset.idx].delegation_type.toLowerCase()
+        )
+      ) {
+        setTimeout(
+          createS2ProvinceDelegation(
+            e.target.dataset.contentfor,
+            e.target.dataset.idx,
+            "",
+            e.params.data.id
+          ),
+          300
+        );
+      }
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#delegation_country_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
+};
+
+// automatic create list school or university for delegation with select2 search
+const createS2SchoolUniversityDelegation = (
+  contentIdx,
+  contentFor,
+  defaultValue = ""
+) => {
+  $(`.content-delegation-school-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-school-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+  $(`.content-delegation-school-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_school_${contentFor}${contentIdx}">
+        ${labelDelegationSchool}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_school_${contentFor}${contentIdx}"
+          name="delegation_school_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateSelect2DynamicOptionCreation(
+    `#delegation_school_${contentFor}${contentIdx}`,
+    `${base_url}/customer/s2-list-school-and-university`,
+    0,
+    placeholderSchool,
+    ["text"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].school_id = e.params.data.id;
+      window[contentFor][e.target.dataset.idx].school_name = e.params.data.text;
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#delegation_school_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
+};
+
+// automatic create list organization for delegation with select2 search
+const createS2OrganizationDelegation = (
+  contentIdx,
+  contentFor,
+  defaultValue = ""
+) => {
+  $(`.content-delegation-organization-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-organization-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+  $(`.content-delegation-organization-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_organization_${contentFor}${contentIdx}">
+        ${labelDelegationOrganization}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_organization_${contentFor}${contentIdx}"
+          name="delegation_organization_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateSelect2DynamicOptionCreation(
+    `#delegation_organization_${contentFor}${contentIdx}`,
+    `${base_url}/customer/s2-list-organization`,
+    0,
+    placeholderOrganization,
+    ["text"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].organization_id =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].organization_name =
+        e.params.data.text;
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#delegation_organization_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
+};
+
+// automatic create list club for delegation with select2 search
+const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
+  $(`.content-delegation-club-${contentFor}-${contentIdx}`).empty();
+  $(`.content-delegation-club-${contentFor}-${contentIdx}`).removeClass(
+    "d-none"
+  );
+  $(`.content-delegation-club-${contentFor}-${contentIdx}`).append(`
+    <div class="form-group d-flex flex-column gap-2">
+      <label
+        for="delegation_club_${contentFor}${contentIdx}">
+        ${labelDelegationClub}*
+      </label>
+      <select
+          class="form-select" data-contentFor="${contentFor}" id="delegation_club_${contentFor}${contentIdx}"
+          name="delegation_club_${contentFor}[]" data-idx="${contentIdx}" required>
+      </select>
+    </div>
+  `);
+
+  initiateSelect2DynamicOptionCreation(
+    `#delegation_club_${contentFor}${contentIdx}`,
+    `${base_url}/customer/s2-list-clubs`,
+    0,
+    placeholderClub,
+    ["text"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].club_id = e.params.data.id;
+      window[contentFor][e.target.dataset.idx].club_name = e.params.data.text;
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#delegation_club_${contentFor}${contentIdx}`).select2(
+      "trigger",
+      "select",
+      {
+        data: defaultValue,
+      }
+    );
+  }
+};
+
 // function automatic create list delegation with select2 search
 const createS2ListDelegation = (contentId, defaultValue = "") => {
   initiateS2(
@@ -23,7 +442,72 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
       window[contentFor][e.target.dataset.idx].delegation_type =
         e.params.data.name;
 
-      console.log("chooseData:", e.params.data);
+      // hide all content delegation
+      $(
+        `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+      $(
+        `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).addClass("d-none");
+
+      //empty all content delegation
+      $(
+        `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+      $(
+        `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+      ).empty();
+
+      switch (e.params.data.name.toLowerCase()) {
+        case "club":
+          createS2ClubDelegation(
+            e.target.dataset.idx,
+            e.target.dataset.contentfor
+          );
+          break;
+        case "school/universities":
+          createS2SchoolUniversityDelegation(
+            e.target.dataset.idx,
+            e.target.dataset.contentfor
+          );
+          break;
+        case "organization":
+          createS2OrganizationDelegation(
+            e.target.dataset.idx,
+            e.target.dataset.contentfor
+          );
+          break;
+        default:
+          createS2CountryDelegation(
+            e.target.dataset.idx,
+            e.target.dataset.contentfor
+          );
+          break;
+      }
     },
     function (param) {
       let req = {
@@ -274,6 +758,26 @@ const handlerMapSelect2Individu = (data) => {
           : ""
       );
     }
+
+    if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
+      console.log("tidak open data:", window.dataIndividu[i]);
+    }
+
+    // hide all content delegation
+    $(`.content-delegation-country-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-province-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-city-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-school-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-club-individu-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-individu-${i}`).empty();
+    $(`.content-delegation-province-individu-${i}`).empty();
+    $(`.content-delegation-city-individu-${i}`).empty();
+    $(`.content-delegation-school-individu-${i}`).empty();
+    $(`.content-delegation-organization-individu-${i}`).empty();
+    $(`.content-delegation-club-individu-${i}`).empty();
   }
 };
 
@@ -421,6 +925,22 @@ const handlerMapSelect2Official = (data) => {
           : ""
       );
     }
+
+    // hide all content delegation
+    $(`.content-delegation-country-official-${i}`).addClass("d-none");
+    $(`.content-delegation-province-official-${i}`).addClass("d-none");
+    $(`.content-delegation-city-official-${i}`).addClass("d-none");
+    $(`.content-delegation-school-official-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-official-${i}`).addClass("d-none");
+    $(`.content-delegation-club-official-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-official-${i}`).empty();
+    $(`.content-delegation-province-official-${i}`).empty();
+    $(`.content-delegation-city-official-${i}`).empty();
+    $(`.content-delegation-school-official-${i}`).empty();
+    $(`.content-delegation-organization-official-${i}`).empty();
+    $(`.content-delegation-club-official-${i}`).empty();
   }
 };
 
@@ -437,6 +957,22 @@ const handlerMapSelect2Team = (data) => {
           : ""
       );
     }
+
+    // hide all content delegation
+    $(`.content-delegation-country-team-${i}`).addClass("d-none");
+    $(`.content-delegation-province-team-${i}`).addClass("d-none");
+    $(`.content-delegation-city-team-${i}`).addClass("d-none");
+    $(`.content-delegation-school-team-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-team-${i}`).addClass("d-none");
+    $(`.content-delegation-club-team-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-team-${i}`).empty();
+    $(`.content-delegation-province-team-${i}`).empty();
+    $(`.content-delegation-city-team-${i}`).empty();
+    $(`.content-delegation-school-team-${i}`).empty();
+    $(`.content-delegation-organization-team-${i}`).empty();
+    $(`.content-delegation-club-team-${i}`).empty();
   }
 };
 
@@ -453,6 +989,22 @@ const handlerMapSelect2MixTeam = (data) => {
           : ""
       );
     }
+
+    // hide all content delegation
+    $(`.content-delegation-country-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-province-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-city-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-school-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-club-mix-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-mix-${i}`).empty();
+    $(`.content-delegation-province-mix-${i}`).empty();
+    $(`.content-delegation-city-mix-${i}`).empty();
+    $(`.content-delegation-school-mix-${i}`).empty();
+    $(`.content-delegation-organization-mix-${i}`).empty();
+    $(`.content-delegation-club-mix-${i}`).empty();
   }
 };
 
@@ -490,9 +1042,6 @@ const generateViewIndividu = () => {
   const arrIndexIndividu = [];
 
   dtIndividu?.map((val, index) => {
-    console.log("val:", val);
-    console.log("index:", index);
-
     let gender = "M";
 
     if (val.user_gender) {
@@ -509,7 +1058,7 @@ const generateViewIndividu = () => {
 
     if (val.contingent_type.toLowerCase() === "open") {
       contentDelegation += `
-        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2
+        <div class="col-12 col-md-6 form-group d-flex flex-column gap-2
           content-delegation-individu-${index}">
             <label
                 for="delegation_individu${index}">
@@ -527,8 +1076,6 @@ const generateViewIndividu = () => {
       contentDelegation = `
         <input type="hidden"name="delegation_individu[]"  value="${val.delegation_type}" />
       `;
-
-      console.log("val:", val);
     }
 
     arrIndexIndividu.push(index);
@@ -556,7 +1103,7 @@ const generateViewIndividu = () => {
                       id="name_individu${index}" style="width:100%" class="form-control w-100">
                       </select>
                   </div>
-                  <div class="col-12 col-lg-6 form-group">
+                  <div class="col-12 col-md-6 form-group">
                       <label
                           for="gender_individu${index}">
                           ${genderLabel}*
@@ -572,7 +1119,7 @@ const generateViewIndividu = () => {
                           </option>
                       </select>
                   </div>
-                  <div class="col-12 col-lg-6 form-group">
+                  <div class="col-12 col-md-6 form-group">
                       <label
                           for="birth_date_individu${index}">
                           ${birthDateLabel}*
@@ -588,7 +1135,7 @@ const generateViewIndividu = () => {
                           }" required>
                   </div>
                   <div
-                      class="col-12 col-lg-6 form-group d-flex flex-column gap-2
+                      class="col-12 col-md-6 form-group d-flex flex-column gap-2
                       content-profile-country-individu-${index}">
                       <label
                           for="profile_country_individu${index}">
@@ -600,7 +1147,7 @@ const generateViewIndividu = () => {
                       </select>
                   </div>
                   <div
-                      class="col-12 col-lg-6 d-flex flex-column gap-2 form-group
+                      class="col-12 col-md-6 d-flex flex-column gap-2 form-group
                       content-profile-city-individu-${index}">
                       <label for="profile_city_individu${index}">
                           ${cityDistrictProfileLabel}*
@@ -614,24 +1161,12 @@ const generateViewIndividu = () => {
                       </select>
                   </div>
                   ${contentDelegation}
-                  <div
-                      class="col-12 content-delegation-country-individu-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-province-individu-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-city-individu-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-school-individu-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-club-individu-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-organization-individu-${index} d-none">
-                  </div>
+                  <div class="content-delegation-country-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-province-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-city-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-school-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-club-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-organization-individu-${index} col-12 col-md-6 d-none"></div>
                 </div>
               </div>
           </div>
@@ -708,24 +1243,12 @@ const generateViewTeam = () => {
                   }" onchange="handlerNameTeam('team',${index})" required>
               </div>
               ${contentDelegation}
-              <div
-                  class="col-12 content-delegation-country-team-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-province-team-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-city-team-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-school-team-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-club-team-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-organization-team-${index} d-none">
-              </div>
+              <section class="content-delegation-country-team-${index}"></section>
+              <section class="content-delegation-province-team-${index}"></section>
+              <section class="content-delegation-city-team-${index}"></section>
+              <section class="content-delegation-school-team-${index}"></section>
+              <section class="content-delegation-club-team-${index}"></section>
+              <section class="content-delegation-organization-team-${index}"></section>
             </div>
           </div>
         </div>
@@ -804,24 +1327,12 @@ const generateViewMixTeam = () => {
                   }" onchange="handlerNameTeam('mix',${index})" required>
               </div>
               ${contentDelegation}
-              <div
-                  class="col-12 content-delegation-country-mix-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-province-mix-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-city-mix-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-school-mix-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-club-mix-${index} d-none">
-              </div>
-              <div
-                  class="col-12 content-delegation-organization-mix-${index} d-none">
-              </div>
+              <section class="content-delegation-country-mix-${index}"></section>
+              <section class="content-delegation-province-mix-${index}"></section>
+              <section class="content-delegation-city-mix-${index}"></section>
+              <section class="content-delegation-school-mix-${index}"></section>
+              <section class="content-delegation-club-mix-${index}"></section>
+              <section class="content-delegation-organization-mix-${index}"></section>
             </div>
           </div>
         </div>
@@ -867,7 +1378,7 @@ const generateViewOfficial = () => {
 
     if (val.contingent_type.toLowerCase() === "open") {
       contentDelegation = `
-        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2
+        <div class="col-12 col-md-6 form-group d-flex flex-column gap-2
           content-delegation-official-${index}">
             <label
                 for="delegation_official${index}">
@@ -969,24 +1480,12 @@ const generateViewOfficial = () => {
                       </select>
                   </div>
                   ${contentDelegation}
-                  <div
-                      class="col-12 content-delegation-country-official-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-province-official-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-city-official-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-school-official-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-club-official-${index} d-none">
-                  </div>
-                  <div
-                      class="col-12 content-delegation-organization-official-${index} d-none">
-                  </div>
+                  <div class="content-delegation-country-official-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-province-official-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-city-official-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-school-official-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-club-official-${index} col-12 col-md-6 d-none"></div>
+                  <div class="content-delegation-organization-official-${index} col-12 col-md-6 d-none"></div>
                 </div>
               </div>
           </div>

@@ -419,5 +419,15 @@
   "Please Login Customer": "Please log in first as a customer",
   "Type your code access": "Type your code access",
   "Placeholder Team Name": "Enter Team Name",
-  "Label Input Team Name": "Team Name"
+  "Label Input Team Name": "Team Name",
+  "Placeholder Option Select Province": "Select Province",
+  "Placeholder Option Select Club": "Enter Your Club Name",
+  "Placeholder Option Select Organization": "Enter Your Organization",
+  "Placeholder Option Select School": "Enter Your School/University",
+  "Label Delegation Club": "Delegation Club",
+  "Label Delegation Country": "Delegation Country",
+  "Label Delegation Province": "Delegation Province",
+  "Label Delegation City": "Delegation City",
+  "Label Delegation Organization": "Delegation Organization",
+  "Label Delegation School": "Delegation School/University"
 }

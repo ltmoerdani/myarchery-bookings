@@ -91,6 +91,9 @@ Route::prefix('/customer')->middleware('auth:customer', 'Deactive:customer', 'ch
   Route::get('/my-orders/details/{id}', 'FrontEnd\Shop\CustomerOrderController@details')->name('customer.order_details');
 
   Route::get('/list-participants', 'FrontEnd\CustomerController@list_participant')->name('customer.list_participant');
+  Route::get('/s2-list-clubs', 'FrontEnd\ClubController@index')->name('customer.list_clubs');
+  Route::get('/s2-list-organization', 'FrontEnd\OrganizationController@s2Organizations')->name('customer.list_organization');
+  Route::get('/s2-list-school-and-university', 'FrontEnd\SchoolUnivesityController@s2SchoolUniversity')->name('customer.list_school_and_university');
 });
 
 
