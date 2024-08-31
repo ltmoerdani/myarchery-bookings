@@ -6,6 +6,162 @@ window.dataIndividu = [];
 window.dataTeam = [];
 window.dataMix = [];
 window.dataOfficial = [];
+window.eventInfo = [];
+
+// automatic create list ticket with select2 search
+const createS2TicketsDelegation = (
+  contentIdx,
+  contentFor,
+  defaultValue = ""
+) => {
+  const dtWindow =
+    window[`data${capitalizeFirstLetter(contentFor)}`][contentIdx];
+
+  initiateS2(
+    `#category_${contentFor}${contentIdx}`,
+    `${base_url}/customer/s2-list-tickets/${
+      window.eventInfo.event_id
+    }/${contentFor}?gender=${
+      !dtWindow.user_gender ? "" : dtWindow.user_gender
+    }`,
+    0,
+    placeholderCategory,
+    ["title"],
+    function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      const checkTicket = window[contentFor].filter(
+        (val) => val.ticket_id === e.params.data.id
+      );
+
+      if (checkTicket.length >= e.params.data.ticket_available) {
+        $(
+          `#category_${e.target.dataset.contentfor}${e.target.dataset.idx}`
+        ).select2("trigger", "select", {
+          data: { id: "", title: "" },
+        });
+
+        return toastr["warning"](
+          `${alertOverOrderQuotaTicket} ${e.params.data.title}`
+        );
+      } else {
+        window[contentFor][e.target.dataset.idx].ticket_id = e.params.data.id;
+        window[contentFor][e.target.dataset.idx].ticket_name =
+          e.params.data.category_name;
+        window[contentFor][e.target.dataset.idx].sub_category_ticket_id =
+          e.params.data.sub_category_id;
+        window[contentFor][e.target.dataset.idx].sub_category_ticket =
+          e.params.data.title;
+        window[contentFor][e.target.dataset.idx].price_scheme =
+          e.params.data.price_scheme;
+        window[contentFor][e.target.dataset.idx].price = e.params.data.price;
+        window[contentFor][e.target.dataset.idx].f_price =
+          e.params.data.f_price;
+        window[contentFor][e.target.dataset.idx].international_price =
+          e.params.data.international_price;
+        window[contentFor][e.target.dataset.idx].f_international_price =
+          e.params.data.f_international_price;
+
+        // early bird
+        window[contentFor][e.target.dataset.idx].early_bird_discount =
+          e.params.data.early_bird_discount;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_amount =
+          e.params.data.early_bird_discount_amount;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_amount_international =
+          e.params.data.early_bird_discount_amount_international;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_international_type =
+          e.params.data.early_bird_discount_international_type;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_international_date =
+          e.params.data.early_bird_discount_international_date;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_international_time =
+          e.params.data.early_bird_discount_international_time;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_international_end_date =
+          e.params.data.early_bird_discount_international_end_date;
+        window[contentFor][
+          e.target.dataset.idx
+        ].early_bird_discount_international_end_time =
+          e.params.data.early_bird_discount_international_end_time;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_type =
+          e.params.data.early_bird_discount_type;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_date =
+          e.params.data.early_bird_discount_date;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_time =
+          e.params.data.early_bird_discount_time;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_end_date =
+          e.params.data.early_bird_discount_end_date;
+        window[contentFor][e.target.dataset.idx].early_bird_discount_end_time =
+          e.params.data.early_bird_discount_end_time;
+
+        // late price
+        window[contentFor][e.target.dataset.idx].late_price_discount =
+          e.params.data.late_price_discount;
+        window[contentFor][e.target.dataset.idx].late_price_discount_amount =
+          e.params.data.late_price_discount_amount;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_amount_international =
+          e.params.data.late_price_discount_amount_international;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_international_type =
+          e.params.data.late_price_discount_international_type;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_international_date =
+          e.params.data.late_price_discount_international_date;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_international_time =
+          e.params.data.late_price_discount_international_time;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_international_end_date =
+          e.params.data.late_price_discount_international_end_date;
+        window[contentFor][
+          e.target.dataset.idx
+        ].late_price_discount_international_end_time =
+          e.params.data.late_price_discount_international_end_time;
+        window[contentFor][e.target.dataset.idx].late_price_discount_type =
+          e.params.data.late_price_discount_type;
+        window[contentFor][e.target.dataset.idx].late_price_discount_date =
+          e.params.data.late_price_discount_date;
+        window[contentFor][e.target.dataset.idx].late_price_discount_time =
+          e.params.data.late_price_discount_time;
+        window[contentFor][e.target.dataset.idx].late_price_discount_end_date =
+          e.params.data.late_price_discount_end_date;
+        window[contentFor][e.target.dataset.idx].late_price_discount_end_time =
+          e.params.data.late_price_discount_end_time;
+      }
+    },
+    function (param) {
+      let req = {
+        q: param.term,
+      };
+      return req;
+    },
+    null,
+    null,
+    false
+  );
+
+  if (defaultValue) {
+    $(`#category_${contentFor}${contentIdx}`).select2("trigger", "select", {
+      data: defaultValue,
+    });
+  }
+};
 
 // automatic create list city for delegation with select2 search
 const createS2CityDelegation = (
@@ -701,6 +857,10 @@ const handlerMapSelect2Individu = (data) => {
               e.params.data.county_id
             );
           }
+
+          setTimeout(() => {
+            createS2TicketsDelegation(e.target.dataset.idx, "individu");
+          }, 300);
         },
         function (param) {
           let req = {
@@ -778,7 +938,6 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-organization-individu-${i}`).empty();
     $(`.content-delegation-club-individu-${i}`).empty();
 
-    console.log("wdData:", window.dataIndividu[i]);
     setTimeout(() => {
       if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
         switch (window.dataIndividu[i].delegation_type.toLowerCase()) {
@@ -814,6 +973,8 @@ const handlerMapSelect2Individu = (data) => {
         }
       }
     }, 500);
+
+    createS2TicketsDelegation(i, "individu");
   }
 };
 
@@ -844,7 +1005,6 @@ const handlerMapSelect2Official = (data) => {
               gender = "F";
             }
           }
-
           window.dataOfficial[e.target.dataset.idx].user_id = e.params.data.id;
           window.dataOfficial[e.target.dataset.idx].city = e.params.data.city;
           window.dataOfficial[e.target.dataset.idx].city_id =
@@ -1080,6 +1240,8 @@ const handlerMapSelect2Team = (data) => {
         }
       }
     }, 500);
+
+    createS2TicketsDelegation(i, "team");
   }
 };
 
@@ -1148,6 +1310,8 @@ const handlerMapSelect2MixTeam = (data) => {
         }
       }
     }, 500);
+
+    createS2TicketsDelegation(i, "mix");
   }
 };
 
@@ -1155,8 +1319,10 @@ const handlerChooseGender = (contentFor, index) => {
   const mapDtWindow = `data${capitalizeFirstLetter(contentFor)}`;
 
   const valueGender = $(`#gender_${contentFor}${index}`).val();
-
   window[mapDtWindow][index].user_gender = valueGender;
+  setTimeout(() => {
+    createS2TicketsDelegation(index, contentFor);
+  }, 300);
 };
 
 const handlerBirthDate = (contentFor, index) => {
@@ -1174,7 +1340,6 @@ const handlerNameTeam = (contentFor, index) => {
 
 const generateViewIndividu = () => {
   const dtIndividu = window.dataIndividu;
-
   if (dtIndividu.length < 1) {
     return $("#individu_section").addClass("d-none");
   }
@@ -1310,6 +1475,18 @@ const generateViewIndividu = () => {
                   <div class="content-delegation-school-individu-${index} col-12 col-md-6 d-none"></div>
                   <div class="content-delegation-club-individu-${index} col-12 col-md-6 d-none"></div>
                   <div class="content-delegation-organization-individu-${index} col-12 col-md-6 d-none"></div>
+                  <div class="col-12 col-lg-6 d-flex flex-column gap-2 form-group">
+                    <label for="category_individu${index}">
+                          ${labelCategory}
+                    </label>
+                    <select
+                        data-idx="${index}"
+                        data-contentFor="individu"
+                        class="form-select"
+                        id="category_individu${index}"
+                        name="category_individu[]" required>
+                    </select>
+                  </div>
                 </div>
               </div>
           </div>
@@ -1392,6 +1569,18 @@ const generateViewTeam = () => {
               <div class="content-delegation-school-team-${index} col-12 col-md-6 d-none"></div>
               <div class="content-delegation-club-team-${index} col-12 col-md-6 d-none"></div>
               <div class="content-delegation-organization-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="col-12 col-lg-6">
+                <label for="category_team${index}">
+                      ${labelCategory}
+                </label>
+                <select
+                    data-idx="${index}"
+                    data-contentFor="team"
+                    class="form-select"
+                    id="category_team${index}"
+                    name="category_team[]" required>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -1476,6 +1665,18 @@ const generateViewMixTeam = () => {
               <div class="content-delegation-school-mix-${index} col-12 col-md-6 d-none"></div>
               <div class="content-delegation-club-mix-${index} col-12 col-md-6 d-none"></div>
               <div class="content-delegation-organization-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="col-12 col-lg-6">
+                <label for="category_mix${index}">
+                      ${labelCategory}
+                </label>
+                <select
+                    data-idx="${index}"
+                    data-contentFor="mix"
+                    class="form-select"
+                    id="category_mix${index}"
+                    name="category_mix[]" required>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -1494,7 +1695,6 @@ const generateViewMixTeam = () => {
 
 const generateViewOfficial = () => {
   const dtOfficial = window.dataOfficial;
-
   if (dtOfficial.length < 1) {
     return $("#official_section").addClass("d-none");
   }
@@ -1646,6 +1846,87 @@ const generateViewOfficial = () => {
   setTimeout(handlerMapSelect2Official(arrIndexOfficial), 5000);
 };
 
+const generateSummaryTickets = () => {
+  let totalTickets = 0;
+  let contentListTickets = "";
+
+  if (window.dataIndividu.length > 0) {
+    totalTickets = totalTickets + window.dataIndividu.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Individu
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataIndividu.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataTeam.length > 0) {
+    totalTickets = totalTickets + window.dataTeam.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Team
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataTeam.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataMix.length > 0) {
+    totalTickets = totalTickets + window.dataMix.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Mix Team
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataMix.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataOfficial.length > 0) {
+    totalTickets = totalTickets + window.dataOfficial.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Official
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataOfficial.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+  // console.log("dataIndividu:", window.dataIndividu);
+  // console.log("dataTeam:", window.dataTeam);
+  // console.log("dataMix:", window.dataMix);
+  // console.log("dataOfficial:", window.dataOfficial);
+
+  $(".list-category-tickets").append(contentListTickets);
+  $(".total-tickets").empty();
+  $(".total-tickets").append(totalTickets);
+};
+
 const handlerBack = (slug, event_id) => {
   window.location.replace(`${base_url}/event/${slug}/${event_id}`);
 };
@@ -1666,10 +1947,15 @@ const getInfoData = async () => {
       window.dataTeam = data.ticket_detail_team_order;
       window.dataMix = data.ticket_detail_mix_team_order;
       window.dataOfficial = data.ticket_detail_official_order;
+      window.eventInfo = data.event;
+
       generateViewIndividu();
       generateViewTeam();
       generateViewMixTeam();
       generateViewOfficial();
+      setTimeout(() => {
+        generateSummaryTickets();
+      }, 300);
     })
     .catch((error) => {
       console.log("err:", error);

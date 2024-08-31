@@ -659,6 +659,7 @@ class CheckOutController extends Controller
         return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
       }
     }
+
     $select = false;
     $event_type = Event::where('id', $request->event_id)->select('event_type')->first();
     if ($event_type->event_type == 'venue') {
@@ -1279,7 +1280,7 @@ class CheckOutController extends Controller
               // participant
               "user_id" => null,
               "user_full_name" => null,
-              "user_gender" => null,
+              "user_gender" => 'M',
               "birthdate" => null,
               "county_id" => null,
               "country_name" => null,
@@ -1307,12 +1308,49 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => null,
-              "ticket_name" => null,
+              "ticket_id" => $k,
+              "ticket_name" => 'official',
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
               "category_ticket"  => $k,
-              "type_data" => 'individu'
+              "type_data" => 'official',
+
+              // ticket normal rice
+              "price_scheme" => null,
+              "price" => null,
+              "f_price" => null,
+              "international_price" => null,
+              "f_international_price" => null,
+
+              // ticket earlybird
+              "early_bird_discount" => null,
+              "early_bird_discount_amount" => null,
+              "early_bird_discount_amount_international" => null,
+              "early_bird_discount_international_type" => null,
+              "early_bird_discount_international_date" => null,
+              "early_bird_discount_international_time" => null,
+              "early_bird_discount_international_end_date" => null,
+              "early_bird_discount_international_end_time" => null,
+              "early_bird_discount_type" => null,
+              "early_bird_discount_date" => null,
+              "early_bird_discount_time" => null,
+              "early_bird_discount_end_date" => null,
+              "early_bird_discount_end_time" => null,
+
+              // ticket late price
+              "late_price_discount" => null,
+              "late_price_discount_amount" => null,
+              "late_price_discount_amount_international" => null,
+              "late_price_discount_international_type" => null,
+              "late_price_discount_international_date" => null,
+              "late_price_discount_international_time" => null,
+              "late_price_discount_international_end_date" => null,
+              "late_price_discount_international_end_time" => null,
+              "late_price_discount_type" => null,
+              "late_price_discount_date" => null,
+              "late_price_discount_time" => null,
+              "late_price_discount_end_date" => null,
+              "late_price_discount_end_time" => null,
             ];
           }
         }
@@ -1355,12 +1393,49 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => null,
-              "ticket_name" => null,
+              "ticket_id" => $k,
+              "ticket_name" => 'official',
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
               "category_ticket"  => $k,
-              "type_data" => 'team'
+              "type_data" => 'official',
+
+              // ticket normal rice
+              "price_scheme" => null,
+              "price" => null,
+              "f_price" => null,
+              "international_price" => null,
+              "f_international_price" => null,
+
+              // ticket earlybird
+              "early_bird_discount" => null,
+              "early_bird_discount_amount" => null,
+              "early_bird_discount_amount_international" => null,
+              "early_bird_discount_international_type" => null,
+              "early_bird_discount_international_date" => null,
+              "early_bird_discount_international_time" => null,
+              "early_bird_discount_international_end_date" => null,
+              "early_bird_discount_international_end_time" => null,
+              "early_bird_discount_type" => null,
+              "early_bird_discount_date" => null,
+              "early_bird_discount_time" => null,
+              "early_bird_discount_end_date" => null,
+              "early_bird_discount_end_time" => null,
+
+              // ticket late price
+              "late_price_discount" => null,
+              "late_price_discount_amount" => null,
+              "late_price_discount_amount_international" => null,
+              "late_price_discount_international_type" => null,
+              "late_price_discount_international_date" => null,
+              "late_price_discount_international_time" => null,
+              "late_price_discount_international_end_date" => null,
+              "late_price_discount_international_end_time" => null,
+              "late_price_discount_type" => null,
+              "late_price_discount_date" => null,
+              "late_price_discount_time" => null,
+              "late_price_discount_end_date" => null,
+              "late_price_discount_end_time" => null,
             ];
           }
         }
@@ -1403,12 +1478,49 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => null,
-              "ticket_name" => null,
+              "ticket_id" => $k,
+              "ticket_name" => 'official',
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
               "category_ticket"  => $k,
-              "type_data" => 'mix team'
+              "type_data" => 'official',
+
+              // ticket normal rice
+              "price_scheme" => null,
+              "price" => null,
+              "f_price" => null,
+              "international_price" => null,
+              "f_international_price" => null,
+
+              // ticket earlybird
+              "early_bird_discount" => null,
+              "early_bird_discount_amount" => null,
+              "early_bird_discount_amount_international" => null,
+              "early_bird_discount_international_type" => null,
+              "early_bird_discount_international_date" => null,
+              "early_bird_discount_international_time" => null,
+              "early_bird_discount_international_end_date" => null,
+              "early_bird_discount_international_end_time" => null,
+              "early_bird_discount_type" => null,
+              "early_bird_discount_date" => null,
+              "early_bird_discount_time" => null,
+              "early_bird_discount_end_date" => null,
+              "early_bird_discount_end_time" => null,
+
+              // ticket late price
+              "late_price_discount" => null,
+              "late_price_discount_amount" => null,
+              "late_price_discount_amount_international" => null,
+              "late_price_discount_international_type" => null,
+              "late_price_discount_international_date" => null,
+              "late_price_discount_international_time" => null,
+              "late_price_discount_international_end_date" => null,
+              "late_price_discount_international_end_time" => null,
+              "late_price_discount_type" => null,
+              "late_price_discount_date" => null,
+              "late_price_discount_time" => null,
+              "late_price_discount_end_date" => null,
+              "late_price_discount_end_time" => null,
             ];
           }
         }
@@ -1417,13 +1529,14 @@ class CheckOutController extends Controller
       if (strtolower($ticket[$k]) == 'official') {
         if ($v > 0) {
           for ($x = 0; $x < $v; $x++) {
+            $info_ticket = Ticket::where('id', $k)->first();
             $ticket_detail_official_order[] = [
               "id" => null, //id from category ticket id or ticket id
 
               // participant
               "user_id" => null,
               "user_full_name" => null,
-              "user_gender" => null,
+              "user_gender" => 'M',
               "birthdate" => null,
               "county_id" => null,
               "country_name" => null,
@@ -1451,12 +1564,49 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => null,
-              "ticket_name" => null,
+              "ticket_id" => $k,
+              "ticket_name" => $info_ticket->title,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
               "category_ticket"  => $k,
-              "type_data" => 'official'
+              "type_data" => 'official',
+
+              // ticket normal rice
+              "price_scheme" => $info_ticket->pricing_scheme,
+              "price" => $info_ticket->price,
+              "f_price" => $info_ticket->f_price,
+              "international_price" => $info_ticket->international_price,
+              "f_international_price" => $info_ticket->f_international_price,
+
+              // ticket earlybird
+              "early_bird_discount" => $info_ticket->early_bird_discount,
+              "early_bird_discount_amount" => $info_ticket->early_bird_discount_amount,
+              "early_bird_discount_amount_international" => $info_ticket->early_bird_discount_amount_international,
+              "early_bird_discount_international_type" => $info_ticket->early_bird_discount_international_type,
+              "early_bird_discount_international_date" => $info_ticket->early_bird_discount_international_date,
+              "early_bird_discount_international_time" => $info_ticket->early_bird_discount_international_time,
+              "early_bird_discount_international_end_date" => $info_ticket->early_bird_discount_international_end_date,
+              "early_bird_discount_international_end_time" => $info_ticket->early_bird_discount_international_end_time,
+              "early_bird_discount_type" => $info_ticket->early_bird_discount_type,
+              "early_bird_discount_date" => $info_ticket->early_bird_discount_date,
+              "early_bird_discount_time" => $info_ticket->early_bird_discount_time,
+              "early_bird_discount_end_date" => $info_ticket->early_bird_discount_end_date,
+              "early_bird_discount_end_time" => $info_ticket->early_bird_discount_end_time,
+
+              // ticket late price
+              "late_price_discount" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_amount" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_amount_international" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_international_type" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_international_date" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_international_time" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_international_end_date" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_international_end_time" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_type" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_date" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_time" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_end_date" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount_end_time" => $info_ticket->early_bird_discount_end_time,
             ];
           }
         }
@@ -1470,6 +1620,11 @@ class CheckOutController extends Controller
     Session::put('ticket_detail_mix_team_order' . $request->checkoutId, $ticket_detail_mix_team_order);
 
     return response()->json(['status' => 'success', 'message' => 'oke'], 200);
+  }
+
+  public function storeCheckoutEventTournament(Request $request)
+  {
+    return response()->json(['data' => $request->all]);
   }
 
   public function getDataFormOrderTournament(Request $request)

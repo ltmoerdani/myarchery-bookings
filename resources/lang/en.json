@@ -432,5 +432,6 @@
   "Label Delegation Province": "Delegation Province",
   "Label Delegation City": "Delegation City",
   "Label Delegation Organization": "Delegation Organization",
-  "Label Delegation School": "Delegation School/University"
+  "Label Delegation School": "Delegation School/University",
+  "ALERT OVER BID TICKET": "The ticket quota you selected cannot meet your wishes, in the ticket category:"
 }

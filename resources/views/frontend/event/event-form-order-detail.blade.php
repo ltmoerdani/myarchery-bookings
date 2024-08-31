@@ -56,7 +56,8 @@
 @endsection
 
 @section('content')
-    <form id="bookingForm" action="{{ route('detail-check-out-tournament') }}" method="POST" enctype="multipart/form-data">
+    <form id="bookingForm" action="{{ route('process_to_detail_coheckout_tournament') }}" method="POST"
+        enctype="multipart/form-data">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $from_info_event['event_id'] }}">
 
@@ -194,7 +195,7 @@
                                 <div class="col-12">
                                     <p class="font-weight-bold">Tickets Info</p>
                                 </div>
-                                <section class="list-category-tickets"></section>
+                                <section class="list-category-tickets col-12"></section>
                                 <div class="col-12 d-flex justify-content-between">
                                     <p class="font-weight-medium mb-0">
                                         Total Tickets
@@ -218,7 +219,7 @@
                                     </div>
                                 @endif
                                 <div class="col-12 mt-3">
-                                    <button class="theme-btn w-100" type="submit">
+                                    <button class="theme-btn w-100" type="submit" id="ToDetailCheckout">
                                         {{ __('Continue') }}
                                     </button>
                                 </div>
@@ -274,6 +275,9 @@
         const labelDelegationCountry = "{{ __('Label Delegation Country') }}";
         const labelDelegationProvince = "{{ __('Label Delegation Province') }}";
         const labelDelegationCity = "{{ __('Label Delegation City') }}";
+        const labelCategory = "{{ __('Category') }}";
+        const placeholderCategory = "{{ __('Select Category') }}";
+        const alertOverOrderQuotaTicket = "{{ __('ALERT OVER BID TICKET') }}";
     </script>
     <script src="{{ asset('assets/front/js/order-detail.js?' . rand()) }}"></script>
     {{-- <script src="{{ asset('assets/front/js/order-detail.min.js') }}"></script> --}}
