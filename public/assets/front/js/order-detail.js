@@ -587,6 +587,9 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
 
 // function automatic create list delegation with select2 search
 const createS2ListDelegation = (contentId, defaultValue = "") => {
+  console.log("contentId:", contentId);
+  console.log("defaultValue:", defaultValue);
+
   initiateS2(
     contentId,
     `${base_url}/api/s2-get-delegation-type`,
@@ -909,6 +912,8 @@ const handlerMapSelect2Individu = (data) => {
           : window.dataIndividu[i].county_id
       );
     }
+
+    console.log(`${i}:`, window.dataIndividu[i]);
 
     if ($(`#delegation_individu${i}`)) {
       createS2ListDelegation(
@@ -1963,3 +1968,59 @@ const getInfoData = async () => {
     });
 };
 getInfoData();
+
+$("#ToDetailCheckout").on("click", function (e) {
+  // $(e.target).attr("disabled", true);
+  // $(".request-loader").addClass("show");
+
+  let bookingForm = document.getElementById("bookingForm");
+  const arrData = [];
+  // arrData.push(window.dataIndividu);
+  // arrData.push(window.dataTeam);
+  // arrData.push(window.dataMix);
+  // arrData.push(window.dataOfficial);
+  // let fd = new FormData("data", arrData);
+  let fd = new FormData(bookingForm);
+  // fd.append("individu", window.dataIndividu);
+  // fd.append("team", window.dataTeam);
+  // fd.append("mix_team", window.dataMix);
+  // fd.append("official", window.dataOfficial);
+
+  fd.append(
+    "individu",
+    window.dataIndividu.length > 0 ? "" : JSON.stringify(window.dataIndividu)
+  );
+  fd.append(
+    "team",
+    window.dataTeam.length > 0 ? "" : JSON.stringify(window.dataTeam)
+  );
+  fd.append(
+    "mix_team",
+    window.dataMix.length > 0 ? "" : JSON.stringify(window.dataMix)
+  );
+  fd.append(
+    "official",
+    window.dataOfficial.length > 0 ? "" : JSON.stringify(window.dataOfficial)
+  );
+
+  let url = $("#bookingForm").attr("action");
+  let method = $("#bookingForm").attr("method");
+
+  $.ajax({
+    url: url,
+    method: method,
+    data: fd,
+    contentType: false,
+    processData: false,
+    success: function (response) {
+      console.log("response:", response);
+    },
+    error: function (error) {
+      console.log("error:", error.responseJSON.errors);
+    },
+  });
+  // console.log("dataIndividu:", window.dataIndividu);
+  // console.log("dataTeam:", window.dataTeam);
+  // console.log("dataMix:", window.dataMix);
+  // console.log("dataOfficial:", window.dataOfficial);
+});

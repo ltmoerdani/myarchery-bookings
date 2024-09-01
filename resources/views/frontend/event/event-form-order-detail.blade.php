@@ -219,7 +219,7 @@
                                     </div>
                                 @endif
                                 <div class="col-12 mt-3">
-                                    <button class="theme-btn w-100" type="submit" id="ToDetailCheckout">
+                                    <button class="theme-btn w-100" type="button" id="ToDetailCheckout">
                                         {{ __('Continue') }}
                                     </button>
                                 </div>

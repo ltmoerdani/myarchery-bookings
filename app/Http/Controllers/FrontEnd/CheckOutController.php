@@ -1308,12 +1308,12 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => $k,
-              "ticket_name" => 'official',
+              "ticket_id" => null,
+              "ticket_name" => null,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
-              "category_ticket"  => $k,
-              "type_data" => 'official',
+              "category_ticket"  => null,
+              "type_data" => null,
 
               // ticket normal rice
               "price_scheme" => null,
@@ -1393,12 +1393,12 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => $k,
-              "ticket_name" => 'official',
+              "ticket_id" => null,
+              "ticket_name" => null,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
-              "category_ticket"  => $k,
-              "type_data" => 'official',
+              "category_ticket"  => null,
+              "type_data" => null,
 
               // ticket normal rice
               "price_scheme" => null,
@@ -1478,12 +1478,12 @@ class CheckOutController extends Controller
               // end delegation
 
               // ticket
-              "ticket_id" => $k,
-              "ticket_name" => 'official',
+              "ticket_id" => null,
+              "ticket_name" => null,
               "sub_category_ticket_id" => null,
               "sub_category_ticket" => null,
-              "category_ticket"  => $k,
-              "type_data" => 'official',
+              "category_ticket"  => null,
+              "type_data" => null,
 
               // ticket normal rice
               "price_scheme" => null,
@@ -1624,7 +1624,7 @@ class CheckOutController extends Controller
 
   public function storeCheckoutEventTournament(Request $request)
   {
-    return response()->json(['data' => $request->all]);
+    return response()->json(['data' => json_decode($request->individu)]);
   }
 
   public function getDataFormOrderTournament(Request $request)
