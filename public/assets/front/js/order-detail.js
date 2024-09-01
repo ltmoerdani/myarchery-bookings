@@ -587,9 +587,6 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
 
 // function automatic create list delegation with select2 search
 const createS2ListDelegation = (contentId, defaultValue = "") => {
-  console.log("contentId:", contentId);
-  console.log("defaultValue:", defaultValue);
-
   initiateS2(
     contentId,
     `${base_url}/api/s2-get-delegation-type`,
@@ -912,8 +909,6 @@ const handlerMapSelect2Individu = (data) => {
           : window.dataIndividu[i].county_id
       );
     }
-
-    console.log(`${i}:`, window.dataIndividu[i]);
 
     if ($(`#delegation_individu${i}`)) {
       createS2ListDelegation(
@@ -1922,10 +1917,6 @@ const generateSummaryTickets = () => {
       </div>
     `;
   }
-  // console.log("dataIndividu:", window.dataIndividu);
-  // console.log("dataTeam:", window.dataTeam);
-  // console.log("dataMix:", window.dataMix);
-  // console.log("dataOfficial:", window.dataOfficial);
 
   $(".list-category-tickets").append(contentListTickets);
   $(".total-tickets").empty();
@@ -1974,34 +1965,25 @@ $("#ToDetailCheckout").on("click", function (e) {
   // $(".request-loader").addClass("show");
 
   let bookingForm = document.getElementById("bookingForm");
-  const arrData = [];
-  // arrData.push(window.dataIndividu);
-  // arrData.push(window.dataTeam);
-  // arrData.push(window.dataMix);
-  // arrData.push(window.dataOfficial);
-  // let fd = new FormData("data", arrData);
   let fd = new FormData(bookingForm);
-  // fd.append("individu", window.dataIndividu);
-  // fd.append("team", window.dataTeam);
-  // fd.append("mix_team", window.dataMix);
-  // fd.append("official", window.dataOfficial);
 
   fd.append(
     "individu",
-    window.dataIndividu.length > 0 ? "" : JSON.stringify(window.dataIndividu)
+    window.dataIndividu.length < 1 ? "" : JSON.stringify(window.dataIndividu)
   );
   fd.append(
     "team",
-    window.dataTeam.length > 0 ? "" : JSON.stringify(window.dataTeam)
+    window.dataTeam.length < 1 ? "" : JSON.stringify(window.dataTeam)
   );
   fd.append(
     "mix_team",
-    window.dataMix.length > 0 ? "" : JSON.stringify(window.dataMix)
+    window.dataMix.length < 1 ? "" : JSON.stringify(window.dataMix)
   );
   fd.append(
     "official",
-    window.dataOfficial.length > 0 ? "" : JSON.stringify(window.dataOfficial)
+    window.dataOfficial.length < 1 ? "" : JSON.stringify(window.dataOfficial)
   );
+  fd.append("event_info", JSON.stringify(window.eventInfo));
 
   let url = $("#bookingForm").attr("action");
   let method = $("#bookingForm").attr("method");
@@ -2019,8 +2001,4 @@ $("#ToDetailCheckout").on("click", function (e) {
       console.log("error:", error.responseJSON.errors);
     },
   });
-  // console.log("dataIndividu:", window.dataIndividu);
-  // console.log("dataTeam:", window.dataTeam);
-  // console.log("dataMix:", window.dataMix);
-  // console.log("dataOfficial:", window.dataOfficial);
 });

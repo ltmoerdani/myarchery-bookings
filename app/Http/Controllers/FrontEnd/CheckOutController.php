@@ -1624,7 +1624,39 @@ class CheckOutController extends Controller
 
   public function storeCheckoutEventTournament(Request $request)
   {
-    return response()->json(['data' => json_decode($request->individu)]);
+    if (!Auth::guard('customer')->user()) {
+      return Response(
+        [
+          'errors' => [
+            'message' => [
+              'Checkout Error, because not have sessions login'
+            ]
+          ]
+        ],
+        401
+      );
+    }
+
+    $eventInfo = json_decode($request->event_info);
+    $getEventType = EventType::where('event_id', $eventInfo->event_id)->first();
+
+    if (!empty($getEventType['code'])) {
+      if ($request->code_access != $getEventType['code']) {
+        return Response(
+          [
+            'errors' => [
+              'message' => [
+                'Code Access Not Valid!'
+              ]
+            ]
+          ],
+          401
+        );
+      }
+      return response()->json(['message' => $request->all()]);
+    }
+
+    return response()->json(['data' => json_decode($request->event_info)]);
   }
 
   public function getDataFormOrderTournament(Request $request)
