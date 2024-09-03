@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\EventType;
 
 class StoreCheckoutEventTournamentRequest extends FormRequest
 {
@@ -24,5 +25,15 @@ class StoreCheckoutEventTournamentRequest extends FormRequest
   public function rules()
   {
     $request = $this->request->all();
+    $eventInfo = json_decode($request['event_info']);
+
+    $ruleArray = [];
+
+    $getEventType = EventType::where('event_id', $eventInfo->event_id)->first();
+    if (!empty($getEventType->code)) {
+      $ruleArray['code_access'] = 'required';
+    }
+
+    return $ruleArray;
   }
 }

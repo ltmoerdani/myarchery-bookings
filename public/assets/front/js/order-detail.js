@@ -1951,6 +1951,8 @@ const getInfoData = async () => {
       generateViewOfficial();
       setTimeout(() => {
         generateSummaryTickets();
+        $("#eventErrors ul").empty();
+        $("#eventErrors").hide();
       }, 300);
     })
     .catch((error) => {
@@ -1998,6 +2000,24 @@ $("#ToDetailCheckout").on("click", function (e) {
       console.log("response:", response);
     },
     error: function (error) {
+      let errors = ``;
+      for (let x in error.responseJSON.errors.message) {
+        errors += `<li>
+                <p class="text-danger mb-0">${error.responseJSON.errors.message[x]}</p>
+              </li>`;
+      }
+
+      $("#eventErrors ul").html(errors);
+      $("#eventErrors").show();
+
+      $(".request-loader").removeClass("show");
+
+      $("html, body").animate(
+        {
+          scrollTop: $("#eventErrors").offset().top - 100,
+        },
+        1000
+      );
       console.log("error:", error.responseJSON.errors);
     },
   });

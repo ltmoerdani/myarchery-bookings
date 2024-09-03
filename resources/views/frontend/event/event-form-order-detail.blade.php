@@ -65,6 +65,12 @@
             <div class="container">
                 <div class="event-details-content">
                     <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-danger pb-1 dis-none" id="eventErrors">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <ul></ul>
+                            </div>
+                        </div>
                         <div class="col-12 col-lg-8 order-1 order-lg-0 my-1">
                             <div class="row">
                                 <div class="col-12">

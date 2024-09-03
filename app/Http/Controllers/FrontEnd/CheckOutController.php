@@ -34,6 +34,7 @@ use App\Models\Organization;
 use App\Models\EventType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreCheckoutEventTournamentRequest;
 
 class CheckOutController extends Controller
 {
@@ -1623,7 +1624,20 @@ class CheckOutController extends Controller
   }
 
   public function storeCheckoutEventTournament(Request $request)
+  // public function storeCheckoutEventTournament(StoreCheckoutEventTournamentRequest $request)
   {
+    $eventInfo = json_decode($request->event_info);
+    $individu_newest = empty($request->individu) ? [] : json_decode($request->individu);
+    $team_newest = empty($request->team) ? [] : json_decode($request->team);
+    $mix_team_newest = empty($request->mix_team) ? [] : json_decode($request->mix_team);
+    $official_newest = empty($request->official) ? [] : json_decode($request->official);
+
+    $errResponseMessage = [
+      'errors' => [
+        'message' => []
+      ]
+    ];
+
     if (!Auth::guard('customer')->user()) {
       return Response(
         [
@@ -1637,26 +1651,43 @@ class CheckOutController extends Controller
       );
     }
 
-    $eventInfo = json_decode($request->event_info);
     $getEventType = EventType::where('event_id', $eventInfo->event_id)->first();
 
     if (!empty($getEventType['code'])) {
       if ($request->code_access != $getEventType['code']) {
-        return Response(
-          [
-            'errors' => [
-              'message' => [
-                'Code Access Not Valid!'
-              ]
-            ]
-          ],
-          401
-        );
+        $errResponseMessage['errors']['message'][] = 'Code Access Not Valid!';
       }
-      return response()->json(['message' => $request->all()]);
+    }
+    // return response()->json(['event_info' => json_decode($request->event_info), 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+
+    foreach ($individu_newest as $keyIDT => $individuDT) {
+      if (empty($individuDT->user_full_name)) {
+        $errResponseMessage['errors']['message'][] = 'This full name in detail individu ' . $keyIDT + 1 . ' is required!';
+      }
+
+      if (empty($individuDT->user_gender)) {
+        $errResponseMessage['errors']['message'][] = 'This gender in detail individu ' . $keyIDT + 1 . ' is required!';
+      }
+
+      if (empty($individuDT->birthdate)) {
+        $errResponseMessage['errors']['message'][] = 'This birth date in detail individu ' . $keyIDT + 1 . ' is required!';
+      }
+
+      if (empty($individuDT->county_id)) {
+        $errResponseMessage['errors']['message'][] = 'This country in detail individu ' . $keyIDT + 1 . ' is required!';
+      }
+
+      if (empty($individuDT->city_id)) {
+        $errResponseMessage['errors']['message'][] = 'This city in detail individu ' . $keyIDT + 1 . ' is required!';
+      }
     }
 
-    return response()->json(['data' => json_decode($request->event_info)]);
+    if (count($errResponseMessage['errors']['message']) > 0) {
+      return Response($errResponseMessage, 400);
+    }
+    return response()->json(['event_info' => json_decode($request->event_info), 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+
+    return response()->json(['data' => $request->all()]);
   }
 
   public function getDataFormOrderTournament(Request $request)
