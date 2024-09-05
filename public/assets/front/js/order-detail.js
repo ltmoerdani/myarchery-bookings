@@ -1965,7 +1965,8 @@ getInfoData();
 $("#ToDetailCheckout").on("click", function (e) {
   // $(e.target).attr("disabled", true);
   // $(".request-loader").addClass("show");
-
+  $("#eventErrors ul").empty();
+  $("#eventErrors").hide();
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
 

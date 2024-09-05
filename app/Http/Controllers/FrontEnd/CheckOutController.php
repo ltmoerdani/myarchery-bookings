@@ -1189,6 +1189,14 @@ class CheckOutController extends Controller
       ->select('events.*', 'event_contents.*', 'event_type.code', 'event_type.event_type', 'event_type.id')
       ->first();
 
+    $event->is_code_access = false;
+
+    if (!empty($event->code)) {
+      unset($event->code);
+      $event->is_code_access = true;
+    }
+
+
     if (empty($event)) {
       return response()->json(['status' => 'error', 'message' => __('No Event Found')], 404);
     }
@@ -1624,13 +1632,15 @@ class CheckOutController extends Controller
   }
 
   public function storeCheckoutEventTournament(Request $request)
-  // public function storeCheckoutEventTournament(StoreCheckoutEventTournamentRequest $request)
   {
     $eventInfo = json_decode($request->event_info);
     $individu_newest = empty($request->individu) ? [] : json_decode($request->individu);
     $team_newest = empty($request->team) ? [] : json_decode($request->team);
     $mix_team_newest = empty($request->mix_team) ? [] : json_decode($request->mix_team);
     $official_newest = empty($request->official) ? [] : json_decode($request->official);
+    $ticketCount = [];
+    $language = $this->getLanguage();
+    $language_id = $language->id;
 
     $errResponseMessage = [
       'errors' => [
@@ -1651,41 +1661,307 @@ class CheckOutController extends Controller
       );
     }
 
-    $getEventType = EventType::where('event_id', $eventInfo->event_id)->first();
+    if ($eventInfo->is_code_access) {
+      $getEventType = EventType::where('event_id', $eventInfo->event_id)->first();
 
-    if (!empty($getEventType['code'])) {
-      if ($request->code_access != $getEventType['code']) {
-        $errResponseMessage['errors']['message'][] = 'Code Access Not Valid!';
+      if (!empty($getEventType['code'])) {
+        if ($request->code_access != $getEventType['code']) {
+          $errResponseMessage['errors']['message'][] = 'Code Access Not Valid!';
+        }
       }
     }
+
     // return response()->json(['event_info' => json_decode($request->event_info), 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+    if (count($individu_newest) > 0) {
+      foreach ($individu_newest as $keyIDT => $individuDT) {
+        if (empty($individuDT->user_full_name)) {
+          $errResponseMessage['errors']['message'][] = 'This full name in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
 
-    foreach ($individu_newest as $keyIDT => $individuDT) {
-      if (empty($individuDT->user_full_name)) {
-        $errResponseMessage['errors']['message'][] = 'This full name in detail individu ' . $keyIDT + 1 . ' is required!';
+        if (empty($individuDT->user_gender)) {
+          $errResponseMessage['errors']['message'][] = 'This gender in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
+
+        if (empty($individuDT->birthdate)) {
+          $errResponseMessage['errors']['message'][] = 'This birth date in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
+
+        if (empty($individuDT->county_id)) {
+          $errResponseMessage['errors']['message'][] = 'This country in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
+
+        if (empty($individuDT->city_id)) {
+          $errResponseMessage['errors']['message'][] = 'This city in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
+
+        if ($individuDT->contingent_type == 'open') {
+          if (strtolower($individuDT->delegation_type) == 'country') {
+            if (empty($individuDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'country') {
+            if (empty($individuDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'province' || strtolower($individuDT->delegation_type) == 'state') {
+            if (empty($individuDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+
+
+            if (empty($individuDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'city/district') {
+            if (empty($individuDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+
+
+            if (empty($individuDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+
+            if (empty($individuDT->city_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This City or District name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'organization') {
+            if (empty($individuDT->organization_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Organization name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'school/universities') {
+            if (empty($individuDT->school_name)) {
+              $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'club') {
+            if (empty($individuDT->club_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Club name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+        }
+
+        if ($individuDT->contingent_type != 'open') {
+          if (strtolower($individuDT->delegation_type) == 'country') {
+            if (empty($individuDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'province' || strtolower($individuDT->delegation_type) == 'state') {
+            if (empty($individuDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'city/district') {
+            if (empty($individuDT->city_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This City or District name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'organization') {
+            if (empty($individuDT->organization_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Organization name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'school/universities') {
+            if (empty($individuDT->school_name)) {
+              $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($individuDT->delegation_type) == 'club') {
+            if (empty($individuDT->club_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Club name in detail individu ' . $keyIDT + 1 . ' is required!';
+            }
+          }
+        }
+
+        if (empty($individuDT->ticket_id)) {
+          $errResponseMessage['errors']['message'][] = 'This Category in detail individu ' . $keyIDT + 1 . ' is required!';
+        }
+
+        if (!empty($individuDT->ticket_id)) {
+          for ($i = 0; $i < count($individu_newest); $i++) {
+            if ($i !== $keyIDT && $individu_newest[$i]->user_full_name == $individuDT->user_full_name && $individu_newest[$i]->ticket_id == $individuDT->ticket_id) {
+              $errResponseMessage['errors']['message'][] = 'Individu ' . ($keyIDT + 1) . ' has a duplicate full name and category in individu detail' . ($i + 1) . '.';
+              break;
+            }
+          }
+
+          $ticket_id = $individuDT->ticket_id;
+
+          // Jika ticket_id sudah ada di array $ticketCount, tambahkan count-nya
+          if (isset($ticketCount[$ticket_id])) {
+            $ticketCount[$ticket_id]['count']++;
+          } else {
+            // Jika belum ada, tambahkan ticket_id ke array dengan count = 1
+            $ticketCount[$ticket_id] = [
+              'ticket_id' => $ticket_id,
+              'count' => 1
+            ];
+          }
+        }
+      }
+    }
+
+    if (count($official_newest) > 0) {
+      foreach ($official_newest as $keyOfficial => $officialDT) {
+        if (empty($officialDT->user_full_name)) {
+          $errResponseMessage['errors']['message'][] = 'This full name in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        if (empty($officialDT->user_gender)) {
+          $errResponseMessage['errors']['message'][] = 'This gender in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        if (empty($officialDT->birthdate)) {
+          $errResponseMessage['errors']['message'][] = 'This birth date in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        if (empty($officialDT->county_id)) {
+          $errResponseMessage['errors']['message'][] = 'This country in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        if (empty($officialDT->city_id)) {
+          $errResponseMessage['errors']['message'][] = 'This city in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        if ($officialDT->contingent_type == 'open') {
+          if (strtolower($officialDT->delegation_type) == 'country') {
+            if (empty($officialDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'country') {
+            if (empty($officialDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'province' || strtolower($officialDT->delegation_type) == 'state') {
+            if (empty($officialDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+
+
+            if (empty($officialDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'city/district') {
+            if (empty($officialDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+
+
+            if (empty($officialDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+
+            if (empty($officialDT->city_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This City or District name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'organization') {
+            if (empty($officialDT->organization_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Organization name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'school/universities') {
+            if (empty($officialDT->school_name)) {
+              $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'club') {
+            if (empty($officialDT->club_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Club name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+        }
+
+        if ($officialDT->contingent_type != 'open') {
+          if (strtolower($officialDT->delegation_type) == 'country') {
+            if (empty($officialDT->country_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This country name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'province' || strtolower($officialDT->delegation_type) == 'state') {
+            if (empty($officialDT->province_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This province name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'city/district') {
+            if (empty($officialDT->city_delegation)) {
+              $errResponseMessage['errors']['message'][] = 'This City or District name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'organization') {
+            if (empty($officialDT->organization_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Organization name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'school/universities') {
+            if (empty($officialDT->school_name)) {
+              $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+
+          if (strtolower($officialDT->delegation_type) == 'club') {
+            if (empty($officialDT->club_name)) {
+              $errResponseMessage['errors']['message'][] = 'This Club name in detail official ' . $keyOfficial + 1 . ' is required!';
+            }
+          }
+        }
       }
 
-      if (empty($individuDT->user_gender)) {
-        $errResponseMessage['errors']['message'][] = 'This gender in detail individu ' . $keyIDT + 1 . ' is required!';
-      }
+      $ticketCount[$official_newest[0]->ticket_id] = [
+        'ticket_id' => $official_newest[0]->ticket_id,
+        'count' => count($official_newest)
+      ];
+    }
 
-      if (empty($individuDT->birthdate)) {
-        $errResponseMessage['errors']['message'][] = 'This birth date in detail individu ' . $keyIDT + 1 . ' is required!';
-      }
 
-      if (empty($individuDT->county_id)) {
-        $errResponseMessage['errors']['message'][] = 'This country in detail individu ' . $keyIDT + 1 . ' is required!';
-      }
+    if (count($ticketCount) > 0) {
+      foreach ($ticketCount as $ticketCountVal) {
+        $checkTicket = Ticket::where('id', $ticketCountVal['ticket_id'])->first();
+        $getTicketContent = TicketContent::where('ticket_id', $ticketCountVal['ticket_id'])
+          ->where('language_id', $language_id)
+          ->first();
 
-      if (empty($individuDT->city_id)) {
-        $errResponseMessage['errors']['message'][] = 'This city in detail individu ' . $keyIDT + 1 . ' is required!';
+        if ($ticketCountVal['count'] >= $checkTicket['ticket_available']) {
+          $errResponseMessage['errors']['message'][] = $getTicketContent['title'] . ' qouta is not match with your request';
+        }
       }
     }
 
     if (count($errResponseMessage['errors']['message']) > 0) {
       return Response($errResponseMessage, 400);
     }
-    return response()->json(['event_info' => json_decode($request->event_info), 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+
+    return response()->json(['event_info' => json_decode($request->event_info), 'ticketCount' => $ticketCount, 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
 
     return response()->json(['data' => $request->all()]);
   }

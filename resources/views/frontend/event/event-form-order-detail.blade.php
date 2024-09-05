@@ -210,7 +210,7 @@
                                         0
                                     </p>
                                 </div>
-                                @if (!empty($event->code))
+                                @if ($event->is_code_access)
                                     <div class="col-12 mt-3 mb-2">
                                         <h4 class="font-weight-bold">{{ __('Code Access') }}</h4>
                                     </div>
