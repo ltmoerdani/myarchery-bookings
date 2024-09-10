@@ -349,7 +349,6 @@ const createS2CountryDelegation = (
       const contentFor = `data${capitalizeFirstLetter(
         e.target.dataset.contentfor
       )}`;
-
       window[contentFor][e.target.dataset.idx].country_delegation_name =
         e.params.data.name;
       window[contentFor][e.target.dataset.idx].country_delegation =
@@ -358,7 +357,6 @@ const createS2CountryDelegation = (
       window[contentFor][e.target.dataset.idx].province_delegation_name = null;
       window[contentFor][e.target.dataset.idx].city_delegation = null;
       window[contentFor][e.target.dataset.idx].city_delegation_name = null;
-
       $(
         `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
       ).addClass("d-none");
@@ -587,6 +585,7 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
 
 // function automatic create list delegation with select2 search
 const createS2ListDelegation = (contentId, defaultValue = "") => {
+  console.log("defaultValue:", defaultValue);
   initiateS2(
     contentId,
     `${base_url}/api/s2-get-delegation-type`,
@@ -640,8 +639,9 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
       $(
         `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
       ).empty();
+      console.log("test:", e.params.data);
 
-      switch (e.params.data.name.toLowerCase()) {
+      switch (e?.params?.data?.name?.toLowerCase()) {
         case "club":
           createS2ClubDelegation(
             e.target.dataset.idx,
@@ -1350,6 +1350,7 @@ const generateViewIndividu = () => {
   const arrIndexIndividu = [];
 
   dtIndividu?.map((val, index) => {
+    console.log("val:", val);
     let gender = "M";
 
     if (val.user_gender) {
@@ -1940,6 +1941,7 @@ const getInfoData = async () => {
     .then((response) => {
       const { data } = response;
       window.dataIndividu = data.ticket_detail_individu_order;
+      console.log("window.dataIndividu:", window.dataIndividu);
       window.dataTeam = data.ticket_detail_team_order;
       window.dataMix = data.ticket_detail_mix_team_order;
       window.dataOfficial = data.ticket_detail_official_order;
@@ -1987,6 +1989,7 @@ $("#ToDetailCheckout").on("click", function (e) {
     window.dataOfficial.length < 1 ? "" : JSON.stringify(window.dataOfficial)
   );
   fd.append("event_info", JSON.stringify(window.eventInfo));
+  fd.append("checkoutID", checkoutID);
 
   let url = $("#bookingForm").attr("action");
   let method = $("#bookingForm").attr("method");
@@ -2000,9 +2003,14 @@ $("#ToDetailCheckout").on("click", function (e) {
     success: function (response) {
       console.log("response:", response);
     },
+    statusCode: {
+      419: function (response) {
+        location.reload();
+      },
+    },
     error: function (error) {
       let errors = ``;
-      for (let x in error.responseJSON.errors.message) {
+      for (let x in error.responseJSON?.errors?.message) {
         errors += `<li>
                 <p class="text-danger mb-0">${error.responseJSON.errors.message[x]}</p>
               </li>`;

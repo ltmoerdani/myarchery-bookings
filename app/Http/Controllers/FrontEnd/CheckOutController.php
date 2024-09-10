@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FrontEnd;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\HelperUser;
 use App\Models\BasicSettings\Basic;
 use App\Models\Country;
 use App\Models\PaymentGateway\OfflineGateway;
@@ -1641,6 +1642,7 @@ class CheckOutController extends Controller
     $ticketCount = [];
     $language = $this->getLanguage();
     $language_id = $language->id;
+    $checkoutID = $request->checkoutID;
 
     $errResponseMessage = [
       'errors' => [
@@ -1671,7 +1673,7 @@ class CheckOutController extends Controller
       }
     }
 
-    // return response()->json(['event_info' => json_decode($request->event_info), 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+    // return response()->json(['individu' =>$individu_newest,'official'=>$official_newest]);
     if (count($individu_newest) > 0) {
       foreach ($individu_newest as $keyIDT => $individuDT) {
         if (empty($individuDT->user_full_name)) {
@@ -1797,7 +1799,7 @@ class CheckOutController extends Controller
         if (!empty($individuDT->ticket_id)) {
           for ($i = 0; $i < count($individu_newest); $i++) {
             if ($i !== $keyIDT && $individu_newest[$i]->user_full_name == $individuDT->user_full_name && $individu_newest[$i]->ticket_id == $individuDT->ticket_id) {
-              $errResponseMessage['errors']['message'][] = 'Individu ' . ($keyIDT + 1) . ' has a duplicate full name and category in individu detail' . ($i + 1) . '.';
+              $errResponseMessage['errors']['message'][] = 'Detail Individu ' . ($keyIDT + 1) . ' has a duplicate full name and category with Detail Individu ' . ($i + 1) . '.';
               break;
             }
           }
@@ -1813,6 +1815,39 @@ class CheckOutController extends Controller
               'ticket_id' => $ticket_id,
               'count' => 1
             ];
+          }
+        }
+
+        if (!empty($individuDT->ticket_id) && !empty($individuDT->user_id) && !empty($individuDT->user_gender) && !empty($individuDT->birthdate)) {
+          $checkSameParticipant = Participant::where('fname', $individuDT->user_full_name)
+            ->where('gender', $individuDT->user_gender)
+            ->where('birthdate', $individuDT->birthdate)
+            ->first();
+          // return response()->json(['check' => $checkSameParticipant->id]);
+          if (!empty($checkSameParticipant)) {
+            $individuDT->user_id = $checkSameParticipant->id;
+          }
+
+          $checkRegisteredParticipant = ParticipantCompetitions::leftJoin('bookings', 'participant_competitions.booking_id', '=', 'bookings.id')
+            ->where('participant_competitions.event_id', $eventInfo->event_id)
+            ->where('participant_competitions.ticket_id', $individuDT->ticket_id)
+            ->where('participant_competitions.participant_id', $individuDT->user_id)
+            ->whereIn('bookings.paymentStatus', ['completed', 'pending'])
+            ->first();
+
+          if (!empty($checkRegisteredParticipant)) {
+            $errResponseMessage['errors']['message'][] = 'This name ' . $individuDT->user_full_name . ' already made an order in category ticket ' . $individuDT->sub_category_ticket . ', in detail individu ' . $keyIDT + 1;
+          } else {
+            $availPendingTicket = ParticipantCompetitions::leftJoin('bookings', 'participant_competitions.booking_id', '=', 'bookings.id')
+              ->where('participant_competitions.event_id', $eventInfo->event_id)
+              ->where('participant_competitions.participant_id', $individuDT->user_id)
+              ->first();
+
+            if (!empty($availPendingTicket)) {
+              if (strtolower($availPendingTicket->paymentStatus) == 'pending') {
+                $errResponseMessage['errors']['message'][] = 'already exist an order pending in individu tickets';
+              }
+            }
           }
         }
       }
@@ -1935,6 +1970,171 @@ class CheckOutController extends Controller
             }
           }
         }
+
+        if (empty($officialDT->user_full_name)) {
+          $errResponseMessage['errors']['message'][] = 'This full name in detail official ' . $keyOfficial + 1 . ' is required!';
+        }
+
+        // Validasi duplikasi nama dan kontingen
+        foreach ($official_newest as $i => $otherOfficialDT) {
+          if ($i !== $keyOfficial) {
+            $isDuplicate = $officialDT->user_full_name === $otherOfficialDT->user_full_name &&
+              $officialDT->delegation_type === $otherOfficialDT->delegation_type;
+
+            // Pengecekan sesuai dengan delegation type
+            switch (strtolower($officialDT->delegation_type)) {
+              case 'country':
+                $isDuplicate = $isDuplicate && ($officialDT->country_delegation === $otherOfficialDT->country_delegation);
+                break;
+              case 'province':
+                $isDuplicate = $isDuplicate && (
+                  $officialDT->country_delegation === $otherOfficialDT->country_delegation &&
+                  $officialDT->province_delegation === $otherOfficialDT->province_delegation
+                );
+                break;
+              case 'city':
+                $isDuplicate = $isDuplicate && (
+                  $officialDT->country_delegation === $otherOfficialDT->country_delegation &&
+                  $officialDT->province_delegation === $otherOfficialDT->province_delegation &&
+                  $officialDT->city_delegation === $otherOfficialDT->city_delegation
+                );
+                break;
+              case 'organization':
+                $isDuplicate = $isDuplicate && ($officialDT->organization_name === $otherOfficialDT->organization_name);
+                break;
+              case 'school/universities':
+                $isDuplicate = $isDuplicate && ($officialDT->school_name === $otherOfficialDT->school_name);
+                break;
+              case 'club':
+                $isDuplicate = $isDuplicate && ($officialDT->club_name === $otherOfficialDT->club_name);
+                break;
+            }
+
+            if ($isDuplicate) {
+              $errResponseMessage['errors']['message'][] = 'Official ' . ($keyOfficial + 1) . ' has a duplicate name and contingent with official ' . ($i + 1) . '.';
+              break;
+            }
+          }
+        }
+
+        $delegation_id_official = null;
+        $country_id_delegation_official = null;
+        $province_id_delegation_official = null;
+
+        switch (strtolower($officialDT->delegation_type)) {
+          case 'country':
+            $delegation_id_official = !$officialDT->country_delegation ? null : $officialDT->country_delegation;
+            break;
+          case 'province':
+            $delegation_id_official = !$officialDT->province_delegation ? null : $officialDT->province_delegation;
+            $country_id_delegation_official = !$officialDT->country_delegation ? null : $officialDT->country_delegation;
+            break;
+          case 'city':
+            $country_id_delegation_official = !$officialDT->country_delegation ? null : $officialDT->country_delegation;
+            $province_id_delegation_official = !$officialDT->province_delegation ? null : $officialDT->province_delegation;
+            $delegation_id_official = !$officialDT->city_delegation ? null : $officialDT->city_delegation;
+            break;
+          case 'organization':
+            if (!empty($officialDT->organization_name)) {
+              $checkDelegationOfficial = Organization::where('id', $officialDT->organization_name)->first();
+
+              if (empty($checkDelegationOfficial)) {
+                $newOrganization = Organization::create([
+                  'name'     => $officialDT->school_name,
+                ]);
+
+                $official_newest[$keyOfficial]->organization_id = $newOrganization->id;
+                $delegation_id_official = $newOrganization->id;
+              } else {
+                $delegation_id_official = $checkDelegationOfficial->id;
+              }
+            } else {
+              $delegation_id_official = null;
+            }
+
+            break;
+          case 'school/universities':
+            if (!empty($officialDT->school_name)) {
+              $checkDelegationOfficial = School::where('name', $officialDT->school_name)->first();
+
+              if (empty($checkDelegationOfficial)) {
+                $newSchool = School::create([
+                  'name'     => $officialDT->school_name,
+                ]);
+
+                $official_newest[$keyOfficial]->school_id = $newSchool->id;
+                $delegation_id_official = $newSchool->id;
+              } else {
+                $delegation_id_official = $checkDelegationOfficial->id;
+              }
+
+              break;
+            }
+          case 'club':
+            if (!empty($officialDT->club_name)) {
+              $checkDelegationOfficial = Clubs::where('id', $officialDT->club_name)->first();
+
+              if (empty($checkDelegationOfficial)) {
+                $newClub = Clubs::create([
+                  'name'     => $officialDT->club_name,
+                ]);
+
+                $official_newest[$keyOfficial]->club_id = $newClub->id;
+                $delegation_id_official = $newClub->id;
+              } else {
+                $delegation_id_official = $checkDelegationOfficial->id;
+              }
+            }
+            break;
+        }
+
+        if (!empty($officialDT->user_id) && !empty($officialDT->user_gender) && !empty($officialDT->birthdate)) {
+          $checkSameParticipant = Participant::where('fname', $officialDT->user_full_name)
+            ->where('gender', $officialDT->user_gender)
+            ->where('birthdate', $officialDT->birthdate)
+            ->first();
+
+          if (!empty($checkSameParticipant)) {
+            $officialDT->user_id = $checkSameParticipant->id;
+          }
+
+          if (!empty($delegation_id_official)) {
+            $checkRegisteredParticipant = ParticipantCompetitions::leftJoin('bookings', 'participant_competitions.booking_id', '=', 'bookings.id')
+              ->where('participant_competitions.event_id', $eventInfo->event_id)
+              ->where('participant_competitions.participant_id', $individuDT->user_id)
+              ->where('participant_competitions.delegation_id', $delegation_id_official);
+
+            if (strtolower($officialDT->delegation_type) == 'province' || strtolower($officialDT->delegation_type) == 'state') {
+              $checkRegisteredParticipant = $checkRegisteredParticipant
+                ->where('participant_competitions.country_id', $country_id_delegation_official);
+            }
+
+            if (strtolower($officialDT->delegation_type) == 'city/district') {
+              $checkRegisteredParticipant = $checkRegisteredParticipant
+                ->where('participant_competitions.country_id', $country_id_delegation_official)
+                ->where('participant_competitions.province_id', $province_id_delegation_official);
+            }
+
+            $checkRegisteredParticipant = $checkRegisteredParticipant
+              ->whereIn('bookings.paymentStatus', ['completed', 'pending'])
+              ->first();
+
+            if (!empty($checkRegisteredParticipant)) {
+              $errResponseMessage['errors']['message'][] = 'This name ' . $individuDT->user_full_name . ' in detail official ' . $keyIDT + 1 . ' this delegation must be order';
+            } else {
+              $availPendingTicket = ParticipantCompetitions::leftJoin('bookings', 'participant_competitions.booking_id', '=', 'bookings.id')
+                ->where('participant_competitions.event_id', $eventInfo->event_id)
+                ->where('participant_competitions.participant_id', $individuDT->user_id)
+                ->first();
+
+              if (!empty($availPendingTicket)) {
+                if (strtolower($availPendingTicket->paymentStatus) == 'pending') {
+                  $errResponseMessage['errors']['message'][] = 'already exist an order pending in official tickets';
+                }
+              }
+            }
+          }
+        }
       }
 
       $ticketCount[$official_newest[0]->ticket_id] = [
@@ -1942,7 +2142,6 @@ class CheckOutController extends Controller
         'count' => count($official_newest)
       ];
     }
-
 
     if (count($ticketCount) > 0) {
       foreach ($ticketCount as $ticketCountVal) {
@@ -1961,9 +2160,13 @@ class CheckOutController extends Controller
       return Response($errResponseMessage, 400);
     }
 
-    return response()->json(['event_info' => json_decode($request->event_info), 'ticketCount' => $ticketCount, 'individu' => json_decode($request->individu), 'official' => json_decode($request->official)]);
+    Session::put('ticket_detail_individu_order_' . $checkoutID, $individu_newest);
+    Session::put('ticket_detail_official_order_' . $checkoutID, $official_newest);
+    Session::put('ticket_detail_team_order_' . $checkoutID, $team_newest);
+    Session::put('ticket_detail_mix_team_order_' . $checkoutID, $mix_team_newest);
 
-    return response()->json(['data' => $request->all()]);
+    return response()->json(['status' => 'success'], 200);
+    // return response()->json(['checkoutID' => $checkoutID, 'event_info' => $eventInfo, 'ticketCount' => $ticketCount, 'individu' => $individu_newest, 'official' => $official_newest]);
   }
 
   public function getDataFormOrderTournament(Request $request)
