@@ -1,67 +1,38 @@
-const AllDataForm = {
-  individu: [],
-  mix_team: [],
-  team: [],
-  official: [],
-  eventInfo: {},
-};
+delete window.dataIndividu;
+delete window.dataTeam;
+delete window.dataMix;
+delete window.dataOfficial;
+window.dataIndividu = [];
+window.dataTeam = [];
+window.dataMix = [];
+window.dataOfficial = [];
+window.eventInfo = [];
 
-const getInfoData = async () => {
-  fetch(`${base_url}/get-data-form-order-tournament?checkoutID=${checkoutID}`, {
-    method: "GET",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((response) => {
-      const { data } = response;
-      AllDataForm.individu = data.ticket_detail_individu_order;
-      AllDataForm.team = data.ticket_detail_team_order;
-      AllDataForm.mix_team = data.ticket_detail_mix_team_order;
-      AllDataForm.official = data.ticket_detail_official_order;
-      AllDataForm.eventInfo = data.event;
-
-      generateViewIndividu();
-      // generateViewTeam();
-      // generateViewMixTeam();
-      generateViewOfficial();
-      setTimeout(() => {
-        generateSummaryTickets();
-        $("#eventErrors ul").empty();
-        $("#eventErrors").hide();
-      }, 300);
-    })
-    .catch((error) => {
-      console.log("err:", error);
-      console.log("error:", error.message);
-    });
-};
-getInfoData();
-
-// global function
 // automatic create list ticket with select2 search
 const createS2TicketsDelegation = (
   contentIdx,
   contentFor,
   defaultValue = ""
 ) => {
-  const dtSingle = AllDataForm[contentFor][contentIdx];
+  const dtWindow =
+    window[`data${capitalizeFirstLetter(contentFor)}`][contentIdx];
 
   initiateS2(
     `#category_${contentFor}${contentIdx}`,
     `${base_url}/customer/s2-list-tickets/${
-      AllDataForm.eventInfo.event_id
+      window.eventInfo.event_id
     }/${contentFor}?gender=${
-      !dtSingle.user_gender ? "" : dtSingle.user_gender
+      !dtWindow.user_gender ? "" : dtWindow.user_gender
     }`,
     0,
     placeholderCategory,
     ["title"],
     function (e) {
-      const checkTicket = AllDataForm[contentFor].filter(
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      const checkTicket = window[contentFor].filter(
         (val) => val.ticket_id === e.params.data.id
       );
 
@@ -76,113 +47,101 @@ const createS2TicketsDelegation = (
           `${alertOverOrderQuotaTicket} ${e.params.data.title}`
         );
       } else {
-        AllDataForm[contentFor][e.target.dataset.idx].ticket_id =
-          e.params.data.id;
-        AllDataForm[contentFor][e.target.dataset.idx].ticket_name =
+        window[contentFor][e.target.dataset.idx].ticket_id = e.params.data.id;
+        window[contentFor][e.target.dataset.idx].ticket_name =
           e.params.data.category_name;
-        AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket_id =
+        window[contentFor][e.target.dataset.idx].sub_category_ticket_id =
           e.params.data.sub_category_id;
-        AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket =
+        window[contentFor][e.target.dataset.idx].sub_category_ticket =
           e.params.data.title;
-        AllDataForm[contentFor][e.target.dataset.idx].price_scheme =
+        window[contentFor][e.target.dataset.idx].price_scheme =
           e.params.data.price_scheme;
-        AllDataForm[contentFor][e.target.dataset.idx].price =
-          e.params.data.price;
-        AllDataForm[contentFor][e.target.dataset.idx].f_price =
+        window[contentFor][e.target.dataset.idx].price = e.params.data.price;
+        window[contentFor][e.target.dataset.idx].f_price =
           e.params.data.f_price;
-        AllDataForm[contentFor][e.target.dataset.idx].international_price =
+        window[contentFor][e.target.dataset.idx].international_price =
           e.params.data.international_price;
-        AllDataForm[contentFor][e.target.dataset.idx].f_international_price =
+        window[contentFor][e.target.dataset.idx].f_international_price =
           e.params.data.f_international_price;
 
         // early bird
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount =
+        window[contentFor][e.target.dataset.idx].early_bird_discount =
           e.params.data.early_bird_discount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_amount = e.params.data.early_bird_discount_amount;
-        AllDataForm[contentFor][
+        window[contentFor][e.target.dataset.idx].early_bird_discount_amount =
+          e.params.data.early_bird_discount_amount;
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_amount_international =
           e.params.data.early_bird_discount_amount_international;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_international_type =
           e.params.data.early_bird_discount_international_type;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_international_date =
           e.params.data.early_bird_discount_international_date;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_international_time =
           e.params.data.early_bird_discount_international_time;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_international_end_date =
           e.params.data.early_bird_discount_international_end_date;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].early_bird_discount_international_end_time =
           e.params.data.early_bird_discount_international_end_time;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_type =
+        window[contentFor][e.target.dataset.idx].early_bird_discount_type =
           e.params.data.early_bird_discount_type;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_date =
+        window[contentFor][e.target.dataset.idx].early_bird_discount_date =
           e.params.data.early_bird_discount_date;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_time =
+        window[contentFor][e.target.dataset.idx].early_bird_discount_time =
           e.params.data.early_bird_discount_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_end_date =
+        window[contentFor][e.target.dataset.idx].early_bird_discount_end_date =
           e.params.data.early_bird_discount_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_end_time =
+        window[contentFor][e.target.dataset.idx].early_bird_discount_end_time =
           e.params.data.early_bird_discount_end_time;
 
         // late price
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount =
+        window[contentFor][e.target.dataset.idx].late_price_discount =
           e.params.data.late_price_discount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_amount = e.params.data.late_price_discount_amount;
-        AllDataForm[contentFor][
+        window[contentFor][e.target.dataset.idx].late_price_discount_amount =
+          e.params.data.late_price_discount_amount;
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_amount_international =
           e.params.data.late_price_discount_amount_international;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_international_type =
           e.params.data.late_price_discount_international_type;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_international_date =
           e.params.data.late_price_discount_international_date;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_international_time =
           e.params.data.late_price_discount_international_time;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_international_end_date =
           e.params.data.late_price_discount_international_end_date;
-        AllDataForm[contentFor][
+        window[contentFor][
           e.target.dataset.idx
         ].late_price_discount_international_end_time =
           e.params.data.late_price_discount_international_end_time;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_type =
+        window[contentFor][e.target.dataset.idx].late_price_discount_type =
           e.params.data.late_price_discount_type;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_date =
+        window[contentFor][e.target.dataset.idx].late_price_discount_date =
           e.params.data.late_price_discount_date;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_time =
+        window[contentFor][e.target.dataset.idx].late_price_discount_time =
           e.params.data.late_price_discount_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_end_date =
+        window[contentFor][e.target.dataset.idx].late_price_discount_end_date =
           e.params.data.late_price_discount_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_end_time =
+        window[contentFor][e.target.dataset.idx].late_price_discount_end_time =
           e.params.data.late_price_discount_end_time;
       }
     },
@@ -204,6 +163,7 @@ const createS2TicketsDelegation = (
   }
 };
 
+// automatic create list city for delegation with select2 search
 const createS2CityDelegation = (
   contentFor,
   contentIdx,
@@ -236,16 +196,14 @@ const createS2CityDelegation = (
     cityDistrictProfileDefaultOption,
     ["name"],
     function (e) {
-      // const contentFor = `data${capitalizeFirstLetter(
-      //   e.target.dataset.contentfor
-      // )}`;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
 
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].city_delegation =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].city_delegation_name =
+        e.params.data.name;
     },
     function (param) {
       let req = {
@@ -269,6 +227,7 @@ const createS2CityDelegation = (
   }
 };
 
+// automatic create list province for delegation with select2 search
 const createS2ProvinceDelegation = (
   contentFor,
   contentIdx,
@@ -300,18 +259,15 @@ const createS2ProvinceDelegation = (
     placeholderProvince,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = null;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+      window[contentFor][e.target.dataset.idx].province_delegation =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].province_delegation_name =
+        e.params.data.name;
+      window[contentFor][e.target.dataset.idx].city_delegation = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_name = null;
 
       $(
         `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
@@ -322,9 +278,7 @@ const createS2ProvinceDelegation = (
 
       if (
         ["city/district"].includes(
-          AllDataForm[e.target.dataset.contentfor][
-            e.target.dataset.idx
-          ].delegation_type.toLowerCase()
+          window[contentFor][e.target.dataset.idx].delegation_type.toLowerCase()
         )
       ) {
         setTimeout(
@@ -361,6 +315,7 @@ const createS2ProvinceDelegation = (
   }
 };
 
+// automatic create list country for delegation with select2 search
 const createS2CountryDelegation = (
   contentIdx,
   contentFor,
@@ -391,25 +346,17 @@ const createS2CountryDelegation = (
     countryProfileDefaultOption,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_delegation_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation_name = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = null;
-
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+      window[contentFor][e.target.dataset.idx].country_delegation_name =
+        e.params.data.name;
+      window[contentFor][e.target.dataset.idx].country_delegation =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].province_delegation = null;
+      window[contentFor][e.target.dataset.idx].province_delegation_name = null;
+      window[contentFor][e.target.dataset.idx].city_delegation = null;
+      window[contentFor][e.target.dataset.idx].city_delegation_name = null;
       $(
         `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
       ).addClass("d-none");
@@ -425,9 +372,7 @@ const createS2CountryDelegation = (
 
       if (
         ["city/district", "province"].includes(
-          AllDataForm[e.target.dataset.contentfor][
-            e.target.dataset.idx
-          ].delegation_type.toLowerCase()
+          window[contentFor][e.target.dataset.idx].delegation_type.toLowerCase()
         )
       ) {
         setTimeout(
@@ -463,6 +408,7 @@ const createS2CountryDelegation = (
   }
 };
 
+// automatic create list school or university for delegation with select2 search
 const createS2SchoolUniversityDelegation = (
   contentIdx,
   contentFor,
@@ -492,11 +438,12 @@ const createS2SchoolUniversityDelegation = (
     placeholderSchool,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].school_id =
-        e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].school_name = e.params.data.text;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].school_id = e.params.data.id;
+      window[contentFor][e.target.dataset.idx].school_name = e.params.data.text;
     },
     function (param) {
       let req = {
@@ -520,6 +467,7 @@ const createS2SchoolUniversityDelegation = (
   }
 };
 
+// automatic create list organization for delegation with select2 search
 const createS2OrganizationDelegation = (
   contentIdx,
   contentFor,
@@ -549,12 +497,14 @@ const createS2OrganizationDelegation = (
     placeholderOrganization,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].organization_id = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].organization_name = e.params.data.text;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].organization_id =
+        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].organization_name =
+        e.params.data.text;
     },
     function (param) {
       let req = {
@@ -578,6 +528,7 @@ const createS2OrganizationDelegation = (
   }
 };
 
+// automatic create list club for delegation with select2 search
 const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
   $(`.content-delegation-club-${contentFor}-${contentIdx}`).empty();
   $(`.content-delegation-club-${contentFor}-${contentIdx}`).removeClass(
@@ -603,10 +554,12 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
     placeholderClub,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].club_id =
-        e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].club_name =
-        e.params.data.text;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].club_id = e.params.data.id;
+      window[contentFor][e.target.dataset.idx].club_name = e.params.data.text;
     },
     function (param) {
       let req = {
@@ -630,7 +583,9 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
   }
 };
 
+// function automatic create list delegation with select2 search
 const createS2ListDelegation = (contentId, defaultValue = "") => {
+  console.log("defaultValue:", defaultValue);
   initiateS2(
     contentId,
     `${base_url}/api/s2-get-delegation-type`,
@@ -638,13 +593,12 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
     labelDelegationType,
     ["name"],
     function (e) {
-      // const contentFor = `data${capitalizeFirstLetter(
-      //   e.target.dataset.contentfor
-      // )}`;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
 
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].delegation_type = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].delegation_type =
+        e.params.data.name;
 
       // hide all content delegation
       $(
@@ -685,6 +639,7 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
       $(
         `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
       ).empty();
+      console.log("test:", e.params.data);
 
       switch (e?.params?.data?.name?.toLowerCase()) {
         case "club":
@@ -731,6 +686,7 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
   }
 };
 
+// function automatic create list city with select2 search
 const createS2ListCity = (
   contentId,
   defaultValue = "",
@@ -746,10 +702,12 @@ const createS2ListCity = (
     cityDistrictProfileDefaultOption,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city =
-        e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city_id =
-        e.params.data.id;
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
+      window[contentFor][e.target.dataset.idx].city = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].city_id = e.params.data.id;
     },
     function (param) {
       let req = {
@@ -769,6 +727,7 @@ const createS2ListCity = (
   }
 };
 
+// function automatic create list country with select2 search
 const createS2ListCountry = (contentId, defaultValue = "") => {
   initiateS2(
     contentId,
@@ -777,17 +736,18 @@ const createS2ListCountry = (contentId, defaultValue = "") => {
     countryProfileDefaultOption,
     ["name"],
     function (e) {
+      const contentFor = `data${capitalizeFirstLetter(
+        e.target.dataset.contentfor
+      )}`;
+
       $(`#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`)
         .empty()
         .trigger("change");
 
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].country =
+      window[contentFor][e.target.dataset.idx].country = e.params.data.name;
+      window[contentFor][e.target.dataset.idx].country_name =
         e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].county_id =
-        e.params.data.id;
+      window[contentFor][e.target.dataset.idx].county_id = e.params.data.id;
 
       createS2ListCity(
         `#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`,
@@ -813,106 +773,6 @@ const createS2ListCountry = (contentId, defaultValue = "") => {
   }
 };
 
-const handlerChooseGender = (contentFor, index) => {
-  const valueGender = $(`#gender_${contentFor}${index}`).val();
-  AllDataForm[contentFor][index].user_gender = valueGender;
-  setTimeout(() => {
-    createS2TicketsDelegation(index, contentFor);
-  }, 300);
-};
-
-const handlerBirthDate = (contentFor, index) => {
-  const valBirthDate = $(`#birth_date_${contentFor}${index}`).val();
-  AllDataForm[contentFor][index].birthdate = valBirthDate;
-};
-
-const handlerNameTeam = (contentFor, index) => {
-  const valInput = $(`#name_${contentFor}${index}`).val();
-  AllDataForm[contentFor][index].team_name = valInput;
-};
-
-const generateSummaryTickets = () => {
-  let totalTickets = 0;
-  let contentListTickets = "";
-
-  if (AllDataForm.individu.length > 0) {
-    totalTickets = totalTickets + AllDataForm.individu.length;
-    contentListTickets += `
-      <div class="d-flex justify-content-between">
-        <p class="font-weight-medium mb-0">
-          Individu
-        </p>
-        <p class="font-weight-medium mb-0">
-          ${AllDataForm.individu.length}
-        </p>
-      </div>
-      <div class="mt-0">
-          <hr style="width:100%;text-align:left;margin-left:0">
-      </div>
-    `;
-  }
-
-  if (AllDataForm.team.length > 0) {
-    totalTickets = totalTickets + AllDataForm.team.length;
-    contentListTickets += `
-      <div class="d-flex justify-content-between">
-        <p class="font-weight-medium mb-0">
-          Team
-        </p>
-        <p class="font-weight-medium mb-0">
-          ${AllDataForm.team.length}
-        </p>
-      </div>
-      <div class="mt-0">
-          <hr style="width:100%;text-align:left;margin-left:0">
-      </div>
-    `;
-  }
-
-  if (AllDataForm.mix_team.length > 0) {
-    totalTickets = totalTickets + AllDataForm.mix_team.length;
-    contentListTickets += `
-      <div class="d-flex justify-content-between">
-        <p class="font-weight-medium mb-0">
-          Mix Team
-        </p>
-        <p class="font-weight-medium mb-0">
-          ${AllDataForm.mix_team.length}
-        </p>
-      </div>
-      <div class="mt-0">
-          <hr style="width:100%;text-align:left;margin-left:0">
-      </div>
-    `;
-  }
-
-  if (AllDataForm.official.length > 0) {
-    totalTickets = totalTickets + AllDataForm.official.length;
-    contentListTickets += `
-      <div class="d-flex justify-content-between">
-        <p class="font-weight-medium mb-0">
-          Official
-        </p>
-        <p class="font-weight-medium mb-0">
-          ${AllDataForm.official.length}
-        </p>
-      </div>
-      <div class="mt-0">
-          <hr style="width:100%;text-align:left;margin-left:0">
-      </div>
-    `;
-  }
-
-  $(".list-category-tickets").append(contentListTickets);
-  $(".total-tickets").empty();
-  $(".total-tickets").append(totalTickets);
-};
-
-const handlerBack = (slug, event_id) => {
-  AllDataForm.appData.location.replace(`${base_url}/event/${slug}/${event_id}`);
-};
-
-// Individu Schema
 const handlerMapSelect2Individu = (data) => {
   for (let i = 0; i < data.length; i++) {
     if ($(`#name_individu${data[i]}`)) {
@@ -924,6 +784,7 @@ const handlerMapSelect2Individu = (data) => {
         ["text"],
         function (e) {
           let gender = "M";
+
           if (e?.params?.data?.gender) {
             if (
               ["m", "male", "pria"].includes(e.params.data.gender.toLowerCase())
@@ -940,34 +801,40 @@ const handlerMapSelect2Individu = (data) => {
             }
           }
 
-          if (e.params.data.id) {
-            AllDataForm.individu[e.target.dataset.idx].user_id =
-              e.params.data.id;
+          window.dataIndividu[e.target.dataset.idx].user_id = e.params.data.id;
+          window.dataIndividu[e.target.dataset.idx].city = e.params.data.city;
+          window.dataIndividu[e.target.dataset.idx].city_id =
+            e.params.data.city_id;
+          window.dataIndividu[e.target.dataset.idx].user_full_name =
+            e.params.data.text;
+          window.dataIndividu[e.target.dataset.idx].country =
+            e.params.data.country;
+          window.dataIndividu[e.target.dataset.idx].country_name =
+            e.params.data.country;
+          window.dataIndividu[e.target.dataset.idx].county_id =
+            e.params.data.county_id;
+          window.dataIndividu[e.target.dataset.idx].user_gender = gender;
+          window.dataIndividu[e.target.dataset.idx].birthdate =
+            e.params.data.birthdate;
 
-            $(`#profile_country_individu${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-            $(`#profile_city_individu${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-          }
+          $(`#gender_individu${e.target.dataset.idx}`).val(gender);
+          $(`#birth_date_individu${e.target.dataset.idx}`).val(
+            e.params.data.birthdate
+          );
+          $(`#profile_country_individu${e.target.dataset.idx}`)
+            .empty()
+            .trigger("change");
+          $(`#profile_city_individu${e.target.dataset.idx}`)
+            .empty()
+            .trigger("change");
 
-          if (e.params.data.text) {
-            AllDataForm.individu[e.target.dataset.idx].user_full_name =
-              e.params.data.text;
-          }
-
-          if (e.params.data.country) {
-            AllDataForm.individu[e.target.dataset.idx].country =
-              e.params.data.country;
-            AllDataForm.individu[e.target.dataset.idx].country_name =
-              e.params.data.country;
-          }
+          createS2ListCity(
+            `#profile_city_individu${e.target.dataset.idx}`,
+            "",
+            ""
+          );
 
           if (e.params.data.county_id) {
-            AllDataForm.individu[e.target.dataset.idx].county_id =
-              e.params.data.county_id;
-
             $(`#profile_country_individu${e.target.dataset.idx}`).select2(
               "trigger",
               "select",
@@ -978,16 +845,6 @@ const handlerMapSelect2Individu = (data) => {
                 },
               }
             );
-          }
-
-          if (e.params.data.city) {
-            AllDataForm.individu[e.target.dataset.idx].city =
-              e.params.data.city;
-          }
-
-          if (e.params.data.city_id) {
-            AllDataForm.individu[e.target.dataset.idx].city_id =
-              e.params.data.city_id;
 
             createS2ListCity(
               `#profile_city_individu${e.target.dataset.idx}`,
@@ -1000,21 +857,6 @@ const handlerMapSelect2Individu = (data) => {
               e.params.data.county_id
             );
           }
-
-          if (e.params.data.gender) {
-            AllDataForm.individu[e.target.dataset.idx].user_gender = gender;
-          }
-
-          if (e.params.data.birthdate) {
-            AllDataForm.individu[e.target.dataset.idx].birthdate =
-              e.params.data.birthdate;
-
-            $(`#birth_date_individu${e.target.dataset.idx}`).val(
-              e.params.data.birthdate
-            );
-          }
-
-          AllDataForm.individu[e.target.dataset.idx].user_gender = gender;
 
           setTimeout(() => {
             createS2TicketsDelegation(e.target.dataset.idx, "individu");
@@ -1032,11 +874,11 @@ const handlerMapSelect2Individu = (data) => {
       );
     }
 
-    if (AllDataForm.individu[i].user_id) {
+    if (window.dataIndividu[i].user_id) {
       $(`#name_individu${data[i]}`).select2("trigger", "select", {
         data: {
-          id: AllDataForm.individu[i].user_id,
-          text: AllDataForm.individu[i].user_full_name,
+          id: window.dataIndividu[i].user_id,
+          text: window.dataIndividu[i].user_full_name,
         },
       });
     }
@@ -1044,10 +886,10 @@ const handlerMapSelect2Individu = (data) => {
     if ($(`#profile_country_individu${i}`)) {
       createS2ListCountry(
         `#profile_country_individu${i}`,
-        AllDataForm.individu[i].county_id
+        window.dataIndividu[i].county_id
           ? {
-              id: AllDataForm.individu[i].county_id,
-              text: AllDataForm.individu[i].country,
+              id: window.dataIndividu[i].county_id,
+              text: window.dataIndividu[i].country,
             }
           : ""
       );
@@ -1056,25 +898,25 @@ const handlerMapSelect2Individu = (data) => {
     if (`#profile_city_individu${i}`) {
       createS2ListCity(
         `#profile_city_individu${i}`,
-        AllDataForm.individu[i].city_id
+        window.dataIndividu[i].city_id
           ? {
-              id: AllDataForm.individu[i].city_id,
-              text: AllDataForm.individu[i].city,
+              id: window.dataIndividu[i].city_id,
+              text: window.dataIndividu[i].city_name,
             }
           : "",
-        !AllDataForm.individu[i]?.county_id
+        !window.dataIndividu[i]?.county_id
           ? ""
-          : AllDataForm.individu[i].county_id
+          : window.dataIndividu[i].county_id
       );
     }
 
     if ($(`#delegation_individu${i}`)) {
       createS2ListDelegation(
         `#delegation_individu${i}`,
-        AllDataForm.individu[i].delegation_type
+        window.dataIndividu[i].delegation_type
           ? {
-              id: AllDataForm.individu[i].delegation_type,
-              text: AllDataForm.individu[i].delegation_type,
+              id: window.dataIndividu[i].delegation_type,
+              text: window.dataIndividu[i].delegation_type,
             }
           : ""
       );
@@ -1087,6 +929,7 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-school-individu-${i}`).addClass("d-none");
     $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
     $(`.content-delegation-club-individu-${i}`).addClass("d-none");
+
     // empty all content delegation
     $(`.content-delegation-country-individu-${i}`).empty();
     $(`.content-delegation-province-individu-${i}`).empty();
@@ -1094,72 +937,410 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-school-individu-${i}`).empty();
     $(`.content-delegation-organization-individu-${i}`).empty();
     $(`.content-delegation-club-individu-${i}`).empty();
-    if (AllDataForm.individu[i].contingent_type.toLowerCase() !== "open") {
-      switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
-        case "country":
-          createS2CountryDelegation(i, "individu");
-          break;
-        case "province":
-          createS2ProvinceDelegation(
-            "individu",
-            i,
-            "",
-            AllDataForm.individu[i].country_delegation
-          );
-          break;
-        case "city/district":
-          createS2CityDelegation(
-            "individu",
-            i,
-            "",
-            AllDataForm.individu[i].country_delegation,
-            AllDataForm.individu[i].province_delegation
-          );
-          break;
-        case "school/universities":
-          createS2SchoolUniversityDelegation(
-            i,
-            "individu",
-            AllDataForm.individu[i].school_id
-              ? {
-                  id: AllDataForm.individu[i].school_id,
-                  text: AllDataForm.individu[i].school_name,
-                }
-              : ""
-          );
-          break;
-        case "organization":
-          createS2OrganizationDelegation(
-            i,
-            "individu",
-            AllDataForm.individu[i].organization_id
-              ? {
-                  id: AllDataForm.individu[i].organization_id,
-                  text: AllDataForm.individu[i].organization_name,
-                }
-              : ""
-          );
-          break;
-        default:
-          createS2ClubDelegation(
-            i,
-            "individu",
-            AllDataForm.individu[i].club_id
-              ? {
-                  id: AllDataForm.individu[i].club_id,
-                  text: AllDataForm.individu[i].club_name,
-                }
-              : ""
-          );
-          break;
+
+    setTimeout(() => {
+      if (window.dataIndividu[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataIndividu[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "individu");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "individu",
+              i,
+              "",
+              window.dataIndividu[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "individu",
+              i,
+              "",
+              window.dataIndividu[i].country_delegation,
+              window.dataIndividu[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "individu");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "individu");
+            break;
+          default:
+            createS2ClubDelegation(i, "individu");
+            break;
+        }
       }
-    }
+    }, 500);
+
     createS2TicketsDelegation(i, "individu");
   }
 };
 
+const handlerMapSelect2Official = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    if ($(`#name_official${data[i]}`)) {
+      initiateSelect2DynamicOptionCreation(
+        `#name_official${data[i]}`,
+        `${base_url}/customer/list-participants`,
+        0,
+        fullNamePlaceholder,
+        ["text"],
+        function (e) {
+          let gender = "M";
+
+          if (e?.params?.data?.gender) {
+            if (
+              ["m", "male", "pria"].includes(e.params.data.gender.toLowerCase())
+            ) {
+              gender = "M";
+            }
+
+            if (
+              ["f", "female", "wanita"].includes(
+                e.params.data.gender.toLowerCase()
+              )
+            ) {
+              gender = "F";
+            }
+          }
+          window.dataOfficial[e.target.dataset.idx].user_id = e.params.data.id;
+          window.dataOfficial[e.target.dataset.idx].city = e.params.data.city;
+          window.dataOfficial[e.target.dataset.idx].city_id =
+            e.params.data.city_id;
+          window.dataOfficial[e.target.dataset.idx].user_full_name =
+            e.params.data.text;
+          window.dataOfficial[e.target.dataset.idx].country =
+            e.params.data.country;
+          window.dataOfficial[e.target.dataset.idx].country_name =
+            e.params.data.country;
+          window.dataOfficial[e.target.dataset.idx].county_id =
+            e.params.data.county_id;
+          window.dataOfficial[e.target.dataset.idx].user_gender = gender;
+          window.dataOfficial[e.target.dataset.idx].birthdate =
+            e.params.data.birthdate;
+
+          $(`#gender_official${e.target.dataset.idx}`).val(gender);
+          $(`#birth_date_official${e.target.dataset.idx}`).val(
+            e.params.data.birthdate
+          );
+          $(`#profile_country_official${e.target.dataset.idx}`)
+            .empty()
+            .trigger("change");
+          $(`#profile_city_official${e.target.dataset.idx}`)
+            .empty()
+            .trigger("change");
+
+          createS2ListCity(
+            `#profile_city_official${e.target.dataset.idx}`,
+            "",
+            ""
+          );
+
+          if (e.params.data.county_id) {
+            $(`#profile_country_official${e.target.dataset.idx}`).select2(
+              "trigger",
+              "select",
+              {
+                data: {
+                  id: e.params.data.county_id,
+                  text: e.params.data.country,
+                },
+              }
+            );
+
+            createS2ListCity(
+              `#profile_city_official${e.target.dataset.idx}`,
+              e.params.data.city_id
+                ? {
+                    id: e.params.data.city_id,
+                    text: e.params.data.city,
+                  }
+                : "",
+              e.params.data.county_id
+            );
+          }
+        },
+        function (param) {
+          let req = {
+            q: param.term,
+          };
+          return req;
+        },
+        null,
+        null,
+        false
+      );
+    }
+
+    if (window.dataOfficial[i].user_id) {
+      $(`#name_official${data[i]}`).select2("trigger", "select", {
+        data: {
+          id: window.dataOfficial[i].user_id,
+          text: window.dataOfficial[i].user_full_name,
+        },
+      });
+    }
+
+    if ($(`#profile_country_official${i}`)) {
+      createS2ListCountry(
+        `#profile_country_official${i}`,
+        window.dataOfficial[i].county_id
+          ? {
+              id: window.dataOfficial[i].county_id,
+              text: window.dataOfficial[i].country,
+            }
+          : ""
+      );
+    }
+
+    if ($(`#profile_city_official${i}`)) {
+      createS2ListCity(
+        `#profile_city_official${i}`,
+        window.dataOfficial[i].city_id
+          ? {
+              id: window.dataOfficial[i].city_id,
+              text: window.dataOfficial[i].city_name,
+            }
+          : "",
+        !window.dataOfficial[i]?.county_id
+          ? ""
+          : window.dataOfficial[i].county_id
+      );
+    }
+
+    if ($(`#delegation_official${i}`)) {
+      createS2ListDelegation(
+        `#delegation_official${i}`,
+        window.dataOfficial[i].county_id
+          ? {
+              id: window.dataOfficial[i].county_id,
+              text: window.dataOfficial[i].country,
+            }
+          : ""
+      );
+    }
+
+    // hide all content delegation
+    $(`.content-delegation-country-official-${i}`).addClass("d-none");
+    $(`.content-delegation-province-official-${i}`).addClass("d-none");
+    $(`.content-delegation-city-official-${i}`).addClass("d-none");
+    $(`.content-delegation-school-official-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-official-${i}`).addClass("d-none");
+    $(`.content-delegation-club-official-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-official-${i}`).empty();
+    $(`.content-delegation-province-official-${i}`).empty();
+    $(`.content-delegation-city-official-${i}`).empty();
+    $(`.content-delegation-school-official-${i}`).empty();
+    $(`.content-delegation-organization-official-${i}`).empty();
+    $(`.content-delegation-club-official-${i}`).empty();
+    setTimeout(() => {
+      if (window.dataOfficial[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataOfficial[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "official");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "official",
+              i,
+              "",
+              window.dataOfficial[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "official",
+              i,
+              "",
+              window.dataOfficial[i].country_delegation,
+              window.dataOfficial[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "official");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "official");
+            break;
+          default:
+            createS2ClubDelegation(i, "official");
+            break;
+        }
+      }
+    }, 500);
+  }
+};
+
+const handlerMapSelect2Team = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    if ($(`#delegation_team${i}`)) {
+      createS2ListDelegation(
+        `#delegation_team${i}`,
+        window.dataTeam[i].delegation_type
+          ? {
+              id: window.dataTeam[i].delegation_type,
+              text: window.dataTeam[i].delegation_type,
+            }
+          : ""
+      );
+    }
+
+    // hide all content delegation
+    $(`.content-delegation-country-team-${i}`).addClass("d-none");
+    $(`.content-delegation-province-team-${i}`).addClass("d-none");
+    $(`.content-delegation-city-team-${i}`).addClass("d-none");
+    $(`.content-delegation-school-team-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-team-${i}`).addClass("d-none");
+    $(`.content-delegation-club-team-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-team-${i}`).empty();
+    $(`.content-delegation-province-team-${i}`).empty();
+    $(`.content-delegation-city-team-${i}`).empty();
+    $(`.content-delegation-school-team-${i}`).empty();
+    $(`.content-delegation-organization-team-${i}`).empty();
+    $(`.content-delegation-club-team-${i}`).empty();
+
+    setTimeout(() => {
+      if (window.dataTeam[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataTeam[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "team");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "team",
+              i,
+              "",
+              window.dataTeam[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "team",
+              i,
+              "",
+              window.dataTeam[i].country_delegation,
+              window.dataTeam[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "team");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "team");
+            break;
+          default:
+            createS2ClubDelegation(i, "team");
+            break;
+        }
+      }
+    }, 500);
+
+    createS2TicketsDelegation(i, "team");
+  }
+};
+
+const handlerMapSelect2MixTeam = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    if ($(`#delegation_mix${i}`)) {
+      createS2ListDelegation(
+        `#delegation_mix${i}`,
+        window.dataMix[i].delegation_type
+          ? {
+              id: window.dataMix[i].delegation_type,
+              text: window.dataMix[i].delegation_type,
+            }
+          : ""
+      );
+    }
+
+    // hide all content delegation
+    $(`.content-delegation-country-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-province-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-city-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-school-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-mix-${i}`).addClass("d-none");
+    $(`.content-delegation-club-mix-${i}`).addClass("d-none");
+
+    // empty all content delegation
+    $(`.content-delegation-country-mix-${i}`).empty();
+    $(`.content-delegation-province-mix-${i}`).empty();
+    $(`.content-delegation-city-mix-${i}`).empty();
+    $(`.content-delegation-school-mix-${i}`).empty();
+    $(`.content-delegation-organization-mix-${i}`).empty();
+    $(`.content-delegation-club-mix-${i}`).empty();
+
+    setTimeout(() => {
+      if (window.dataMix[i].contingent_type.toLowerCase() !== "open") {
+        switch (window.dataMix[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "mix");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "mix",
+              i,
+              "",
+              window.dataMix[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "mix",
+              i,
+              "",
+              window.dataMix[i].country_delegation,
+              window.dataMix[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(i, "mix");
+            break;
+          case "organization":
+            createS2OrganizationDelegation(i, "mix");
+            break;
+          default:
+            createS2ClubDelegation(i, "mix");
+            break;
+        }
+      }
+    }, 500);
+
+    createS2TicketsDelegation(i, "mix");
+  }
+};
+
+const handlerChooseGender = (contentFor, index) => {
+  const mapDtWindow = `data${capitalizeFirstLetter(contentFor)}`;
+
+  const valueGender = $(`#gender_${contentFor}${index}`).val();
+  window[mapDtWindow][index].user_gender = valueGender;
+  setTimeout(() => {
+    createS2TicketsDelegation(index, contentFor);
+  }, 300);
+};
+
+const handlerBirthDate = (contentFor, index) => {
+  const valBirthDate = $(`#birth_date_${contentFor}${index}`).val();
+  const mapDtWindow = `data${capitalizeFirstLetter(contentFor)}`;
+
+  window[mapDtWindow][index].birthdate = valBirthDate;
+};
+
+const handlerNameTeam = (contentFor, index) => {
+  const valInput = $(`#name_${contentFor}${index}`).val();
+  const mapDtWindow = `data${capitalizeFirstLetter(contentFor)}`;
+  window[mapDtWindow][index].team_name = valInput;
+};
+
 const generateViewIndividu = () => {
-  if (AllDataForm.individu.length < 1) {
+  const dtIndividu = window.dataIndividu;
+  if (dtIndividu.length < 1) {
     return $("#individu_section").addClass("d-none");
   }
 
@@ -1167,7 +1348,9 @@ const generateViewIndividu = () => {
 
   let content = ``;
   const arrIndexIndividu = [];
-  AllDataForm.individu?.map((val, index) => {
+
+  dtIndividu?.map((val, index) => {
+    console.log("val:", val);
     let gender = "M";
 
     if (val.user_gender) {
@@ -1318,234 +1501,202 @@ const generateViewIndividu = () => {
     </div>
   `);
 
-  setTimeout(() => {
-    handlerMapSelect2Individu(arrIndexIndividu);
-  }, 200);
+  handlerMapSelect2Individu(arrIndexIndividu);
 };
 
-// Official Schema
-const handlerMapSelect2Official = (data) => {
-  for (let i = 0; i < data.length; i++) {
-    if ($(`#name_official${data[i]}`)) {
-      initiateSelect2DynamicOptionCreation(
-        `#name_official${data[i]}`,
-        `${base_url}/customer/list-participants`,
-        0,
-        fullNamePlaceholder,
-        ["text"],
-        function (e) {
-          let gender = "M";
+const generateViewTeam = () => {
+  const dtTeam = window.dataTeam;
 
-          if (e?.params?.data?.gender) {
-            if (
-              ["m", "male", "pria"].includes(e.params.data.gender.toLowerCase())
-            ) {
-              gender = "M";
-            }
-
-            if (
-              ["f", "female", "wanita"].includes(
-                e.params.data.gender.toLowerCase()
-              )
-            ) {
-              gender = "F";
-            }
-          }
-
-          if (e.params.data.id) {
-            AllDataForm.official[e.target.dataset.idx].user_id =
-              e.params.data.id;
-
-            $(`#profile_country_official${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-            $(`#profile_city_official${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-          }
-
-          if (e.params.data.text) {
-            AllDataForm.official[e.target.dataset.idx].user_full_name =
-              e.params.data.text;
-          }
-
-          if (e.params.data.country) {
-            AllDataForm.official[e.target.dataset.idx].country =
-              e.params.data.country;
-            AllDataForm.official[e.target.dataset.idx].country_name =
-              e.params.data.country;
-          }
-
-          if (e.params.data.county_id) {
-            AllDataForm.official[e.target.dataset.idx].county_id =
-              e.params.data.county_id;
-
-            $(`#profile_country_official${e.target.dataset.idx}`).select2(
-              "trigger",
-              "select",
-              {
-                data: {
-                  id: e.params.data.county_id,
-                  text: e.params.data.country,
-                },
-              }
-            );
-          }
-
-          if (e.params.data.city) {
-            AllDataForm.official[e.target.dataset.idx].city =
-              e.params.data.city;
-          }
-
-          if (e.params.data.city_id) {
-            AllDataForm.official[e.target.dataset.idx].city_id =
-              e.params.data.city_id;
-
-            createS2ListCity(
-              `#profile_city_official${e.target.dataset.idx}`,
-              e.params.data.city_id
-                ? {
-                    id: e.params.data.city_id,
-                    text: e.params.data.city,
-                  }
-                : "",
-              e.params.data.county_id
-            );
-          }
-
-          if (e.params.data.gender) {
-            AllDataForm.official[e.target.dataset.idx].user_gender = gender;
-          }
-
-          if (e.params.data.birthdate) {
-            AllDataForm.official[e.target.dataset.idx].birthdate =
-              e.params.data.birthdate;
-
-            $(`#birth_date_official${e.target.dataset.idx}`).val(
-              e.params.data.birthdate
-            );
-          }
-
-          AllDataForm.official[e.target.dataset.idx].user_gender = gender;
-
-          setTimeout(() => {
-            createS2TicketsDelegation(e.target.dataset.idx, "official");
-          }, 300);
-        },
-        function (param) {
-          let req = {
-            q: param.term,
-          };
-          return req;
-        },
-        null,
-        null,
-        false
-      );
-    }
-
-    if (AllDataForm.official[i].user_id) {
-      $(`#name_official${data[i]}`).select2("trigger", "select", {
-        data: {
-          id: AllDataForm.official[i].user_id,
-          text: AllDataForm.official[i].user_full_name,
-        },
-      });
-    }
-
-    if ($(`#profile_country_official${i}`)) {
-      createS2ListCountry(
-        `#profile_country_official${i}`,
-        AllDataForm.official[i].county_id
-          ? {
-              id: AllDataForm.official[i].county_id,
-              text: AllDataForm.official[i].country,
-            }
-          : ""
-      );
-    }
-
-    if ($(`#profile_city_official${i}`)) {
-      createS2ListCity(
-        `#profile_city_official${i}`,
-        AllDataForm.official[i].city_id
-          ? {
-              id: AllDataForm.official[i].city_id,
-              text: AllDataForm.official[i].city_name,
-            }
-          : "",
-        !AllDataForm.official[i]?.county_id
-          ? ""
-          : AllDataForm.official[i].county_id
-      );
-    }
-
-    if ($(`#delegation_official${i}`)) {
-      createS2ListDelegation(
-        `#delegation_official${i}`,
-        AllDataForm.official[i].county_id
-          ? {
-              id: AllDataForm.official[i].county_id,
-              text: AllDataForm.official[i].country,
-            }
-          : ""
-      );
-    }
-
-    // hide all content delegation
-    $(`.content-delegation-country-official-${i}`).addClass("d-none");
-    $(`.content-delegation-province-official-${i}`).addClass("d-none");
-    $(`.content-delegation-city-official-${i}`).addClass("d-none");
-    $(`.content-delegation-school-official-${i}`).addClass("d-none");
-    $(`.content-delegation-organization-official-${i}`).addClass("d-none");
-    $(`.content-delegation-club-official-${i}`).addClass("d-none");
-
-    // empty all content delegation
-    $(`.content-delegation-country-official-${i}`).empty();
-    $(`.content-delegation-province-official-${i}`).empty();
-    $(`.content-delegation-city-official-${i}`).empty();
-    $(`.content-delegation-school-official-${i}`).empty();
-    $(`.content-delegation-organization-official-${i}`).empty();
-    $(`.content-delegation-club-official-${i}`).empty();
-
-    if (AllDataForm.official[i].contingent_type.toLowerCase() !== "open") {
-      switch (AllDataForm.official[i].delegation_type.toLowerCase()) {
-        case "country":
-          createS2CountryDelegation(i, "official");
-          break;
-        case "province":
-          createS2ProvinceDelegation(
-            "official",
-            i,
-            "",
-            AllDataForm.official[i].country_delegation
-          );
-          break;
-        case "city/district":
-          createS2CityDelegation(
-            "official",
-            i,
-            "",
-            AllDataForm.official[i].country_delegation,
-            AllDataForm.official[i].province_delegation
-          );
-          break;
-        case "school/universities":
-          createS2SchoolUniversityDelegation(i, "official");
-          break;
-        case "organization":
-          createS2OrganizationDelegation(i, "official");
-          break;
-        default:
-          createS2ClubDelegation(i, "official");
-          break;
-      }
-    }
+  if (dtTeam.length < 1) {
+    return $("#team_section").addClass("d-none");
   }
+
+  $("#team_section").removeClass("d-none");
+
+  let content = ``;
+  const arrIndexTeam = [];
+
+  dtTeam?.map((val, index) => {
+    let contentDelegation = "";
+
+    if (val.contingent_type.toLowerCase() === "open") {
+      contentDelegation += `
+        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2
+          content-delegation-team-${index}">
+            <label
+                for="delegation_team${index}">
+                ${labelDelegationType}*
+            </label>
+            <select
+                class="form-select" data-contentFor="team" id="delegation_team${index}"
+                name="delegation_team[]" data-idx="${index}" required>
+            </select>
+        </div>
+      `;
+    }
+
+    if (val.contingent_type.toLowerCase() !== "open") {
+      contentDelegation = `
+        <input type="hidden"name="delegation_team[]"  value="${val.delegation_type}" />
+      `;
+    }
+
+    arrIndexTeam.push(index);
+    content += `
+      <div class="card">
+        <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer" id="participant_team${index}" data-toggle="collapse" aria-expanded="false" data-target="#collapse_participant_team_${index}" aria-controls="collapse_participant_team_${index}">
+          ${titleTeamAccordion} ${index + 1}
+        </div>
+        <div id="collapse_participant_team_${index}"
+        class='collapse ${
+          index == 0 ? "show" : ""
+        }' aria-labelledby="collapse_participant_team_${index}" data-parent="#accordionParticipantTeam">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 form-group">
+                  <label for="name_team${index}">
+                      ${labelTeamName}*
+                  </label>
+                  <input type="text" class="form-control" data-contentFor="team" id="name_team${index}"
+                  name="name_team[]" data-idx="${index}" placeholder="${placeholderTeamName}"
+                  value="${
+                    !val.team_name ? "" : val.team_name
+                  }" onchange="handlerNameTeam('team',${index})" required>
+              </div>
+              ${contentDelegation}
+              <div class="content-delegation-country-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-province-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-city-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-school-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-club-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-organization-team-${index} col-12 col-md-6 d-none"></div>
+              <div class="col-12 col-lg-6">
+                <label for="category_team${index}">
+                      ${labelCategory}
+                </label>
+                <select
+                    data-idx="${index}"
+                    data-contentFor="team"
+                    class="form-select"
+                    id="category_team${index}"
+                    name="category_team[]" required>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  $("#form_team").append(`
+    <div class="accordion" id="accordionParticipantTeam">
+      ${content}
+    </div>
+  `);
+
+  handlerMapSelect2Team(arrIndexTeam);
+};
+
+const generateViewMixTeam = () => {
+  const dtMixTeam = window.dataMix;
+  if (dtMixTeam.length < 1) {
+    return $("#mix_team_section").addClass("d-none");
+  }
+
+  $("#mix_team_section").removeClass("d-none");
+
+  let content = ``;
+  const arrIndexMixTeam = [];
+
+  dtMixTeam?.map((val, index) => {
+    let contentDelegation = "";
+
+    if (val.contingent_type.toLowerCase() === "open") {
+      contentDelegation += `
+        <div class="col-12 col-lg-6 form-group d-flex flex-column gap-2
+          content-delegation-mix-${index}">
+            <label
+                for="delegation_mix${index}">
+                ${labelDelegationType}*
+            </label>
+            <select
+                class="form-select" data-contentFor="mix" id="delegation_mix${index}"
+                name="delegation_mix[]" data-idx="${index}" required>
+            </select>
+        </div>
+      `;
+    }
+
+    if (val.contingent_type.toLowerCase() !== "open") {
+      contentDelegation = `
+        <input type="hidden" name="delegation_mix[]" value="${val.delegation_type}" />
+      `;
+    }
+
+    arrIndexMixTeam.push(index);
+
+    content += `
+      <div class="card">
+        <div class="card-header bg-primary-1 text-white text-left collapsed cursor-pointer"
+        id="participant_mix${index}" data-toggle="collapse" aria-expanded="false"
+        data-target="#collapse_participant_mix_${index}" aria-controls="collapse_participant_mix_${index}">
+          ${titleMixTeamAccordion} ${index + 1}
+        </div>
+        <div id="collapse_participant_mix_${index}"
+        class='collapse ${
+          index == 0 ? "show" : ""
+        }' aria-labelledby="collapse_participant_mix_${index}" data-parent="#accordionParticipantMix">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 form-group">
+                  <label for="name_mix${index}">
+                      ${labelTeamName}*
+                  </label>
+                  <input type="text" class="form-control" data-contentFor="mix" id="name_mix${index}"
+                  name="name_mix[]" data-idx="${index}" placeholder="${placeholderTeamName}"
+                  value="${
+                    !val.team_name ? "" : val.team_name
+                  }" onchange="handlerNameTeam('mix',${index})" required>
+              </div>
+              ${contentDelegation}
+              <div class="content-delegation-country-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-province-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-city-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-school-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-club-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="content-delegation-organization-mix-${index} col-12 col-md-6 d-none"></div>
+              <div class="col-12 col-lg-6">
+                <label for="category_mix${index}">
+                      ${labelCategory}
+                </label>
+                <select
+                    data-idx="${index}"
+                    data-contentFor="mix"
+                    class="form-select"
+                    id="category_mix${index}"
+                    name="category_mix[]" required>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  $("#form_mix_team").append(`
+    <div class="accordion" id="accordionParticipantMix">
+      ${content}
+    </div>
+  `);
+
+  handlerMapSelect2MixTeam(arrIndexMixTeam);
 };
 
 const generateViewOfficial = () => {
-  if (AllDataForm.official.length < 1) {
+  const dtOfficial = window.dataOfficial;
+  if (dtOfficial.length < 1) {
     return $("#official_section").addClass("d-none");
   }
 
@@ -1554,7 +1705,7 @@ const generateViewOfficial = () => {
   let contentOfficial = "";
   const arrIndexOfficial = [];
 
-  AllDataForm.official?.map((val, index) => {
+  dtOfficial?.map((val, index) => {
     let gender = "M";
 
     if (val.user_gender) {
@@ -1696,6 +1847,123 @@ const generateViewOfficial = () => {
   setTimeout(handlerMapSelect2Official(arrIndexOfficial), 5000);
 };
 
+const generateSummaryTickets = () => {
+  let totalTickets = 0;
+  let contentListTickets = "";
+
+  if (window.dataIndividu.length > 0) {
+    totalTickets = totalTickets + window.dataIndividu.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Individu
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataIndividu.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataTeam.length > 0) {
+    totalTickets = totalTickets + window.dataTeam.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Team
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataTeam.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataMix.length > 0) {
+    totalTickets = totalTickets + window.dataMix.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Mix Team
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataMix.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  if (window.dataOfficial.length > 0) {
+    totalTickets = totalTickets + window.dataOfficial.length;
+    contentListTickets += `
+      <div class="d-flex justify-content-between">
+        <p class="font-weight-medium mb-0">
+          Official
+        </p>
+        <p class="font-weight-medium mb-0">
+          ${window.dataOfficial.length}
+        </p>
+      </div>
+      <div class="mt-0">
+          <hr style="width:100%;text-align:left;margin-left:0">
+      </div>
+    `;
+  }
+
+  $(".list-category-tickets").append(contentListTickets);
+  $(".total-tickets").empty();
+  $(".total-tickets").append(totalTickets);
+};
+
+const handlerBack = (slug, event_id) => {
+  window.location.replace(`${base_url}/event/${slug}/${event_id}`);
+};
+
+const getInfoData = async () => {
+  fetch(`${base_url}/get-data-form-order-tournament?checkoutID=${checkoutID}`, {
+    method: "GET",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((response) => {
+      const { data } = response;
+      window.dataIndividu = data.ticket_detail_individu_order;
+      console.log("window.dataIndividu:", window.dataIndividu);
+      window.dataTeam = data.ticket_detail_team_order;
+      window.dataMix = data.ticket_detail_mix_team_order;
+      window.dataOfficial = data.ticket_detail_official_order;
+      window.eventInfo = data.event;
+
+      generateViewIndividu();
+      generateViewTeam();
+      generateViewMixTeam();
+      generateViewOfficial();
+      setTimeout(() => {
+        generateSummaryTickets();
+        $("#eventErrors ul").empty();
+        $("#eventErrors").hide();
+      }, 300);
+    })
+    .catch((error) => {
+      console.log("err:", error);
+      console.log("error:", error.message);
+    });
+};
+getInfoData();
+
 $("#ToDetailCheckout").on("click", function (e) {
   // $(e.target).attr("disabled", true);
   // $(".request-loader").addClass("show");
@@ -1706,21 +1974,21 @@ $("#ToDetailCheckout").on("click", function (e) {
 
   fd.append(
     "individu",
-    AllDataForm.individu.length < 1 ? "" : JSON.stringify(AllDataForm.individu)
+    window.dataIndividu.length < 1 ? "" : JSON.stringify(window.dataIndividu)
   );
   fd.append(
     "team",
-    AllDataForm.team.length < 1 ? "" : JSON.stringify(AllDataForm.team)
+    window.dataTeam.length < 1 ? "" : JSON.stringify(window.dataTeam)
   );
   fd.append(
     "mix_team",
-    AllDataForm.mix_team.length < 1 ? "" : JSON.stringify(AllDataForm.mix_team)
+    window.dataMix.length < 1 ? "" : JSON.stringify(window.dataMix)
   );
   fd.append(
     "official",
-    AllDataForm.official.length < 1 ? "" : JSON.stringify(AllDataForm.official)
+    window.dataOfficial.length < 1 ? "" : JSON.stringify(window.dataOfficial)
   );
-  fd.append("event_info", JSON.stringify(AllDataForm.eventInfo));
+  fd.append("event_info", JSON.stringify(window.eventInfo));
   fd.append("checkoutID", checkoutID);
 
   let url = $("#bookingForm").attr("action");

@@ -36,7 +36,6 @@ function initiateSelect2DynamicOptionCreation(
       placeholder: placeholder,
       multiple: multiple,
       templateResult: function (data) {
-        var text = "";
         var optText = "";
         if (data.loading) {
           return "Mencari...";
@@ -45,7 +44,7 @@ function initiateSelect2DynamicOptionCreation(
         attrs.forEach((item, i) => {
           let label = item.split(".");
           let obj = data;
-          if (i != 0) {
+          if (i !== 0) {
             optText += " - ";
           }
           label.forEach((text) => {
@@ -53,16 +52,15 @@ function initiateSelect2DynamicOptionCreation(
           });
           optText += obj;
         });
-        return optText == undefined ? data.text : optText;
+        return optText === undefined ? data.text : optText;
       },
       templateSelection: function (data) {
-        var text = "";
         var optText = "";
         if (!data.text) {
           attrs.forEach((item, i) => {
             let label = item.split(".");
             let obj = data;
-            if (i != 0) {
+            if (i !== 0) {
               optText += " - ";
             }
             label.forEach((text) => {
@@ -78,15 +76,13 @@ function initiateSelect2DynamicOptionCreation(
       tags: true,
       createTag: function (params) {
         var term = $.trim(params.term);
-
         if (term === "") {
           return null;
         }
-
         return {
           id: term,
           text: term,
-          newTag: true, // add additional parameters
+          newTag: true,
         };
       },
       insertTag: function (data, tag) {
@@ -95,6 +91,14 @@ function initiateSelect2DynamicOptionCreation(
       },
     })
     .on("select2:select", function (e) {
+      const selectedData = e.params.data;
+
+      // Menangani tag baru yang dipilih
+      if (selectedData.newTag) {
+        console.info("new tag:", selectedData);
+      }
+
+      // Menjalankan callback jika disediakan
       if (onSelect) onSelect(e);
     });
 }
