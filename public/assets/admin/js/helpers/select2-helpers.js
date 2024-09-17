@@ -16,7 +16,8 @@ function initiateSelect2DynamicOptionCreation(
     .select2({
       ajax: {
         url: url,
-        data: paramsCallback ??
+        data:
+          paramsCallback ??
           function (params) {
             let req = {
               q: params.term,
@@ -34,30 +35,16 @@ function initiateSelect2DynamicOptionCreation(
       dropdownParent: parentModal,
       placeholder: placeholder,
       multiple: multiple,
-      tags: true,  // Allow new tags to be created
-      createTag: function (params) {
-        var term = $.trim(params.term);
-        if (term === "") {
-          return null;
-        }
-        return {
-          id: term,
-          text: term,
-          newTag: true // Mark this as a new tag
-        };
-      },
-      insertTag: function (data, tag) {
-        // Insert the tag at the end of the results
-        data.push(tag);
-      },
       templateResult: function (data) {
         if (data.loading) {
           return "Mencari...";
         }
 
         var optText = "";
+
+        // Tangani opsi baru
         if (data.newTag) {
-          optText = data.text; // For new tags, just show the text
+          optText = data.text;
         } else {
           attrs.forEach((item, i) => {
             let label = item.split(".");
@@ -71,12 +58,15 @@ function initiateSelect2DynamicOptionCreation(
             optText += obj;
           });
         }
+
         return optText === undefined ? data.text : optText;
       },
       templateSelection: function (data) {
         var optText = "";
+
+        // Tangani opsi baru
         if (data.newTag) {
-          optText = data.text; // Handle newly created tag
+          optText = data.text;
         } else if (!data.text) {
           attrs.forEach((item, i) => {
             let label = item.split(".");
@@ -92,23 +82,66 @@ function initiateSelect2DynamicOptionCreation(
         } else {
           optText = data.text;
         }
+
         return optText;
-      }
+      },
+      tags: true,
+      createTag: function (params) {
+        var term = $.trim(params.term);
+        if (term === "") {
+          return null;
+        }
+        var newTag = {
+          id: term,
+          text: term,
+          newTag: true,
+        };
+
+        // Trigger select event manually
+        $(this).trigger('select2:select', {
+          params: {
+            data: newTag
+          }
+        });
+
+        return newTag;
+      },
+      insertTag: function (data, tag) {
+        // Masukkan tag di akhir hasil dan pastikan perubahan diakui oleh Select2
+        data.push(tag);
+        $(this).trigger('change');
+      },
     })
     .on("select2:select", function (e) {
       const selectedData = e.params.data;
-
-      // Menangani tag baru yang dipilih
-      if (selectedData.newTag) {
-        console.info("New tag created:", selectedData);
-      }
+      console.log("Data yang dipilih:", selectedData);
 
       // Menjalankan callback jika disediakan
-      if (onSelect) {
-        onSelect(e);
+      if (onSelect) onSelect(e);
+    })
+    .on("select2:close", function (e) {
+      const selectedData = $(elId).select2('data');
+      if (selectedData.length > 0 && selectedData[0].newTag) {
+        console.log("Tag baru dibuat:", selectedData[0]);
       }
     });
 }
+
+$(document).ready(function () {
+  // Contoh penggunaan fungsi initiateSelect2DynamicOptionCreation
+  initiateSelect2DynamicOptionCreation(
+    '#yourSelect2ElementId',  // Ganti dengan ID elemen Select2 Anda
+    'api/url',  // Ganti dengan URL API Anda
+    3,  // Minimum input length
+    'Pilih opsi',  // Placeholder
+    ['text'],  // Atribut untuk ditampilkan
+    function (e) {
+      // Callback setelah opsi dipilih
+      console.log("Opsi dipilih:", e.params.data);
+    }
+  );
+});
+
 
 
 /**
