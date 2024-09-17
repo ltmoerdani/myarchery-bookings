@@ -16,8 +16,7 @@ function initiateSelect2DynamicOptionCreation(
     .select2({
       ajax: {
         url: url,
-        data:
-          paramsCallback ??
+        data: paramsCallback ??
           function (params) {
             let req = {
               q: params.term,
@@ -35,28 +34,31 @@ function initiateSelect2DynamicOptionCreation(
       dropdownParent: parentModal,
       placeholder: placeholder,
       multiple: multiple,
+      tags: true,  // Allow new tags to be created
+      createTag: function (params) {
+        var term = $.trim(params.term);
+        if (term === "") {
+          return null;
+        }
+        return {
+          id: term,
+          text: term,
+          newTag: true // Mark this as a new tag
+        };
+      },
+      insertTag: function (data, tag) {
+        // Insert the tag at the end of the results
+        data.push(tag);
+      },
       templateResult: function (data) {
-        var optText = "";
         if (data.loading) {
           return "Mencari...";
         }
 
-        attrs.forEach((item, i) => {
-          let label = item.split(".");
-          let obj = data;
-          if (i !== 0) {
-            optText += " - ";
-          }
-          label.forEach((text) => {
-            obj = obj[text];
-          });
-          optText += obj;
-        });
-        return optText === undefined ? data.text : optText;
-      },
-      templateSelection: function (data) {
         var optText = "";
-        if (!data.text) {
+        if (data.newTag) {
+          optText = data.text; // For new tags, just show the text
+        } else {
           attrs.forEach((item, i) => {
             let label = item.split(".");
             let obj = data;
@@ -68,40 +70,46 @@ function initiateSelect2DynamicOptionCreation(
             });
             optText += obj;
           });
-          return optText;
+        }
+        return optText === undefined ? data.text : optText;
+      },
+      templateSelection: function (data) {
+        var optText = "";
+        if (data.newTag) {
+          optText = data.text; // Handle newly created tag
+        } else if (!data.text) {
+          attrs.forEach((item, i) => {
+            let label = item.split(".");
+            let obj = data;
+            if (i !== 0) {
+              optText += " - ";
+            }
+            label.forEach((text) => {
+              obj = obj[text];
+            });
+            optText += obj;
+          });
         } else {
-          return data.text;
+          optText = data.text;
         }
-      },
-      tags: true,
-      createTag: function (params) {
-        var term = $.trim(params.term);
-        if (term === "") {
-          return null;
-        }
-        return {
-          id: term,
-          text: term,
-          newTag: true,
-        };
-      },
-      insertTag: function (data, tag) {
-        // Insert the tag at the end of the results
-        data.push(tag);
-      },
+        return optText;
+      }
     })
     .on("select2:select", function (e) {
       const selectedData = e.params.data;
 
       // Menangani tag baru yang dipilih
       if (selectedData.newTag) {
-        console.info("new tag:", selectedData);
+        console.info("New tag created:", selectedData);
       }
 
       // Menjalankan callback jika disediakan
-      if (onSelect) onSelect(e);
+      if (onSelect) {
+        onSelect(e);
+      }
     });
 }
+
 
 /**
  * Initiate S2 With option
@@ -153,25 +161,6 @@ function initiateS2(
             });
             optText += obj;
           });
-        // for (let i = 0; i < attrs.length; i++) {
-
-        //     let label = data[attrs[i]].split('.');
-        //     let obj = data[attrs[i]];
-        //     if (i != 0) {
-        //         optText += ' - ';
-        //     }
-        //     label.forEach(text => {
-        //         obj = obj[text];
-        //     });
-        //     optText += obj;
-        //     console.log(optText);
-
-        //     // text += data[attrs[i]]
-
-        //     // if (i != attrs.length - 1) {
-        //     //     text += " - "
-        //     // }
-        // }
         return data.loading ? "Mencari..." : optText;
       },
       templateSelection: function (data) {
