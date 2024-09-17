@@ -97,19 +97,21 @@ function initiateSelect2DynamicOptionCreation(
           newTag: true,
         };
 
-        // Trigger select event manually
-        $(this).trigger('select2:select', {
-          params: {
-            data: newTag
-          }
-        });
-
+        // Hanya return tag, jangan trigger langsung
         return newTag;
       },
       insertTag: function (data, tag) {
-        // Masukkan tag di akhir hasil dan pastikan perubahan diakui oleh Select2
+        // Masukkan tag di akhir hasil
         data.push(tag);
-        $(this).trigger('change');
+
+        // Tunggu hingga enter ditekan untuk memilih tag baru
+        $(elId).one('select2:selecting', function () {
+          $(elId).select2('trigger', 'select', {
+            data: tag
+          });
+        });
+        
+        $(elId).trigger('change');
       },
     })
     .on("select2:select", function (e) {
