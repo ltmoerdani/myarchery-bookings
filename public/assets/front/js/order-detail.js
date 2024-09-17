@@ -61,129 +61,139 @@ const createS2TicketsDelegation = (
     placeholderCategory,
     ["title"],
     function (e) {
-      const checkTicket = AllDataForm[contentFor].filter(
-        (val) => val.ticket_id === e.params.data.id
-      );
-
-      if (checkTicket.length >= e.params.data.ticket_available) {
-        $(
-          `#category_${e.target.dataset.contentfor}${e.target.dataset.idx}`
-        ).select2("trigger", "select", {
-          data: { id: "", title: "" },
-        });
-
-        return toastr["warning"](
-          `${alertOverOrderQuotaTicket} ${e.params.data.title}`
+      if (e.params.data.id) {
+        const checkTicket = AllDataForm[contentFor].filter(
+          (val) => val.ticket_id === e.params.data.id
         );
-      } else {
-        AllDataForm[contentFor][e.target.dataset.idx].ticket_id =
-          e.params.data.id;
-        AllDataForm[contentFor][e.target.dataset.idx].ticket_name =
-          e.params.data.category_name;
-        AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket_id =
-          e.params.data.sub_category_id;
-        AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket =
-          e.params.data.title;
-        AllDataForm[contentFor][e.target.dataset.idx].price_scheme =
-          e.params.data.price_scheme;
-        AllDataForm[contentFor][e.target.dataset.idx].price =
-          e.params.data.price;
-        AllDataForm[contentFor][e.target.dataset.idx].f_price =
-          e.params.data.f_price;
-        AllDataForm[contentFor][e.target.dataset.idx].international_price =
-          e.params.data.international_price;
-        AllDataForm[contentFor][e.target.dataset.idx].f_international_price =
-          e.params.data.f_international_price;
 
-        // early bird
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount =
-          e.params.data.early_bird_discount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_amount = e.params.data.early_bird_discount_amount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_amount_international =
-          e.params.data.early_bird_discount_amount_international;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_international_type =
-          e.params.data.early_bird_discount_international_type;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_international_date =
-          e.params.data.early_bird_discount_international_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_international_time =
-          e.params.data.early_bird_discount_international_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_international_end_date =
-          e.params.data.early_bird_discount_international_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_international_end_time =
-          e.params.data.early_bird_discount_international_end_time;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_type =
-          e.params.data.early_bird_discount_type;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_date =
-          e.params.data.early_bird_discount_date;
-        AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount_time =
-          e.params.data.early_bird_discount_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_end_date =
-          e.params.data.early_bird_discount_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].early_bird_discount_end_time =
-          e.params.data.early_bird_discount_end_time;
+        if (checkTicket.length >= e.params.data.ticket_available) {
+          $(
+            `#category_${e.target.dataset.contentfor}${e.target.dataset.idx}`
+          ).select2("trigger", "select", {
+            data: { id: "", title: "" },
+          });
 
-        // late price
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount =
-          e.params.data.late_price_discount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_amount = e.params.data.late_price_discount_amount;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_amount_international =
-          e.params.data.late_price_discount_amount_international;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_international_type =
-          e.params.data.late_price_discount_international_type;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_international_date =
-          e.params.data.late_price_discount_international_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_international_time =
-          e.params.data.late_price_discount_international_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_international_end_date =
-          e.params.data.late_price_discount_international_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_international_end_time =
-          e.params.data.late_price_discount_international_end_time;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_type =
-          e.params.data.late_price_discount_type;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_date =
-          e.params.data.late_price_discount_date;
-        AllDataForm[contentFor][e.target.dataset.idx].late_price_discount_time =
-          e.params.data.late_price_discount_time;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_end_date =
-          e.params.data.late_price_discount_end_date;
-        AllDataForm[contentFor][
-          e.target.dataset.idx
-        ].late_price_discount_end_time =
-          e.params.data.late_price_discount_end_time;
+          return toastr["warning"](
+            `${alertOverOrderQuotaTicket} ${e.params.data.title}`
+          );
+        } else {
+          AllDataForm[contentFor][e.target.dataset.idx].ticket_id =
+            e.params.data.id;
+          AllDataForm[contentFor][e.target.dataset.idx].ticket_name =
+            e.params.data.category_name;
+          AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket_id =
+            e.params.data.sub_category_id;
+          AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket =
+            e.params.data.title;
+          AllDataForm[contentFor][e.target.dataset.idx].price_scheme =
+            e.params.data.price_scheme;
+          AllDataForm[contentFor][e.target.dataset.idx].price =
+            e.params.data.price;
+          AllDataForm[contentFor][e.target.dataset.idx].f_price =
+            e.params.data.f_price;
+          AllDataForm[contentFor][e.target.dataset.idx].international_price =
+            e.params.data.international_price;
+          AllDataForm[contentFor][e.target.dataset.idx].f_international_price =
+            e.params.data.f_international_price;
+
+          // early bird
+          AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount =
+            e.params.data.early_bird_discount;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_amount =
+            e.params.data.early_bird_discount_amount;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_amount_international =
+            e.params.data.early_bird_discount_amount_international;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_international_type =
+            e.params.data.early_bird_discount_international_type;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_international_date =
+            e.params.data.early_bird_discount_international_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_international_time =
+            e.params.data.early_bird_discount_international_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_international_end_date =
+            e.params.data.early_bird_discount_international_end_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_international_end_time =
+            e.params.data.early_bird_discount_international_end_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_type = e.params.data.early_bird_discount_type;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_date = e.params.data.early_bird_discount_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_time = e.params.data.early_bird_discount_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_end_date =
+            e.params.data.early_bird_discount_end_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].early_bird_discount_end_time =
+            e.params.data.early_bird_discount_end_time;
+
+          // late price
+          AllDataForm[contentFor][e.target.dataset.idx].late_price_discount =
+            e.params.data.late_price_discount;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_amount =
+            e.params.data.late_price_discount_amount;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_amount_international =
+            e.params.data.late_price_discount_amount_international;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_international_type =
+            e.params.data.late_price_discount_international_type;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_international_date =
+            e.params.data.late_price_discount_international_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_international_time =
+            e.params.data.late_price_discount_international_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_international_end_date =
+            e.params.data.late_price_discount_international_end_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_international_end_time =
+            e.params.data.late_price_discount_international_end_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_type = e.params.data.late_price_discount_type;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_date = e.params.data.late_price_discount_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_time = e.params.data.late_price_discount_time;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_end_date =
+            e.params.data.late_price_discount_end_date;
+          AllDataForm[contentFor][
+            e.target.dataset.idx
+          ].late_price_discount_end_time =
+            e.params.data.late_price_discount_end_time;
+        }
       }
     },
     function (param) {
@@ -236,16 +246,14 @@ const createS2CityDelegation = (
     cityDistrictProfileDefaultOption,
     ["name"],
     function (e) {
-      // const contentFor = `data${capitalizeFirstLetter(
-      //   e.target.dataset.contentfor
-      // )}`;
-
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = e.params.data.name;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation = e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation_name = e.params.data.name;
+      }
     },
     function (param) {
       let req = {
@@ -300,43 +308,45 @@ const createS2ProvinceDelegation = (
     placeholderProvince,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = null;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].province_delegation = e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].province_delegation_name = e.params.data.name;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation = null;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation_name = null;
 
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
 
-      if (
-        ["city/district"].includes(
-          AllDataForm[e.target.dataset.contentfor][
-            e.target.dataset.idx
-          ].delegation_type.toLowerCase()
-        )
-      ) {
-        setTimeout(
-          createS2CityDelegation(
-            e.target.dataset.contentfor,
-            e.target.dataset.idx,
-            "",
-            countryId,
-            e.params.data.id
-          ),
-          300
-        );
+        if (
+          ["city/district"].includes(
+            AllDataForm[e.target.dataset.contentfor][
+              e.target.dataset.idx
+            ].delegation_type.toLowerCase()
+          )
+        ) {
+          setTimeout(
+            createS2CityDelegation(
+              e.target.dataset.contentfor,
+              e.target.dataset.idx,
+              "",
+              countryId,
+              e.params.data.id
+            ),
+            300
+          );
+        }
       }
     },
     function (param) {
@@ -391,54 +401,56 @@ const createS2CountryDelegation = (
     countryProfileDefaultOption,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_delegation_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_delegation = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].province_delegation_name = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation = null;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].city_delegation_name = null;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].country_delegation_name = e.params.data.name;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].country_delegation = e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].province_delegation = null;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].province_delegation_name = null;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation = null;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_delegation_name = null;
 
-      $(
-        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
+        $(
+          `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
 
-      if (
-        ["city/district", "province"].includes(
-          AllDataForm[e.target.dataset.contentfor][
-            e.target.dataset.idx
-          ].delegation_type.toLowerCase()
-        )
-      ) {
-        setTimeout(
-          createS2ProvinceDelegation(
-            e.target.dataset.contentfor,
-            e.target.dataset.idx,
-            "",
-            e.params.data.id
-          ),
-          300
-        );
+        if (
+          ["city/district", "province"].includes(
+            AllDataForm[e.target.dataset.contentfor][
+              e.target.dataset.idx
+            ].delegation_type.toLowerCase()
+          )
+        ) {
+          setTimeout(
+            createS2ProvinceDelegation(
+              e.target.dataset.contentfor,
+              e.target.dataset.idx,
+              "",
+              e.params.data.id
+            ),
+            300
+          );
+        }
       }
     },
     function (param) {
@@ -492,11 +504,14 @@ const createS2SchoolUniversityDelegation = (
     placeholderSchool,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].school_id =
-        e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].school_name = e.params.data.text;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].school_id = e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].school_name = e.params.data.text;
+      }
     },
     function (param) {
       let req = {
@@ -549,12 +564,14 @@ const createS2OrganizationDelegation = (
     placeholderOrganization,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].organization_id = e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].organization_name = e.params.data.text;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].organization_id = e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].organization_name = e.params.data.text;
+      }
     },
     function (param) {
       let req = {
@@ -603,10 +620,13 @@ const createS2ClubDelegation = (contentIdx, contentFor, defaultValue = "") => {
     placeholderClub,
     ["text"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].club_id =
-        e.params.data.id;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].club_name =
-        e.params.data.text;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].club_id =
+          e.params.data.id;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].club_name = e.params.data.text;
+      }
     },
     function (param) {
       let req = {
@@ -638,79 +658,77 @@ const createS2ListDelegation = (contentId, defaultValue = "") => {
     labelDelegationType,
     ["name"],
     function (e) {
-      // const contentFor = `data${capitalizeFirstLetter(
-      //   e.target.dataset.contentfor
-      // )}`;
+      if (e.params.data.name) {
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].delegation_type = e.params.data.name;
 
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].delegation_type = e.params.data.name;
+        // hide all content delegation
+        $(
+          `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
+        $(
+          `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).addClass("d-none");
 
-      // hide all content delegation
-      $(
-        `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
-      $(
-        `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).addClass("d-none");
+        //empty all content delegation
+        $(
+          `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
+        $(
+          `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
+        ).empty();
 
-      //empty all content delegation
-      $(
-        `.content-delegation-country-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-province-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-city-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-school-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-organization-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-      $(
-        `.content-delegation-club-${e.target.dataset.contentfor}-${e.target.dataset.idx}`
-      ).empty();
-
-      switch (e?.params?.data?.name?.toLowerCase()) {
-        case "club":
-          createS2ClubDelegation(
-            e.target.dataset.idx,
-            e.target.dataset.contentfor
-          );
-          break;
-        case "school/universities":
-          createS2SchoolUniversityDelegation(
-            e.target.dataset.idx,
-            e.target.dataset.contentfor
-          );
-          break;
-        case "organization":
-          createS2OrganizationDelegation(
-            e.target.dataset.idx,
-            e.target.dataset.contentfor
-          );
-          break;
-        default:
-          createS2CountryDelegation(
-            e.target.dataset.idx,
-            e.target.dataset.contentfor
-          );
-          break;
+        switch (e?.params?.data?.name?.toLowerCase()) {
+          case "club":
+            createS2ClubDelegation(
+              e.target.dataset.idx,
+              e.target.dataset.contentfor
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(
+              e.target.dataset.idx,
+              e.target.dataset.contentfor
+            );
+            break;
+          case "organization":
+            createS2OrganizationDelegation(
+              e.target.dataset.idx,
+              e.target.dataset.contentfor
+            );
+            break;
+          default:
+            createS2CountryDelegation(
+              e.target.dataset.idx,
+              e.target.dataset.contentfor
+            );
+            break;
+        }
       }
     },
     function (param) {
@@ -746,10 +764,12 @@ const createS2ListCity = (
     cityDistrictProfileDefaultOption,
     ["name"],
     function (e) {
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city =
-        e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city_id =
-        e.params.data.id;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city =
+          e.params.data.name;
+        AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city_id =
+          e.params.data.id;
+      }
     },
     function (param) {
       let req = {
@@ -781,19 +801,22 @@ const createS2ListCountry = (contentId, defaultValue = "") => {
         .empty()
         .trigger("change");
 
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].country =
-        e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][
-        e.target.dataset.idx
-      ].country_name = e.params.data.name;
-      AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].county_id =
-        e.params.data.id;
+      if (e.params.data.id) {
+        AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].country =
+          e.params.data.name;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].country_name = e.params.data.name;
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].county_id = e.params.data.id;
 
-      createS2ListCity(
-        `#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`,
-        "",
-        e.params.data.id
-      );
+        createS2ListCity(
+          `#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`,
+          "",
+          e.params.data.id
+        );
+      }
     },
     function (param) {
       let req = {
@@ -915,6 +938,7 @@ const handlerBack = (slug, event_id) => {
 // Individu Schema
 const handlerMapSelect2Individu = (data) => {
   for (let i = 0; i < data.length; i++) {
+    console.log("AllDataForm.individu[i]:", AllDataForm.individu[i]);
     if ($(`#name_individu${data[i]}`)) {
       initiateSelect2DynamicOptionCreation(
         `#name_individu${data[i]}`,
@@ -1094,6 +1118,7 @@ const handlerMapSelect2Individu = (data) => {
     $(`.content-delegation-school-individu-${i}`).empty();
     $(`.content-delegation-organization-individu-${i}`).empty();
     $(`.content-delegation-club-individu-${i}`).empty();
+
     if (AllDataForm.individu[i].contingent_type.toLowerCase() !== "open") {
       switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
         case "country":
@@ -1154,7 +1179,80 @@ const handlerMapSelect2Individu = (data) => {
           break;
       }
     }
-    createS2TicketsDelegation(i, "individu");
+
+    if (AllDataForm.individu[i].contingent_type.toLowerCase() === "open") {
+      if (AllDataForm.individu[i].delegation_type) {
+        switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "individu");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "individu",
+              i,
+              "",
+              AllDataForm.individu[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "individu",
+              i,
+              "",
+              AllDataForm.individu[i].country_delegation,
+              AllDataForm.individu[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].school_id
+                ? {
+                    id: AllDataForm.individu[i].school_id,
+                    text: AllDataForm.individu[i].school_name,
+                  }
+                : ""
+            );
+            break;
+          case "organization":
+            createS2OrganizationDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].organization_id
+                ? {
+                    id: AllDataForm.individu[i].organization_id,
+                    text: AllDataForm.individu[i].organization_name,
+                  }
+                : ""
+            );
+            break;
+          default:
+            createS2ClubDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].club_id
+                ? {
+                    id: AllDataForm.individu[i].club_id,
+                    text: AllDataForm.individu[i].club_name,
+                  }
+                : ""
+            );
+            break;
+        }
+      }
+    }
+
+    createS2TicketsDelegation(
+      i,
+      "individu",
+      AllDataForm.individu[i].ticket_id
+        ? {
+            id: AllDataForm.individu[i].ticket_id,
+            text: AllDataForm.individu[i].sub_category_ticket,
+          }
+        : ""
+    );
   }
 };
 
@@ -1326,6 +1424,7 @@ const generateViewIndividu = () => {
 // Official Schema
 const handlerMapSelect2Official = (data) => {
   for (let i = 0; i < data.length; i++) {
+    console.log("data official:", data[i]);
     if ($(`#name_official${data[i]}`)) {
       initiateSelect2DynamicOptionCreation(
         `#name_official${data[i]}`,
@@ -1396,7 +1495,6 @@ const handlerMapSelect2Official = (data) => {
             AllDataForm.official[e.target.dataset.idx].city =
               e.params.data.city;
           }
-
           if (e.params.data.city_id) {
             AllDataForm.official[e.target.dataset.idx].city_id =
               e.params.data.city_id;
@@ -1471,7 +1569,7 @@ const handlerMapSelect2Official = (data) => {
         AllDataForm.official[i].city_id
           ? {
               id: AllDataForm.official[i].city_id,
-              text: AllDataForm.official[i].city_name,
+              text: AllDataForm.official[i].city,
             }
           : "",
         !AllDataForm.official[i]?.county_id
@@ -1483,10 +1581,10 @@ const handlerMapSelect2Official = (data) => {
     if ($(`#delegation_official${i}`)) {
       createS2ListDelegation(
         `#delegation_official${i}`,
-        AllDataForm.official[i].county_id
+        AllDataForm.official[i].delegation_type
           ? {
-              id: AllDataForm.official[i].county_id,
-              text: AllDataForm.official[i].country,
+              id: AllDataForm.official[i].delegation_type,
+              text: AllDataForm.official[i].delegation_type,
             }
           : ""
       );
@@ -1541,6 +1639,78 @@ const handlerMapSelect2Official = (data) => {
           break;
       }
     }
+
+    console.log("AllDataForm.official[i]:", AllDataForm.official[i]);
+
+    if (AllDataForm.official[i].contingent_type.toLowerCase() === "open") {
+      if (AllDataForm.official[i].delegation_type) {
+        switch (AllDataForm.official[i].delegation_type.toLowerCase()) {
+          case "country":
+            createS2CountryDelegation(i, "official");
+            break;
+          case "province":
+            createS2ProvinceDelegation(
+              "official",
+              i,
+              AllDataForm.official[i].school_id
+                ? {
+                    id: AllDataForm.official[i].school_id,
+                    text: AllDataForm.official[i].school_name,
+                  }
+                : "",
+              AllDataForm.official[i].country_delegation
+            );
+            break;
+          case "city/district":
+            createS2CityDelegation(
+              "official",
+              i,
+              "",
+              AllDataForm.official[i].country_delegation,
+              AllDataForm.official[i].province_delegation
+            );
+            break;
+          case "school/universities":
+            createS2SchoolUniversityDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].school_id
+                ? {
+                    id: AllDataForm.official[i].school_id,
+                    text: AllDataForm.official[i].school_name,
+                  }
+                : ""
+            );
+            break;
+          case "organization":
+            createS2OrganizationDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].organization_id
+                ? {
+                    id: AllDataForm.official[i].organization_id,
+                    text: AllDataForm.official[i].organization_name,
+                  }
+                : ""
+            );
+            break;
+          default:
+            createS2ClubDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].club_id
+                ? {
+                    id: AllDataForm.official[i].club_id,
+                    text: AllDataForm.official[i].club_name,
+                  }
+                : ""
+            );
+            break;
+        }
+      }
+    }
+
+    createS2TicketsDelegation(i, "official");
   }
 };
 
@@ -1693,7 +1863,9 @@ const generateViewOfficial = () => {
     </div>
   `;
 
-  setTimeout(handlerMapSelect2Official(arrIndexOfficial), 5000);
+  setTimeout(() => {
+    handlerMapSelect2Official(arrIndexOfficial);
+  }, 200);
 };
 
 $("#ToDetailCheckout").on("click", function (e) {
