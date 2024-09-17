@@ -1,5 +1,10 @@
 @extends('frontend.layout')
 
+@section('script')
+    <script src="{{ asset('assets/admin/js/helpers/select2-helpers.js?' . time()) }}"></script>
+    <script src="{{ asset('assets/admin/js/helpers/global-helpers.js?' . time()) }}"></script>
+@endsection
+
 @php
     $og_title = $from_info_event['event_title'];
     if ($event->date_type == 'multiple') {
@@ -242,11 +247,6 @@
             </div>
         </section>
     </form>
-@endsection
-
-@section('script')
-    <script src="{{ asset('assets/admin/js/helpers/select2-helpers.js?' . time()) }}"></script>
-    <script src="{{ asset('assets/admin/js/helpers/global-helpers.js?' . time()) }}"></script>
 @endsection
 
 @section('custom-script')
