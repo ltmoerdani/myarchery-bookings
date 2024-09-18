@@ -1,5 +1,5 @@
 /**
- * Inisialisasi Select2 dengan Opsi Dinamis
+ * Inisialisasi Select2 dengan Opsi Dinamis dan `selectOnClose`
  */
 function initiateSelect2DynamicOptionCreation(
   elId,
@@ -35,6 +35,24 @@ function initiateSelect2DynamicOptionCreation(
       dropdownParent: parentModal,
       placeholder: placeholder,
       multiple: multiple,
+      tags: true,
+      selectOnClose: true, // Opsi penting ditambahkan di sini
+      createTag: function (params) {
+        var term = $.trim(params.term);
+        if (term === "") {
+          return null;
+        }
+        return {
+          id: term,
+          text: term,
+          newTag: true
+        };
+      },
+      insertTag: function (data, tag) {
+        if (!data.some(existingTag => existingTag.id === tag.id)) {
+          data.push(tag);
+        }
+      },
       templateResult: function (data) {
         if (data.loading) {
           return "Mencari...";
@@ -42,7 +60,6 @@ function initiateSelect2DynamicOptionCreation(
 
         var optText = "";
 
-        // Tangani opsi baru
         if (data.newTag) {
           optText = data.text;
         } else {
@@ -64,7 +81,6 @@ function initiateSelect2DynamicOptionCreation(
       templateSelection: function (data) {
         var optText = "";
 
-        // Tangani opsi baru
         if (data.newTag) {
           optText = data.text;
         } else if (!data.text) {
@@ -85,25 +101,6 @@ function initiateSelect2DynamicOptionCreation(
 
         return optText;
       },
-      tags: true,
-      createTag: function (params) {
-        var term = $.trim(params.term);
-        if (term === "") {
-          return null;
-        }
-        // Jangan buat tag baru hingga input selesai (misalnya saat menekan Enter)
-        return {
-          id: term,
-          text: term,
-          newTag: true
-        };
-      },
-      insertTag: function (data, tag) {
-        // Pastikan tag hanya di-insert sekali, setelah input selesai
-        if (!data.some(existingTag => existingTag.id === tag.id)) {
-          data.push(tag);
-        }
-      },
     })
     .on("select2:select", function (e) {
       const selectedData = e.params.data;
@@ -111,16 +108,8 @@ function initiateSelect2DynamicOptionCreation(
 
       // Menjalankan callback jika disediakan
       if (onSelect) onSelect(e);
-
-      // Memicu event change untuk memastikan Select2 mengenali pilihan baru
-      $(elId).trigger('change.select2');  // Memaksa Select2 mengupdate
-    })
-    .on("select2:close", function (e) {
-      const selectedData = $(elId).select2('data');
-      if (selectedData.length > 0 && selectedData[0].newTag) {
-        console.log("Tag baru dibuat:", selectedData[0]);
-      }
     });
+    // Tidak perlu lagi event handler 'select2:close'
 }
 
 /**
@@ -129,33 +118,21 @@ function initiateSelect2DynamicOptionCreation(
 function validateSelect2Input(elId) {
   const selectedData = $(elId).select2('data');
   
-  // Periksa apakah ada data yang dipilih
   if (selectedData.length === 0) {
-    // Tidak ada data yang dipilih, input tidak valid
     return false;
   }
 
-  // Ambil data pilihan pertama (untuk kasus single select)
   const selectedOption = selectedData[0];
 
-  // Jika opsi adalah tag baru yang dibuat oleh pengguna
   if (selectedOption.newTag) {
-    // Anggap valid karena pengguna telah membuat opsi baru
     return true;
   }
 
-  // Jika bukan tag baru, lakukan validasi sesuai kriteria Anda
-  // Misalnya, periksa apakah opsi memiliki ID atau atribut tertentu
-  if (isValidExistingOption(selectedOption)) {
-    return true;
-  } else {
-    return false;
-  }
+  return isValidExistingOption(selectedOption);
 }
 
 // Contoh fungsi untuk validasi opsi yang sudah ada
 function isValidExistingOption(option) {
-  // Misalnya, periksa apakah opsi memiliki properti 'id' yang valid
   return option.id !== undefined && option.id !== null && option.id !== '';
 }
 
@@ -164,7 +141,7 @@ $('#yourFormId').validate({
   rules: {
     select2FieldName: {
       required: true,
-      validateSelect2: true  // Nama metode validasi kustom
+      validateSelect2: true
     }
   },
   messages: {
