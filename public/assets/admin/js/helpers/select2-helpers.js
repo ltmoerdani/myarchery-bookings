@@ -1,5 +1,5 @@
 /**
- * Initiate S2 With Dynamic Option Creation
+ * Inisialisasi Select2 dengan Opsi Dinamis
  */
 function initiateSelect2DynamicOptionCreation(
   elId,
@@ -111,6 +111,9 @@ function initiateSelect2DynamicOptionCreation(
 
       // Menjalankan callback jika disediakan
       if (onSelect) onSelect(e);
+
+      // Memicu event change untuk memastikan Select2 mengenali pilihan baru
+      $(elId).trigger('change.select2');  // Memaksa Select2 mengupdate
     })
     .on("select2:close", function (e) {
       const selectedData = $(elId).select2('data');
@@ -120,8 +123,64 @@ function initiateSelect2DynamicOptionCreation(
     });
 }
 
+/**
+ * Fungsi Validasi untuk Select2
+ */
+function validateSelect2Input(elId) {
+  const selectedData = $(elId).select2('data');
+  
+  // Periksa apakah ada data yang dipilih
+  if (selectedData.length === 0) {
+    // Tidak ada data yang dipilih, input tidak valid
+    return false;
+  }
+
+  // Ambil data pilihan pertama (untuk kasus single select)
+  const selectedOption = selectedData[0];
+
+  // Jika opsi adalah tag baru yang dibuat oleh pengguna
+  if (selectedOption.newTag) {
+    // Anggap valid karena pengguna telah membuat opsi baru
+    return true;
+  }
+
+  // Jika bukan tag baru, lakukan validasi sesuai kriteria Anda
+  // Misalnya, periksa apakah opsi memiliki ID atau atribut tertentu
+  if (isValidExistingOption(selectedOption)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// Contoh fungsi untuk validasi opsi yang sudah ada
+function isValidExistingOption(option) {
+  // Misalnya, periksa apakah opsi memiliki properti 'id' yang valid
+  return option.id !== undefined && option.id !== null && option.id !== '';
+}
+
+// Inisialisasi Validasi dengan jQuery Validation
+$('#yourFormId').validate({
+  rules: {
+    select2FieldName: {
+      required: true,
+      validateSelect2: true  // Nama metode validasi kustom
+    }
+  },
+  messages: {
+    select2FieldName: {
+      required: 'Field ini wajib diisi.'
+    }
+  }
+});
+
+// Tambahkan metode validasi kustom
+$.validator.addMethod('validateSelect2', function(value, element) {
+  return validateSelect2Input(element);
+}, 'Silakan pilih opsi yang valid.');
+
+// Inisialisasi Select2 di halaman
 $(document).ready(function () {
-  // Contoh penggunaan fungsi initiateSelect2DynamicOptionCreation
   initiateSelect2DynamicOptionCreation(
     '#yourSelect2ElementId',  // Ganti dengan ID elemen Select2 Anda
     'api/url',  // Ganti dengan URL API Anda
