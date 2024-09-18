@@ -91,20 +91,18 @@ function initiateSelect2DynamicOptionCreation(
         if (term === "") {
           return null;
         }
-        var newTag = {
+        // Jangan buat tag baru hingga input selesai (misalnya saat menekan Enter)
+        return {
           id: term,
           text: term,
-          newTag: true,
+          newTag: true
         };
-
-        // Kembalikan tag baru tanpa langsung men-trigger pemilihan
-        return newTag;
       },
       insertTag: function (data, tag) {
-        // Masukkan tag di akhir hasil, tetapi tidak langsung dipilih
-        data.push(tag);
-
-        // Jangan trigger select2 secara otomatis di sini, tunggu sampai pengguna menekan enter
+        // Pastikan tag hanya di-insert sekali, setelah input selesai
+        if (!data.some(existingTag => existingTag.id === tag.id)) {
+          data.push(tag);
+        }
       },
     })
     .on("select2:select", function (e) {
@@ -117,19 +115,7 @@ function initiateSelect2DynamicOptionCreation(
     .on("select2:close", function (e) {
       const selectedData = $(elId).select2('data');
       if (selectedData.length > 0 && selectedData[0].newTag) {
-        console.log("Tag baru dibuat tetapi belum dipilih:", selectedData[0]);
-      }
-    })
-    .on("keypress", function (e) {
-      if (e.which === 13) { // Deteksi Enter (keyCode 13)
-        const selectedData = $(elId).select2('data');
-        if (selectedData.length > 0 && selectedData[0].newTag) {
-          // Trigger pemilihan tag baru setelah pengguna menekan Enter
-          $(elId).select2('trigger', 'select', {
-            data: selectedData[0]
-          });
-          console.log("Tag baru dipilih setelah Enter:", selectedData[0]);
-        }
+        console.log("Tag baru dibuat:", selectedData[0]);
       }
     });
 }
@@ -148,7 +134,6 @@ $(document).ready(function () {
     }
   );
 });
-
 
 /**
  * Initiate S2 With option
