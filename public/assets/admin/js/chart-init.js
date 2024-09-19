@@ -100,10 +100,10 @@ const myEventBookingChart = new Chart(chartTwo, {
     scales: {
       yAxes: [{
         ticks: {
-          stepSize: 1
+          stepSize: 20  // Sesuaikan stepSize ini sesuai kebutuhan, misalnya per 10 order
         }
       }]
-    }
+    }    
   }
 });
 
