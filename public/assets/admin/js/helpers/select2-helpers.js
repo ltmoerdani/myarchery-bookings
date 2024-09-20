@@ -45,11 +45,11 @@ function initiateSelect2DynamicOptionCreation(
         return {
           id: term,
           text: term,
-          newTag: true
+          newTag: true,
         };
       },
       insertTag: function (data, tag) {
-        if (!data.some(existingTag => existingTag.id === tag.id)) {
+        if (!data.some((existingTag) => existingTag.id === tag.id)) {
           data.push(tag);
         }
       },
@@ -104,20 +104,20 @@ function initiateSelect2DynamicOptionCreation(
     })
     .on("select2:select", function (e) {
       const selectedData = e.params.data;
-      console.log("Data yang dipilih:", selectedData);
+      console.log("selected:", selectedData);
 
       // Menjalankan callback jika disediakan
       if (onSelect) onSelect(e);
     });
-    // Tidak perlu lagi event handler 'select2:close'
+  // Tidak perlu lagi event handler 'select2:close'
 }
 
 /**
  * Fungsi Validasi untuk Select2
  */
 function validateSelect2Input(elId) {
-  const selectedData = $(elId).select2('data');
-  
+  const selectedData = $(elId).select2("data");
+
   if (selectedData.length === 0) {
     return false;
   }
@@ -133,40 +133,44 @@ function validateSelect2Input(elId) {
 
 // Contoh fungsi untuk validasi opsi yang sudah ada
 function isValidExistingOption(option) {
-  return option.id !== undefined && option.id !== null && option.id !== '';
+  return option.id !== undefined && option.id !== null && option.id !== "";
 }
 
 // Inisialisasi Validasi dengan jQuery Validation
-$('#yourFormId').validate({
+$("#yourFormId").validate({
   rules: {
     select2FieldName: {
       required: true,
-      validateSelect2: true
-    }
+      validateSelect2: true,
+    },
   },
   messages: {
     select2FieldName: {
-      required: 'Field ini wajib diisi.'
-    }
-  }
+      required: "Field ini wajib diisi.",
+    },
+  },
 });
 
 // Tambahkan metode validasi kustom
-$.validator.addMethod('validateSelect2', function(value, element) {
-  return validateSelect2Input(element);
-}, 'Silakan pilih opsi yang valid.');
+$.validator.addMethod(
+  "validateSelect2",
+  function (value, element) {
+    return validateSelect2Input(element);
+  },
+  "Silakan pilih opsi yang valid."
+);
 
 // Inisialisasi Select2 di halaman
 $(document).ready(function () {
   initiateSelect2DynamicOptionCreation(
-    '#yourSelect2ElementId',  // Ganti dengan ID elemen Select2 Anda
-    'api/url',  // Ganti dengan URL API Anda
-    3,  // Minimum input length
-    'Pilih opsi',  // Placeholder
-    ['text'],  // Atribut untuk ditampilkan
+    "#yourSelect2ElementId", // Ganti dengan ID elemen Select2 Anda
+    "api/url", // Ganti dengan URL API Anda
+    3, // Minimum input length
+    "Pilih opsi", // Placeholder
+    ["text"], // Atribut untuk ditampilkan
     function (e) {
       // Callback setelah opsi dipilih
-      console.log("Opsi dipilih:", e.params.data);
+      // console.log("Opsi dipilih:", e.params.data);
     }
   );
 });

@@ -766,7 +766,7 @@ const createS2ListCity = (
     function (e) {
       if (e.params.data.id) {
         AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city =
-          e.params.data.name;
+          e.params.data.text;
         AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city_id =
           e.params.data.id;
       }
@@ -797,16 +797,17 @@ const createS2ListCountry = (contentId, defaultValue = "") => {
     countryProfileDefaultOption,
     ["name"],
     function (e) {
+      console.log("Ecountry:", e);
       $(`#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`)
         .empty()
         .trigger("change");
 
       if (e.params.data.id) {
         AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].country =
-          e.params.data.name;
+          e.params.data.text;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
-        ].country_name = e.params.data.name;
+        ].country_name = e.params.data.text;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].county_id = e.params.data.id;
@@ -938,7 +939,6 @@ const handlerBack = (slug, event_id) => {
 // Individu Schema
 const handlerMapSelect2Individu = (data) => {
   for (let i = 0; i < data.length; i++) {
-    console.log("AllDataForm.individu[i]:", AllDataForm.individu[i]);
     if ($(`#name_individu${data[i]}`)) {
       initiateSelect2DynamicOptionCreation(
         `#name_individu${data[i]}`,
@@ -981,37 +981,53 @@ const handlerMapSelect2Individu = (data) => {
               e.params.data.text;
           }
 
-          if (e.params.data.country) {
-            AllDataForm.individu[e.target.dataset.idx].country =
-              e.params.data.country;
-            AllDataForm.individu[e.target.dataset.idx].country_name =
-              e.params.data.country;
-          }
+          // if (e.params.data.country) {
+          //   AllDataForm.individu[e.target.dataset.idx].country =
+          //     e.params.data.country;
+          //   AllDataForm.individu[e.target.dataset.idx].country_name =
+          //     e.params.data.country;
+          // }
 
           if (e.params.data.county_id) {
             AllDataForm.individu[e.target.dataset.idx].county_id =
               e.params.data.county_id;
+            AllDataForm.individu[e.target.dataset.idx].country =
+              e.params.data.country;
+            AllDataForm.individu[e.target.dataset.idx].country_name =
+              e.params.data.country;
 
-            $(`#profile_country_individu${e.target.dataset.idx}`).select2(
-              "trigger",
-              "select",
-              {
-                data: {
-                  id: e.params.data.county_id,
-                  text: e.params.data.country,
-                },
-              }
+            createS2ListCountry(
+              `#profile_country_individu${e.target.dataset.idx}`,
+              AllDataForm.individu[e.target.dataset.idx].county_id
+                ? {
+                    id: e.params.data.county_id,
+                    text: e.params.data.country,
+                  }
+                : ""
             );
+
+            // $(`#profile_country_individu${e.target.dataset.idx}`).select2(
+            //   "trigger",
+            //   "select",
+            //   {
+            //     data: {
+            //       id: e.params.data.county_id,
+            //       text: e.params.data.country,
+            //     },
+            //   }
+            // );
           }
 
-          if (e.params.data.city) {
-            AllDataForm.individu[e.target.dataset.idx].city =
-              e.params.data.city;
-          }
+          // if (e.params.data.city) {
+          //   AllDataForm.individu[e.target.dataset.idx].city =
+          //     e.params.data.city;
+          // }
 
           if (e.params.data.city_id) {
             AllDataForm.individu[e.target.dataset.idx].city_id =
               e.params.data.city_id;
+            AllDataForm.individu[e.target.dataset.idx].city =
+              e.params.data.city;
 
             createS2ListCity(
               `#profile_city_individu${e.target.dataset.idx}`,
@@ -1025,8 +1041,9 @@ const handlerMapSelect2Individu = (data) => {
             );
           }
 
-          if (e.params.data.gender) {
+          if (gender) {
             AllDataForm.individu[e.target.dataset.idx].user_gender = gender;
+            $(`#gender_individu${e.target.dataset.idx}`).val(gender);
           }
 
           if (e.params.data.birthdate) {
@@ -1424,7 +1441,6 @@ const generateViewIndividu = () => {
 // Official Schema
 const handlerMapSelect2Official = (data) => {
   for (let i = 0; i < data.length; i++) {
-    console.log("data official:", data[i]);
     if ($(`#name_official${data[i]}`)) {
       initiateSelect2DynamicOptionCreation(
         `#name_official${data[i]}`,
@@ -1433,6 +1449,7 @@ const handlerMapSelect2Official = (data) => {
         fullNamePlaceholder,
         ["text"],
         function (e) {
+          console.log("e:", e);
           let gender = "M";
 
           if (e?.params?.data?.gender) {
@@ -1468,16 +1485,21 @@ const handlerMapSelect2Official = (data) => {
               e.params.data.text;
           }
 
-          if (e.params.data.country) {
-            AllDataForm.official[e.target.dataset.idx].country =
-              e.params.data.country;
-            AllDataForm.official[e.target.dataset.idx].country_name =
-              e.params.data.country;
-          }
+          // if (e.params.data.country) {
+          //   AllDataForm.official[e.target.dataset.idx].country =
+          //     e.params.data.country;
+          //   AllDataForm.official[e.target.dataset.idx].country_name =
+          //     e.params.data.country;
+          // }
 
           if (e.params.data.county_id) {
             AllDataForm.official[e.target.dataset.idx].county_id =
               e.params.data.county_id;
+
+            AllDataForm.official[e.target.dataset.idx].country =
+              e.params.data.country;
+            AllDataForm.official[e.target.dataset.idx].country_name =
+              e.params.data.country;
 
             $(`#profile_country_official${e.target.dataset.idx}`).select2(
               "trigger",
@@ -1491,13 +1513,16 @@ const handlerMapSelect2Official = (data) => {
             );
           }
 
-          if (e.params.data.city) {
-            AllDataForm.official[e.target.dataset.idx].city =
-              e.params.data.city;
-          }
+          // if (e.params.data.city) {
+          //   AllDataForm.official[e.target.dataset.idx].city =
+          //     e.params.data.city;
+          // }
+
           if (e.params.data.city_id) {
             AllDataForm.official[e.target.dataset.idx].city_id =
               e.params.data.city_id;
+            AllDataForm.official[e.target.dataset.idx].city =
+              e.params.data.city;
 
             createS2ListCity(
               `#profile_city_official${e.target.dataset.idx}`,
@@ -1511,8 +1536,9 @@ const handlerMapSelect2Official = (data) => {
             );
           }
 
-          if (e.params.data.gender) {
+          if (gender) {
             AllDataForm.official[e.target.dataset.idx].user_gender = gender;
+            $(`#gender_official${e.target.dataset.idx}`).val(gender);
           }
 
           if (e.params.data.birthdate) {
@@ -1550,6 +1576,8 @@ const handlerMapSelect2Official = (data) => {
         },
       });
     }
+
+    console.log("AllDataForm.official[i]:", AllDataForm.official[i]);
 
     if ($(`#profile_country_official${i}`)) {
       createS2ListCountry(
@@ -1609,13 +1637,27 @@ const handlerMapSelect2Official = (data) => {
     if (AllDataForm.official[i].contingent_type.toLowerCase() !== "open") {
       switch (AllDataForm.official[i].delegation_type.toLowerCase()) {
         case "country":
-          createS2CountryDelegation(i, "official");
+          createS2CountryDelegation(
+            i,
+            "official",
+            AllDataForm.individu[i].country_delegation
+              ? {
+                  id: AllDataForm.individu[i].country_delegation,
+                  text: AllDataForm.individu[i].country_delegation_name,
+                }
+              : ""
+          );
           break;
         case "province":
           createS2ProvinceDelegation(
             "official",
             i,
-            "",
+            AllDataForm.individu[i].province_delegation
+              ? {
+                  id: AllDataForm.individu[i].province_delegation,
+                  text: AllDataForm.individu[i].province_delegation_name,
+                }
+              : "",
             AllDataForm.official[i].country_delegation
           );
           break;
@@ -1623,7 +1665,12 @@ const handlerMapSelect2Official = (data) => {
           createS2CityDelegation(
             "official",
             i,
-            "",
+            AllDataForm.individu[i].city_delegation
+              ? {
+                  id: AllDataForm.individu[i].city_delegation,
+                  text: AllDataForm.individu[i].city_delegation_name,
+                }
+              : "",
             AllDataForm.official[i].country_delegation,
             AllDataForm.official[i].province_delegation
           );
@@ -1639,8 +1686,6 @@ const handlerMapSelect2Official = (data) => {
           break;
       }
     }
-
-    console.log("AllDataForm.official[i]:", AllDataForm.official[i]);
 
     if (AllDataForm.official[i].contingent_type.toLowerCase() === "open") {
       if (AllDataForm.official[i].delegation_type) {
@@ -1875,6 +1920,10 @@ $("#ToDetailCheckout").on("click", function (e) {
   $("#eventErrors").hide();
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
+
+  console.log("individu:", AllDataForm.individu);
+  console.log("official:", AllDataForm.official);
+  return false;
 
   fd.append(
     "individu",
