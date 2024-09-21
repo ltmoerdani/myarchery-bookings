@@ -37,7 +37,7 @@ class TicketController extends Controller
     $information['event'] = $event;
 
     if ($request->event_type == 'tournament' || $request->event_type == 'turnamen') {
-      $tickets = Ticket::where('event_id', $request->event_id)->inRandomOrder()->groupBy('title')->get();
+      $tickets = Ticket::where('event_id', $request->event_id)->orderBy('title', 'asc')->groupBy('title')->get(); // Untuk urutan ascending (ASC)
       foreach ($tickets as $key => $ticket) {
         if (strtolower($ticket->title) == 'official') {
           $detailTicket = Ticket::where('event_id', $request->event_id)
@@ -431,8 +431,12 @@ class TicketController extends Controller
           $ticket->f_price = empty($request->f_price) ? 0 : $request->f_price;
           $ticket->f_international_price = empty($request->f_international_price) ? 0 : $request->f_international_price;
           $ticket->ticket_available_type = 'limited';
-          $ticket->ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
-          $ticket->original_ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
+          // Hanya update original_ticket_available
+          $ticket->original_ticket_available = empty($request->original_ticket_available[$ticket_id]) ? 0 : $request->original_ticket_available[$ticket_id];
+
+          // Biarkan ticket_available (sisa tiket) tidak berubah
+          // Jadi baris di bawah ini dihapus, tidak perlu ada perubahan pada ticket_available
+          // $ticket->ticket_available = empty($request->ticket_available[$ticket_id]) ? 0 : $request->ticket_available[$ticket_id];
           $ticket->price = $price;
           $ticket->international_price = $international_price;
           $ticket->max_ticket_buy_type = $request->max_ticket_buy_type;

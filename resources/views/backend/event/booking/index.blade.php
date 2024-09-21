@@ -204,96 +204,96 @@
                                                         {{ $position == 'left' ? $symbol . ' ' : '' }}{{ $booking->price + $booking->tax }}{{ $position == 'right' ? ' ' . $symbol : '' }}
                                                     </td>
                                                     {{-- <td>
-                            @if ($booking->organizer)
-                              {{ $position == 'left' ? $symbol . ' ' : '' }}{{ $booking->price - $booking->commission }}{{ $position == 'right' ? ' ' . $symbol : '' }}
-                            @else
-                              -
-                            @endif
+                                                        @if ($booking->organizer)
+                                                        {{ $position == 'left' ? $symbol . ' ' : '' }}{{ $booking->price - $booking->commission }}{{ $position == 'right' ? ' ' . $symbol : '' }}
+                                                        @else
+                                                        -
+                                                        @endif
 
-                          </td> --}}
+                                                    </td> --}}
                                                     {{-- <td>{{ !is_null($booking->paymentMethod) ? $booking->paymentMethod : '-' }}
                                                     </td> --}}
                                                     <td>
-    @if ($booking->gatewayType == 'online')
-        @if ($booking->paymentStatus == 'pending')
-            <form class="d-inline-block paymentStatusForm"
-                action="{{ route('admin.event_booking.update_payment_status', $booking->id) }}"
-                method="post">
-                @csrf
-                <select
-                    class="form-control paymentStatusBtn form-control-sm @if ($booking->paymentStatus == 'completed') bg-success @elseif ($booking->paymentStatus == 'pending') bg-warning text-dark @elseif ($booking->paymentStatus == 'rejected') bg-danger @elseif ($booking->paymentStatus == 'expired') btn-muted @endif"
-                    name="payment_status">
-                    <option value="completed"
-                        {{ $booking->paymentStatus == 'completed' ? 'selected' : '' }}>
-                        {{ __('Completed') }}
-                    </option>
-                    <option value="pending"
-                        {{ $booking->paymentStatus == 'pending' ? 'selected' : '' }}>
-                        {{ __('Pending') }}
-                    </option>
-                    <option value="rejected"
-                        {{ $booking->paymentStatus == 'rejected' ? 'selected' : '' }}>
-                        {{ __('Rejected') }}
-                    </option>
-                    <option value="expired"
-                        {{ $booking->paymentStatus == 'expired' ? 'selected' : '' }}>
-                        {{ __('Expired') }}
-                    </option>
-                </select>
-            </form>
-        @elseif ($booking->paymentStatus == 'completed')
-            <h2 class="d-inline-block"><span
-                class="badge badge-success">{{ __('Completed') }}</span>
-            </h2>
-        @elseif ($booking->paymentStatus == 'expired')
-            <span class="badge btn-muted">{{ __('Expired') }}</span>
-        @else
-            <span class="badge badge-{{ $booking->paymentStatus == 'rejected' ? 'danger' : 'success' }}">{{ ucfirst($booking->paymentStatus) }}</span>
-        @endif
-    @elseif ($booking->gatewayType == 'offline')
-        @if ($booking->paymentStatus == 'pending')
-            <form class="d-inline-block paymentStatusForm"
-                action="{{ route('admin.event_booking.update_payment_status', $booking->id) }}"
-                method="post">
-                @csrf
-                <select
-                    class="form-control paymentStatusBtn form-control-sm @if ($booking->paymentStatus == 'completed') bg-success @elseif ($booking->paymentStatus == 'pending') bg-warning text-dark @elseif ($booking->paymentStatus == 'rejected') bg-danger @elseif ($booking->paymentStatus == 'expired') btn-muted @endif"
-                    name="payment_status">
-                    <option value="completed"
-                        {{ $booking->paymentStatus == 'completed' ? 'selected' : '' }}>
-                        {{ __('Completed') }}
-                    </option>
-                    <option value="pending"
-                        {{ $booking->paymentStatus == 'pending' ? 'selected' : '' }}>
-                        {{ __('Pending') }}
-                    </option>
-                    <option value="rejected"
-                        {{ $booking->paymentStatus == 'rejected' ? 'selected' : '' }}>
-                        {{ __('Rejected') }}
-                    </option>
-                    <option value="expired"
-                        {{ $booking->paymentStatus == 'expired' ? 'selected' : '' }}>
-                        {{ __('Expired') }}
-                    </option>
-                </select>
-            </form>
-        @elseif ($booking->paymentStatus == 'expired')
-            <span class="badge btn-muted">{{ __('Expired') }}</span>
-        @else
-            <span
-                class="badge badge-{{ $booking->paymentStatus == 'rejected' ? 'danger' : 'success' }}">{{ ucfirst($booking->paymentStatus) }}</span>
-        @endif
-    @else
-        @if ($booking->paymentStatus == 'free')
-            <span
-                class="badge badge-primary">{{ ucfirst($booking->paymentStatus) }}</span>
-        @elseif ($booking->paymentStatus == 'expired')
-            <span class="badge btn-muted">{{ __('Expired') }}</span>
-        @else
-            -
-        @endif
-    @endif
-</td>
+                                                        @if ($booking->gatewayType == 'online')
+                                                            @if ($booking->paymentStatus == 'pending')
+                                                                <form class="d-inline-block paymentStatusForm"
+                                                                    action="{{ route('admin.event_booking.update_payment_status', $booking->id) }}"
+                                                                    method="post">
+                                                                    @csrf
+                                                                    <select
+                                                                        class="form-control paymentStatusBtn form-control-sm @if ($booking->paymentStatus == 'completed') bg-success @elseif ($booking->paymentStatus == 'pending') bg-warning text-dark @elseif ($booking->paymentStatus == 'rejected') bg-danger @elseif ($booking->paymentStatus == 'expired') btn-muted @endif"
+                                                                        name="payment_status">
+                                                                        <option value="completed"
+                                                                            {{ $booking->paymentStatus == 'completed' ? 'selected' : '' }}>
+                                                                            {{ __('Completed') }}
+                                                                        </option>
+                                                                        <option value="pending"
+                                                                            {{ $booking->paymentStatus == 'pending' ? 'selected' : '' }}>
+                                                                            {{ __('Pending') }}
+                                                                        </option>
+                                                                        <option value="rejected"
+                                                                            {{ $booking->paymentStatus == 'rejected' ? 'selected' : '' }}>
+                                                                            {{ __('Rejected') }}
+                                                                        </option>
+                                                                        <option value="expired"
+                                                                            {{ $booking->paymentStatus == 'expired' ? 'selected' : '' }}>
+                                                                            {{ __('Expired') }}
+                                                                        </option>
+                                                                    </select>
+                                                                </form>
+                                                            @elseif ($booking->paymentStatus == 'completed')
+                                                                <h2 class="d-inline-block"><span
+                                                                    class="badge badge-success">{{ __('Completed') }}</span>
+                                                                </h2>
+                                                            @elseif ($booking->paymentStatus == 'expired')
+                                                                <span class="badge btn-muted">{{ __('Expired') }}</span>
+                                                            @else
+                                                                <span class="badge badge-{{ $booking->paymentStatus == 'rejected' ? 'danger' : 'success' }}">{{ ucfirst($booking->paymentStatus) }}</span>
+                                                            @endif
+                                                        @elseif ($booking->gatewayType == 'offline')
+                                                            @if ($booking->paymentStatus == 'pending')
+                                                                <form class="d-inline-block paymentStatusForm"
+                                                                    action="{{ route('admin.event_booking.update_payment_status', $booking->id) }}"
+                                                                    method="post">
+                                                                    @csrf
+                                                                    <select
+                                                                        class="form-control paymentStatusBtn form-control-sm @if ($booking->paymentStatus == 'completed') bg-success @elseif ($booking->paymentStatus == 'pending') bg-warning text-dark @elseif ($booking->paymentStatus == 'rejected') bg-danger @elseif ($booking->paymentStatus == 'expired') btn-muted @endif"
+                                                                        name="payment_status">
+                                                                        <option value="completed"
+                                                                            {{ $booking->paymentStatus == 'completed' ? 'selected' : '' }}>
+                                                                            {{ __('Completed') }}
+                                                                        </option>
+                                                                        <option value="pending"
+                                                                            {{ $booking->paymentStatus == 'pending' ? 'selected' : '' }}>
+                                                                            {{ __('Pending') }}
+                                                                        </option>
+                                                                        <option value="rejected"
+                                                                            {{ $booking->paymentStatus == 'rejected' ? 'selected' : '' }}>
+                                                                            {{ __('Rejected') }}
+                                                                        </option>
+                                                                        <option value="expired"
+                                                                            {{ $booking->paymentStatus == 'expired' ? 'selected' : '' }}>
+                                                                            {{ __('Expired') }}
+                                                                        </option>
+                                                                    </select>
+                                                                </form>
+                                                            @elseif ($booking->paymentStatus == 'expired')
+                                                                <span class="badge btn-muted">{{ __('Expired') }}</span>
+                                                            @else
+                                                                <span
+                                                                    class="badge badge-{{ $booking->paymentStatus == 'rejected' ? 'danger' : 'success' }}">{{ ucfirst($booking->paymentStatus) }}</span>
+                                                            @endif
+                                                        @else
+                                                            @if ($booking->paymentStatus == 'free')
+                                                                <span
+                                                                    class="badge badge-primary">{{ ucfirst($booking->paymentStatus) }}</span>
+                                                            @elseif ($booking->paymentStatus == 'expired')
+                                                                <span class="badge btn-muted">{{ __('Expired') }}</span>
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        @endif
+                                                    </td>
 
                                                     {{-- <td>
                                                         @if ($booking->scan_status == 1)

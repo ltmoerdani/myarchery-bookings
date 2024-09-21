@@ -681,14 +681,26 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="form-group">
-                                                                        <input type="number" min="1"
-                                                                            value="{{ $valTicket->ticket_available }}"
-                                                                            class="form-control"
-                                                                            name="ticket_available[{{ $valTicket->id }}]">
-                                                                        <span class="my-1 py-0">
-                                                                            *{{ __('If you want a category that cannot be ordered, please enter 0') }}
-                                                                        </span>
+                                                                        <label for="">{{ __('Quota') }}</label>
+                                                                        <input type="number" name="original_ticket_available[{{ $valTicket->id }}]" 
+                                                                               value="{{ $valTicket->original_ticket_available }}" class="form-control">
                                                                     </div>
+                                                                    
+                                                                    <div class="form-group">
+                                                                        <label for="">{{ __('Remaining Quota') }}</label>
+                                                                        <input type="number" value="{{ $valTicket->ticket_available }}" class="form-control" readonly>
+                                                                        <small class="form-text text-muted">
+                                                                            {{ __('This is the number of remaining quota.') }}
+                                                                        </small>
+                                                                    </div>
+                                                                    
+                                                                    <div class="form-group">
+                                                                        <label for="">{{ __('Quota Used') }}</label>
+                                                                        <input type="number" value="{{ $valTicket->ticket_occupied }}" class="form-control" readonly>
+                                                                        <small class="form-text text-muted">
+                                                                            {{ __('This is the number of quota that have been used.') }}
+                                                                        </small>
+                                                                    </div>                                                                                                                                
                                                                 </td>
                                                             </tr>
                                                         @endforeach
