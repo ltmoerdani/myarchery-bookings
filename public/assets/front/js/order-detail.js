@@ -247,6 +247,24 @@ const createS2CityDelegation = (
     ["name"],
     function (e) {
       if (e.params.data.id) {
+        let delegationCityName = null;
+
+        if (e.params.data.name) {
+          delegationCityName = e.params.data.name;
+        }
+
+        if (e.params.data.text) {
+          delegationCityName = e.params.data.text;
+        }
+
+        if (e.params.data.city) {
+          delegationCityName = e.params.data.city;
+        }
+
+        if (e.params.data.city_name) {
+          delegationCityName = e.params.data.city_name;
+        }
+
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].city_delegation = e.params.data.id;
@@ -309,12 +327,30 @@ const createS2ProvinceDelegation = (
     ["name"],
     function (e) {
       if (e.params.data.id) {
+        let delegationProvinceName = null;
+
+        if (e.params.data.name) {
+          delegationProvinceName = e.params.data.name;
+        }
+
+        if (e.params.data.text) {
+          delegationProvinceName = e.params.data.text;
+        }
+
+        if (e.params.data.province) {
+          delegationProvinceName = e.params.data.province;
+        }
+
+        if (e.params.data.province_name) {
+          delegationProvinceName = e.params.data.province_name;
+        }
+
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].province_delegation = e.params.data.id;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
-        ].province_delegation_name = e.params.data.name;
+        ].province_delegation_name = delegationProvinceName;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].city_delegation = null;
@@ -402,9 +438,27 @@ const createS2CountryDelegation = (
     ["name"],
     function (e) {
       if (e.params.data.id) {
+        let delegationCountryName = null;
+
+        if (e.params.data.name) {
+          delegationCountryName = e.params.data.name;
+        }
+
+        if (e.params.data.text) {
+          delegationCountryName = e.params.data.text;
+        }
+
+        if (e.params.data.country) {
+          delegationCountryName = e.params.data.country;
+        }
+
+        if (e.params.data.country_name) {
+          delegationCountryName = e.params.data.country_name;
+        }
+
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
-        ].country_delegation_name = e.params.data.name;
+        ].country_delegation_name = delegationCountryName;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].country_delegation = e.params.data.id;
@@ -765,8 +819,19 @@ const createS2ListCity = (
     ["name"],
     function (e) {
       if (e.params.data.id) {
-        AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city =
-          e.params.data.text;
+        let cityName = null;
+
+        if (e.params.data.name) {
+          cityName = e.params.data.name;
+        }
+
+        if (e.params.data.text) {
+          cityName = e.params.data.text;
+        }
+
+        AllDataForm[e.target.dataset.contentfor][
+          e.target.dataset.idx
+        ].city_name = cityName;
         AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].city_id =
           e.params.data.id;
       }
@@ -797,17 +862,30 @@ const createS2ListCountry = (contentId, defaultValue = "") => {
     countryProfileDefaultOption,
     ["name"],
     function (e) {
-      console.log("Ecountry:", e);
       $(`#profile_city_${e.target.dataset.contentfor}${e.target.dataset.idx}`)
         .empty()
         .trigger("change");
 
       if (e.params.data.id) {
+        let countryName = null;
+
+        if (e.params.data.name) {
+          countryName = e.params.data.name;
+        }
+
+        if (e.params.data.text) {
+          countryName = e.params.data.text;
+        }
+
+        if (e.params.data.country) {
+          countryName = e.params.data.country;
+        }
+
         AllDataForm[e.target.dataset.contentfor][e.target.dataset.idx].country =
-          e.params.data.text;
+          countryName;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
-        ].country_name = e.params.data.text;
+        ].country_name = countryName;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
         ].county_id = e.params.data.id;
@@ -933,7 +1011,7 @@ const generateSummaryTickets = () => {
 };
 
 const handlerBack = (slug, event_id) => {
-  AllDataForm.appData.location.replace(`${base_url}/event/${slug}/${event_id}`);
+  window.location.replace(`${base_url}/event/${slug}/${event_id}`);
 };
 
 // Individu Schema
@@ -967,13 +1045,6 @@ const handlerMapSelect2Individu = (data) => {
           if (e.params.data.id) {
             AllDataForm.individu[e.target.dataset.idx].user_id =
               e.params.data.id;
-
-            $(`#profile_country_individu${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-            $(`#profile_city_individu${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
           }
 
           if (e.params.data.text) {
@@ -981,14 +1052,10 @@ const handlerMapSelect2Individu = (data) => {
               e.params.data.text;
           }
 
-          // if (e.params.data.country) {
-          //   AllDataForm.individu[e.target.dataset.idx].country =
-          //     e.params.data.country;
-          //   AllDataForm.individu[e.target.dataset.idx].country_name =
-          //     e.params.data.country;
-          // }
-
           if (e.params.data.county_id) {
+            $(`#profile_country_individu${e.target.dataset.idx}`)
+              .empty()
+              .trigger("change");
             AllDataForm.individu[e.target.dataset.idx].county_id =
               e.params.data.county_id;
             AllDataForm.individu[e.target.dataset.idx].country =
@@ -1005,25 +1072,12 @@ const handlerMapSelect2Individu = (data) => {
                   }
                 : ""
             );
-
-            // $(`#profile_country_individu${e.target.dataset.idx}`).select2(
-            //   "trigger",
-            //   "select",
-            //   {
-            //     data: {
-            //       id: e.params.data.county_id,
-            //       text: e.params.data.country,
-            //     },
-            //   }
-            // );
           }
 
-          // if (e.params.data.city) {
-          //   AllDataForm.individu[e.target.dataset.idx].city =
-          //     e.params.data.city;
-          // }
-
           if (e.params.data.city_id) {
+            $(`#profile_city_individu${e.target.dataset.idx}`)
+              .empty()
+              .trigger("change");
             AllDataForm.individu[e.target.dataset.idx].city_id =
               e.params.data.city_id;
             AllDataForm.individu[e.target.dataset.idx].city =
@@ -1100,7 +1154,7 @@ const handlerMapSelect2Individu = (data) => {
         AllDataForm.individu[i].city_id
           ? {
               id: AllDataForm.individu[i].city_id,
-              text: AllDataForm.individu[i].city,
+              text: AllDataForm.individu[i].city_name,
             }
           : "",
         !AllDataForm.individu[i]?.county_id
@@ -1139,7 +1193,16 @@ const handlerMapSelect2Individu = (data) => {
     if (AllDataForm.individu[i].contingent_type.toLowerCase() !== "open") {
       switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
         case "country":
-          createS2CountryDelegation(i, "individu");
+          createS2CountryDelegation(
+            i,
+            "individu",
+            AllDataForm.individu[i].country_delegation
+              ? {
+                  id: AllDataForm.individu[i].country_delegation,
+                  text: AllDataForm.individu[i].country_delegation_name,
+                }
+              : ""
+          );
           break;
         case "province":
           createS2ProvinceDelegation(
@@ -1449,7 +1512,6 @@ const handlerMapSelect2Official = (data) => {
         fullNamePlaceholder,
         ["text"],
         function (e) {
-          console.log("e:", e);
           let gender = "M";
 
           if (e?.params?.data?.gender) {
@@ -1471,13 +1533,6 @@ const handlerMapSelect2Official = (data) => {
           if (e.params.data.id) {
             AllDataForm.official[e.target.dataset.idx].user_id =
               e.params.data.id;
-
-            $(`#profile_country_official${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
-            $(`#profile_city_official${e.target.dataset.idx}`)
-              .empty()
-              .trigger("change");
           }
 
           if (e.params.data.text) {
@@ -1485,14 +1540,10 @@ const handlerMapSelect2Official = (data) => {
               e.params.data.text;
           }
 
-          // if (e.params.data.country) {
-          //   AllDataForm.official[e.target.dataset.idx].country =
-          //     e.params.data.country;
-          //   AllDataForm.official[e.target.dataset.idx].country_name =
-          //     e.params.data.country;
-          // }
-
           if (e.params.data.county_id) {
+            $(`#profile_country_official${e.target.dataset.idx}`)
+              .empty()
+              .trigger("change");
             AllDataForm.official[e.target.dataset.idx].county_id =
               e.params.data.county_id;
 
@@ -1513,15 +1564,13 @@ const handlerMapSelect2Official = (data) => {
             );
           }
 
-          // if (e.params.data.city) {
-          //   AllDataForm.official[e.target.dataset.idx].city =
-          //     e.params.data.city;
-          // }
-
           if (e.params.data.city_id) {
+            $(`#profile_city_official${e.target.dataset.idx}`)
+              .empty()
+              .trigger("change");
             AllDataForm.official[e.target.dataset.idx].city_id =
               e.params.data.city_id;
-            AllDataForm.official[e.target.dataset.idx].city =
+            AllDataForm.official[e.target.dataset.idx].city_name =
               e.params.data.city;
 
             createS2ListCity(
@@ -1577,8 +1626,6 @@ const handlerMapSelect2Official = (data) => {
       });
     }
 
-    console.log("AllDataForm.official[i]:", AllDataForm.official[i]);
-
     if ($(`#profile_country_official${i}`)) {
       createS2ListCountry(
         `#profile_country_official${i}`,
@@ -1597,7 +1644,7 @@ const handlerMapSelect2Official = (data) => {
         AllDataForm.official[i].city_id
           ? {
               id: AllDataForm.official[i].city_id,
-              text: AllDataForm.official[i].city,
+              text: AllDataForm.official[i].city_name,
             }
           : "",
         !AllDataForm.official[i]?.county_id
@@ -1640,10 +1687,10 @@ const handlerMapSelect2Official = (data) => {
           createS2CountryDelegation(
             i,
             "official",
-            AllDataForm.individu[i].country_delegation
+            AllDataForm.official[i].country_delegation
               ? {
-                  id: AllDataForm.individu[i].country_delegation,
-                  text: AllDataForm.individu[i].country_delegation_name,
+                  id: AllDataForm.official[i].country_delegation,
+                  text: AllDataForm.official[i].country_delegation_name,
                 }
               : ""
           );
@@ -1652,10 +1699,10 @@ const handlerMapSelect2Official = (data) => {
           createS2ProvinceDelegation(
             "official",
             i,
-            AllDataForm.individu[i].province_delegation
+            AllDataForm.official[i].province_delegation
               ? {
-                  id: AllDataForm.individu[i].province_delegation,
-                  text: AllDataForm.individu[i].province_delegation_name,
+                  id: AllDataForm.official[i].province_delegation,
+                  text: AllDataForm.official[i].province_delegation_name,
                 }
               : "",
             AllDataForm.official[i].country_delegation
@@ -1665,10 +1712,10 @@ const handlerMapSelect2Official = (data) => {
           createS2CityDelegation(
             "official",
             i,
-            AllDataForm.individu[i].city_delegation
+            AllDataForm.official[i].city_delegation
               ? {
-                  id: AllDataForm.individu[i].city_delegation,
-                  text: AllDataForm.individu[i].city_delegation_name,
+                  id: AllDataForm.official[i].city_delegation,
+                  text: AllDataForm.official[i].city_delegation_name,
                 }
               : "",
             AllDataForm.official[i].country_delegation,
@@ -1676,13 +1723,40 @@ const handlerMapSelect2Official = (data) => {
           );
           break;
         case "school/universities":
-          createS2SchoolUniversityDelegation(i, "official");
+          createS2SchoolUniversityDelegation(
+            i,
+            "official",
+            AllDataForm.official[i].school_id
+              ? {
+                  id: AllDataForm.official[i].school_id,
+                  text: AllDataForm.official[i].school_name,
+                }
+              : ""
+          );
           break;
         case "organization":
-          createS2OrganizationDelegation(i, "official");
+          createS2OrganizationDelegation(
+            i,
+            "official",
+            AllDataForm.official[i].organization_id
+              ? {
+                  id: AllDataForm.official[i].organization_id,
+                  text: AllDataForm.official[i].organization_name,
+                }
+              : ""
+          );
           break;
         default:
-          createS2ClubDelegation(i, "official");
+          createS2ClubDelegation(
+            i,
+            "official",
+            AllDataForm.official[i].organization_id
+              ? {
+                  id: AllDataForm.official[i].organization_id,
+                  text: AllDataForm.official[i].organization_name,
+                }
+              : ""
+          );
           break;
       }
     }
@@ -1691,26 +1765,71 @@ const handlerMapSelect2Official = (data) => {
       if (AllDataForm.official[i].delegation_type) {
         switch (AllDataForm.official[i].delegation_type.toLowerCase()) {
           case "country":
-            createS2CountryDelegation(i, "official");
+            createS2CountryDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].country_delegation
+                ? {
+                    id: AllDataForm.official[i].country_delegation,
+                    text: AllDataForm.official[i].country_delegation_name,
+                  }
+                : ""
+            );
             break;
           case "province":
+            createS2CountryDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].country_delegation
+                ? {
+                    id: AllDataForm.official[i].country_delegation,
+                    text: AllDataForm.official[i].country_delegation_name,
+                  }
+                : ""
+            );
             createS2ProvinceDelegation(
               "official",
               i,
-              AllDataForm.official[i].school_id
+              AllDataForm.official[i].province_delegation
                 ? {
-                    id: AllDataForm.official[i].school_id,
-                    text: AllDataForm.official[i].school_name,
+                    id: AllDataForm.official[i].province_delegation,
+                    text: AllDataForm.official[i].province_delegation_name,
                   }
                 : "",
               AllDataForm.official[i].country_delegation
             );
             break;
           case "city/district":
+            createS2CountryDelegation(
+              i,
+              "official",
+              AllDataForm.official[i].country_delegation
+                ? {
+                    id: AllDataForm.official[i].country_delegation,
+                    text: AllDataForm.official[i].country_delegation_name,
+                  }
+                : ""
+            );
+            createS2ProvinceDelegation(
+              "official",
+              i,
+              AllDataForm.official[i].province_delegation
+                ? {
+                    id: AllDataForm.official[i].province_delegation,
+                    text: AllDataForm.official[i].province_delegation_name,
+                  }
+                : "",
+              AllDataForm.official[i].country_delegation
+            );
             createS2CityDelegation(
               "official",
               i,
-              "",
+              AllDataForm.official[i].city_delegation
+                ? {
+                    id: AllDataForm.official[i].city_delegation,
+                    text: AllDataForm.official[i].city_delegation_name,
+                  }
+                : "",
               AllDataForm.official[i].country_delegation,
               AllDataForm.official[i].province_delegation
             );
@@ -1920,10 +2039,9 @@ $("#ToDetailCheckout").on("click", function (e) {
   $("#eventErrors").hide();
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
-
-  console.log("individu:", AllDataForm.individu);
-  console.log("official:", AllDataForm.official);
-  return false;
+  console.log("AllDataForm.individu:", AllDataForm.individu);
+  console.log("AllDataForm.official:", AllDataForm.official);
+  // return false;
 
   fd.append(
     "individu",

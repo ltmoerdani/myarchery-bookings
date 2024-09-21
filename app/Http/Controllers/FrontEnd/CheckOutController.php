@@ -1604,19 +1604,19 @@ class CheckOutController extends Controller
               "early_bird_discount_end_time" => $info_ticket->early_bird_discount_end_time,
 
               // ticket late price
-              "late_price_discount" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_amount" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_amount_international" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_international_type" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_international_date" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_international_time" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_international_end_date" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_international_end_time" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_type" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_date" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_time" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_end_date" => $info_ticket->early_bird_discount_end_time,
-              "late_price_discount_end_time" => $info_ticket->early_bird_discount_end_time,
+              "late_price_discount" => $info_ticket->late_price_discount,
+              "late_price_discount_amount" => $info_ticket->late_price_discount_amount,
+              "late_price_discount_amount_international" => $info_ticket->late_price_discount_amount_international,
+              "late_price_discount_international_type" => $info_ticket->late_price_discount_international_type,
+              "late_price_discount_international_date" => $info_ticket->late_price_discount_international_date,
+              "late_price_discount_international_time" => $info_ticket->late_price_discount_international_time,
+              "late_price_discount_international_end_date" => $info_ticket->late_price_discount_international_end_date,
+              "late_price_discount_international_end_time" => $info_ticket->late_price_discount_international_end_time,
+              "late_price_discount_type" => $info_ticket->late_price_discount_type,
+              "late_price_discount_date" => $info_ticket->late_price_discount_date,
+              "late_price_discount_time" => $info_ticket->late_price_discount_time,
+              "late_price_discount_end_date" => $info_ticket->late_price_discount_end_date,
+              "late_price_discount_end_time" => $info_ticket->late_price_discount_end_time,
             ];
           }
         }
@@ -2100,7 +2100,7 @@ class CheckOutController extends Controller
 
               if (empty($checkDelegationOfficial)) {
                 $newOrganization = Organization::create([
-                  'name'     => $officialDT->school_name,
+                  'name'     => $officialDT->organization_name,
                 ]);
 
                 $official_newest[$keyOfficial]->organization_id = $newOrganization->id;
