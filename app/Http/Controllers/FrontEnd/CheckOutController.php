@@ -2264,5 +2264,30 @@ class CheckOutController extends Controller
       200
     );
   }
+
+  public function DetailOrderEventTournament(Request $request)
+  {
+    //check customer logged in or not ?
+    if (Auth::guard('customer')->check() == false) {
+      return redirect()->route('customer.login', ['redirectPath' => 'event_checkout']);
+    }
+
+    $event = Session::get('event_' . $request->checkoutID);
+
+    if (empty($event)) {
+      return redirect()->route('events')->with(['alert-type' => 'error', 'message' => 'Not Found Checkout ID']);
+    }
+
+    $delegation_event = Session::get('delegation_event_' . $request->checkoutID);
+    $category_tickets = Session::get('category_tickets_' . $request->checkoutID);
+    $ticket_detail_individu_order = Session::get('ticket_detail_individu_order_' . $request->checkoutID);
+    $ticket_detail_official_order = Session::get('ticket_detail_official_order_' . $request->checkoutID);
+    $ticket_detail_team_order = Session::get('ticket_detail_team_order' . $request->checkoutID);
+    $ticket_detail_mix_team_order = Session::get('ticket_detail_mix_team_order' . $request->checkoutID);
+    $from_info_event = Session::get('from_info_event_' . $request->checkoutID);
+    $organizer = Session::get('organizer_' . $request->checkoutID);
+
+    dd($delegation_event, $from_info_event, $organizer, $category_tickets, $ticket_detail_individu_order, $ticket_detail_official_order, $ticket_detail_team_order, $ticket_detail_mix_team_order);
+  }
   // end checkout tournament
 }

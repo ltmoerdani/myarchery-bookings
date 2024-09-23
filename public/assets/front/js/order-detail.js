@@ -77,122 +77,226 @@ const createS2TicketsDelegation = (
             `${alertOverOrderQuotaTicket} ${e.params.data.title}`
           );
         } else {
-          AllDataForm[contentFor][e.target.dataset.idx].ticket_id =
-            e.params.data.id;
-          AllDataForm[contentFor][e.target.dataset.idx].ticket_name =
-            e.params.data.category_name;
-          AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket_id =
-            e.params.data.sub_category_id;
-          AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket =
-            e.params.data.title;
-          AllDataForm[contentFor][e.target.dataset.idx].price_scheme =
-            e.params.data.price_scheme;
-          AllDataForm[contentFor][e.target.dataset.idx].price =
-            e.params.data.price;
-          AllDataForm[contentFor][e.target.dataset.idx].f_price =
-            e.params.data.f_price;
-          AllDataForm[contentFor][e.target.dataset.idx].international_price =
-            e.params.data.international_price;
-          AllDataForm[contentFor][e.target.dataset.idx].f_international_price =
-            e.params.data.f_international_price;
+          if (e.params.data.id) {
+            AllDataForm[contentFor][e.target.dataset.idx].ticket_id =
+              e.params.data.id;
+          }
+
+          if (e.params.data.category_name) {
+            AllDataForm[contentFor][e.target.dataset.idx].ticket_name =
+              e.params.data.category_name;
+          }
+
+          if (e.params.data.sub_category_id) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].sub_category_ticket_id = e.params.data.sub_category_id;
+          }
+
+          if (e.params.data.title) {
+            AllDataForm[contentFor][e.target.dataset.idx].sub_category_ticket =
+              e.params.data.title;
+          }
+
+          if (e.params.data.price_scheme) {
+            AllDataForm[contentFor][e.target.dataset.idx].price_scheme =
+              e.params.data.price_scheme;
+          }
+
+          if (e.params.data.price) {
+            AllDataForm[contentFor][e.target.dataset.idx].price =
+              e.params.data.price;
+          }
+
+          if (e.params.data.f_price) {
+            AllDataForm[contentFor][e.target.dataset.idx].f_price =
+              e.params.data.f_price;
+          }
+
+          if (e.params.data.international_price) {
+            AllDataForm[contentFor][e.target.dataset.idx].international_price =
+              e.params.data.international_price;
+          }
+
+          if (e.params.data.f_international_price) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].f_international_price = e.params.data.f_international_price;
+          }
 
           // early bird
-          AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount =
-            e.params.data.early_bird_discount;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_amount =
-            e.params.data.early_bird_discount_amount;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_amount_international =
-            e.params.data.early_bird_discount_amount_international;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_international_type =
-            e.params.data.early_bird_discount_international_type;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_international_date =
-            e.params.data.early_bird_discount_international_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_international_time =
-            e.params.data.early_bird_discount_international_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_international_end_date =
-            e.params.data.early_bird_discount_international_end_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_international_end_time =
-            e.params.data.early_bird_discount_international_end_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_type = e.params.data.early_bird_discount_type;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_date = e.params.data.early_bird_discount_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_time = e.params.data.early_bird_discount_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_end_date =
-            e.params.data.early_bird_discount_end_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].early_bird_discount_end_time =
-            e.params.data.early_bird_discount_end_time;
+          if (e.params.data.early_bird_discount) {
+            AllDataForm[contentFor][e.target.dataset.idx].early_bird_discount =
+              e.params.data.early_bird_discount;
+          }
+
+          if (e.params.data.early_bird_discount_amount) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_amount =
+              e.params.data.early_bird_discount_amount;
+          }
+
+          if (e.params.data.early_bird_discount_amount_international) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_amount_international =
+              e.params.data.early_bird_discount_amount_international;
+          }
+
+          if (e.params.data.early_bird_discount_international_type) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_international_type =
+              e.params.data.early_bird_discount_international_type;
+          }
+
+          if (e.params.data.early_bird_discount_international_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_international_date =
+              e.params.data.early_bird_discount_international_date;
+          }
+
+          if (e.params.data.early_bird_discount_international_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_international_time =
+              e.params.data.early_bird_discount_international_time;
+          }
+
+          if (e.params.data.early_bird_discount_international_end_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_international_end_date =
+              e.params.data.early_bird_discount_international_end_date;
+          }
+
+          if (e.params.data.early_bird_discount_international_end_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_international_end_time =
+              e.params.data.early_bird_discount_international_end_time;
+          }
+
+          if (e.params.data.early_bird_discount_type) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_type = e.params.data.early_bird_discount_type;
+          }
+
+          if (e.params.data.early_bird_discount_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_date = e.params.data.early_bird_discount_date;
+          }
+
+          if (e.params.data.early_bird_discount_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_time = e.params.data.early_bird_discount_time;
+          }
+
+          if (e.params.data.early_bird_discount_end_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_end_date =
+              e.params.data.early_bird_discount_end_date;
+          }
+
+          if (e.params.data.early_bird_discount_end_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].early_bird_discount_end_time =
+              e.params.data.early_bird_discount_end_time;
+          }
 
           // late price
-          AllDataForm[contentFor][e.target.dataset.idx].late_price_discount =
-            e.params.data.late_price_discount;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_amount =
-            e.params.data.late_price_discount_amount;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_amount_international =
-            e.params.data.late_price_discount_amount_international;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_international_type =
-            e.params.data.late_price_discount_international_type;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_international_date =
-            e.params.data.late_price_discount_international_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_international_time =
-            e.params.data.late_price_discount_international_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_international_end_date =
-            e.params.data.late_price_discount_international_end_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_international_end_time =
-            e.params.data.late_price_discount_international_end_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_type = e.params.data.late_price_discount_type;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_date = e.params.data.late_price_discount_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_time = e.params.data.late_price_discount_time;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_end_date =
-            e.params.data.late_price_discount_end_date;
-          AllDataForm[contentFor][
-            e.target.dataset.idx
-          ].late_price_discount_end_time =
-            e.params.data.late_price_discount_end_time;
+          if (e.params.data.late_price_discount) {
+            AllDataForm[contentFor][e.target.dataset.idx].late_price_discount =
+              e.params.data.late_price_discount;
+          }
+
+          if (e.params.data.late_price_discount_amount) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_amount =
+              e.params.data.late_price_discount_amount;
+          }
+
+          if (e.params.data.late_price_discount_amount_international) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_amount_international =
+              e.params.data.late_price_discount_amount_international;
+          }
+
+          if (e.params.data.late_price_discount_international_type) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_international_type =
+              e.params.data.late_price_discount_international_type;
+          }
+
+          if (e.params.data.late_price_discount_international_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_international_date =
+              e.params.data.late_price_discount_international_date;
+          }
+
+          if (e.params.data.late_price_discount_international_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_international_time =
+              e.params.data.late_price_discount_international_time;
+          }
+
+          if (e.params.data.late_price_discount_international_end_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_international_end_date =
+              e.params.data.late_price_discount_international_end_date;
+          }
+
+          if (e.params.data.late_price_discount_international_end_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_international_end_time =
+              e.params.data.late_price_discount_international_end_time;
+          }
+
+          if (e.params.data.late_price_discount_type) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_type = e.params.data.late_price_discount_type;
+          }
+
+          if (e.params.data.late_price_discount_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_date = e.params.data.late_price_discount_date;
+          }
+
+          if (e.params.data.late_price_discount_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_time = e.params.data.late_price_discount_time;
+          }
+
+          if (e.params.data.late_price_discount_end_date) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_end_date =
+              e.params.data.late_price_discount_end_date;
+          }
+
+          if (e.params.data.late_price_discount_end_time) {
+            AllDataForm[contentFor][
+              e.target.dataset.idx
+            ].late_price_discount_end_time =
+              e.params.data.late_price_discount_end_time;
+          }
         }
       }
     },
@@ -1264,21 +1368,71 @@ const handlerMapSelect2Individu = (data) => {
       if (AllDataForm.individu[i].delegation_type) {
         switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
           case "country":
-            createS2CountryDelegation(i, "individu");
+            createS2CountryDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].country_delegation
+                ? {
+                    id: AllDataForm.individu[i].country_delegation,
+                    text: AllDataForm.individu[i].country_delegation_name,
+                  }
+                : ""
+            );
             break;
           case "province":
+            createS2CountryDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].country_delegation
+                ? {
+                    id: AllDataForm.individu[i].country_delegation,
+                    text: AllDataForm.individu[i].country_delegation_name,
+                  }
+                : ""
+            );
             createS2ProvinceDelegation(
               "individu",
               i,
-              "",
+              AllDataForm.individu[i].province_delegation
+                ? {
+                    id: AllDataForm.individu[i].province_delegation,
+                    text: AllDataForm.individu[i].province_delegation_name,
+                  }
+                : "",
               AllDataForm.individu[i].country_delegation
             );
             break;
           case "city/district":
+            createS2CountryDelegation(
+              i,
+              "individu",
+              AllDataForm.individu[i].country_delegation
+                ? {
+                    id: AllDataForm.individu[i].country_delegation,
+                    text: AllDataForm.individu[i].country_delegation_name,
+                  }
+                : ""
+            );
+            createS2ProvinceDelegation(
+              "individu",
+              i,
+              AllDataForm.individu[i].province_delegation
+                ? {
+                    id: AllDataForm.individu[i].province_delegation,
+                    text: AllDataForm.individu[i].province_delegation_name,
+                  }
+                : "",
+              AllDataForm.individu[i].country_delegation
+            );
             createS2CityDelegation(
               "individu",
               i,
-              "",
+              AllDataForm.individu[i].city_delegation
+                ? {
+                    id: AllDataForm.individu[i].city_delegation,
+                    text: AllDataForm.individu[i].city_delegation_name,
+                  }
+                : "",
               AllDataForm.individu[i].country_delegation,
               AllDataForm.individu[i].province_delegation
             );
@@ -2033,14 +2187,16 @@ const generateViewOfficial = () => {
 };
 
 $("#ToDetailCheckout").on("click", function (e) {
-  // $(e.target).attr("disabled", true);
-  // $(".request-loader").addClass("show");
+  $(e.target).attr("disabled", true);
+  $(".request-loader").addClass("show");
+
   $("#eventErrors ul").empty();
   $("#eventErrors").hide();
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
-  console.log("AllDataForm.individu:", AllDataForm.individu);
-  console.log("AllDataForm.official:", AllDataForm.official);
+
+  // console.log("AllDataForm.individu:", AllDataForm.individu);
+  // console.log("AllDataForm.official:", AllDataForm.official);
   // return false;
 
   fd.append(
@@ -2072,7 +2228,9 @@ $("#ToDetailCheckout").on("click", function (e) {
     contentType: false,
     processData: false,
     success: function (response) {
-      console.log("response:", response);
+      if (response.status == "success") {
+        location.replace(`${url_detail_order}?checkoutID=${checkoutID}`);
+      }
     },
     statusCode: {
       419: function (response) {
@@ -2098,7 +2256,6 @@ $("#ToDetailCheckout").on("click", function (e) {
         },
         1000
       );
-      console.log("error:", error.responseJSON.errors);
     },
   });
 });

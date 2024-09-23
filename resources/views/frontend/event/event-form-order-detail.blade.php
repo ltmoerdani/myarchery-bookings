@@ -252,6 +252,7 @@
 @section('custom-script')
     <script>
         const base_url = "{{ url('/') }}";
+        const url_detail_order = "{{ route('detail_order_event_tournament') }}";
         const checkoutID = "{{ $checkoutID }}";
         const titleIndividuAccordion = "{{ __('Collapse Name Form Individu Category') }}";
         const titleTeamAccordion = "{{ __('Collapse Name Form Team Category') }}";

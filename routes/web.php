@@ -211,6 +211,7 @@ Route::middleware('change.lang')->group(function () {
   Route::get('/process-form-order-tournament', 'FrontEnd\CheckOutController@formOrderView')->name('processing_to_form_order_tournament');
   Route::get('/get-data-form-order-tournament', 'FrontEnd\CheckOutController@getDataFormOrderTournament')->name('get_data_form_order_tournament');
   Route::post('/process-to-detail-checkout-tournament', 'FrontEnd\CheckOutController@storeCheckoutEventTournament')->name('process_to_detail_coheckout_tournament');
+  Route::get('/detail-order-checkout-tournament', 'FrontEnd\CheckOutController@DetailOrderEventTournament')->name('detail_order_event_tournament');
 
   Route::post('/check-out2', 'FrontEnd\CheckOutController@checkout2')->name('check-out2');
   Route::get('/checkout', 'FrontEnd\CheckOutController@checkout')->name('check-out');
