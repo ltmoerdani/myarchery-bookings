@@ -1754,61 +1754,61 @@ class CheckOutController extends Controller
           }
         }
 
-        if ($individuDT->contingent_type == 'open') {
-          if (empty($individuDT->delegation_type)) {
-            $errResponseMessage['errors']['message'][] = 'Delegation Type in detail individu ' . $keyIDT + 1 . ' is required!';
-          } else {
-            if (strtolower($individuDT->delegation_type) == 'country') {
-              if (empty($individuDT->country_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
+        // if ($individuDT->contingent_type == 'open') {
+        //   if (empty($individuDT->delegation_type)) {
+        //     $errResponseMessage['errors']['message'][] = 'Delegation Type in detail individu ' . $keyIDT + 1 . ' is required!';
+        //   } else {
+        //     if (strtolower($individuDT->delegation_type) == 'country') {
+        //       if (empty($individuDT->country_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
 
-            if (strtolower($individuDT->delegation_type) == 'province' || strtolower($individuDT->delegation_type) == 'state') {
-              if (empty($individuDT->country_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-
-
-              if (empty($individuDT->province_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
-
-            if (strtolower($individuDT->delegation_type) == 'city/district') {
-              if (empty($individuDT->country_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
+        //     if (strtolower($individuDT->delegation_type) == 'province' || strtolower($individuDT->delegation_type) == 'state') {
+        //       if (empty($individuDT->country_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
 
 
-              if (empty($individuDT->province_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
+        //       if (empty($individuDT->province_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
 
-              if (empty($individuDT->city_delegation)) {
-                $errResponseMessage['errors']['message'][] = 'This City or District name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
+        //     if (strtolower($individuDT->delegation_type) == 'city/district') {
+        //       if (empty($individuDT->country_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This country name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
 
-            if (strtolower($individuDT->delegation_type) == 'organization') {
-              if (empty($individuDT->organization_name)) {
-                $errResponseMessage['errors']['message'][] = 'This Organization name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
 
-            if (strtolower($individuDT->delegation_type) == 'school/universities') {
-              if (empty($individuDT->school_name)) {
-                $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
+        //       if (empty($individuDT->province_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This province name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
 
-            if (strtolower($individuDT->delegation_type) == 'club') {
-              if (empty($individuDT->club_name)) {
-                $errResponseMessage['errors']['message'][] = 'This Club name in detail individu ' . $keyIDT + 1 . ' is required!';
-              }
-            }
-          }
-        }
+        //       if (empty($individuDT->city_delegation)) {
+        //         $errResponseMessage['errors']['message'][] = 'This City or District name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
+
+        //     if (strtolower($individuDT->delegation_type) == 'organization') {
+        //       if (empty($individuDT->organization_name)) {
+        //         $errResponseMessage['errors']['message'][] = 'This Organization name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
+
+        //     if (strtolower($individuDT->delegation_type) == 'school/universities') {
+        //       if (empty($individuDT->school_name)) {
+        //         $errResponseMessage['errors']['message'][] = 'This School/Universities name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
+
+        //     if (strtolower($individuDT->delegation_type) == 'club') {
+        //       if (empty($individuDT->club_name)) {
+        //         $errResponseMessage['errors']['message'][] = 'This Club name in detail individu ' . $keyIDT + 1 . ' is required!';
+        //       }
+        //     }
+        //   }
+        // }
 
         if ($individuDT->contingent_type != 'open') {
           if (strtolower($individuDT->delegation_type) == 'country') {
@@ -2096,7 +2096,7 @@ class CheckOutController extends Controller
             break;
           case 'organization':
             if (!empty($officialDT->organization_name)) {
-              $checkDelegationOfficial = Organization::where('id', $officialDT->organization_name)->first();
+              $checkDelegationOfficial = Organization::where('name', $officialDT->organization_name)->first();
 
               if (empty($checkDelegationOfficial)) {
                 $newOrganization = Organization::create([
@@ -2132,7 +2132,7 @@ class CheckOutController extends Controller
             }
           case 'club':
             if (!empty($officialDT->club_name)) {
-              $checkDelegationOfficial = Clubs::where('id', $officialDT->club_name)->first();
+              $checkDelegationOfficial = Clubs::where('name', $officialDT->club_name)->first();
 
               if (empty($checkDelegationOfficial)) {
                 $newClub = Clubs::create([
@@ -2274,9 +2274,18 @@ class CheckOutController extends Controller
 
     $event = Session::get('event_' . $request->checkoutID);
 
+    $online_gateways = OnlineGateway::where('status', 1)->get();
+    $offline_gateways = OfflineGateway::where('status', 1)->orderBy('serial_number', 'asc')->get();
+    $language = $this->getLanguage();
+    $language_id = $language->id;
+
     if (empty($event)) {
       return redirect()->route('events')->with(['alert-type' => 'error', 'message' => 'Not Found Checkout ID']);
     }
+
+    $basic = Basic::select('event_guest_checkout_status', 'percent_handling_fee')->first();
+    $event_guest_checkout_status = $basic->event_guest_checkout_status;
+    $percent_handling_fee = $basic->percent_handling_fee;
 
     $delegation_event = Session::get('delegation_event_' . $request->checkoutID);
     $category_tickets = Session::get('category_tickets_' . $request->checkoutID);
@@ -2287,7 +2296,37 @@ class CheckOutController extends Controller
     $from_info_event = Session::get('from_info_event_' . $request->checkoutID);
     $organizer = Session::get('organizer_' . $request->checkoutID);
 
-    dd($delegation_event, $from_info_event, $organizer, $category_tickets, $ticket_detail_individu_order, $ticket_detail_official_order, $ticket_detail_team_order, $ticket_detail_mix_team_order);
+    $information['online_gateways'] = Session::get('online_gateways');
+    $information['offline_gateways'] = Session::get('offline_gateways');
+
+    $orders[] = [
+      // "title" => $v,
+      "title" => 'order_ticket' . time(),
+      "category" => 'individu',
+      "ticket_detail_individu_order" => $ticket_detail_individu_order,
+      "ticket_detail_official_order" => $ticket_detail_official_order,
+      "ticket_detail_team_order" => $ticket_detail_team_order,
+      "ticket_detail_mix_team_order" => $ticket_detail_mix_team_order,
+    ];
+
+    $information['event'] = Event::leftJoin('event_contents', 'event_contents.event_id', '=', 'events.id')
+      ->where('events.id', $from_info_event['event_id'])
+      ->where('event_contents.language_id', $language_id)
+      ->first();
+    $information['customer'] = Auth::guard('customer')->user();
+    $information['organizer'] = $organizer;
+    $information['online_gateways'] = Session::get('online_gateways');
+    $information['offline_gateways'] = Session::get('offline_gateways');
+    // $information['ticket_infos'] = $category_ticket;
+    $information['orders'] = $orders;
+    $information['ppn_value'] = $percent_handling_fee;
+    $information['language_id'] = $language_id;
+
+    // $information['request_ticket_infos'] = json_encode($category_ticket);
+    $information['request_orders'] = json_encode($orders);
+    // dd($information);
+    return view('frontend.event.event-tournament-checkout-detail', $information);
+    // dd($delegation_event, $from_info_event, $organizer, $category_tickets, $ticket_detail_individu_order, $ticket_detail_official_order, $ticket_detail_team_order, $ticket_detail_mix_team_order);
   }
   // end checkout tournament
 }
