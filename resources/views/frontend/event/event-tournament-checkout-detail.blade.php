@@ -105,6 +105,183 @@
                                         </table>
                                     </div>
                                 </div>
+                                @foreach ($orders as $val_order)
+                                    {{-- for individu --}}
+                                    @if (count($val_order['ticket_detail_individu_order']) > 0)
+                                        <section id="individu_section">
+                                            <div class="col-12 mt-3">
+                                                <h4 style="font-weight: bold">
+                                                    {{ __('Category Order Individu') }}
+                                                </h4>
+                                                <small>
+                                                    {{ __('Description Category Order Individu') }}
+                                                </small>
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead class="table-secondary">
+                                                            <tr>
+                                                                <th scope="col">No</th>
+                                                                <th scope="col">Full Name</th>
+                                                                <th scope="col">Gender</th>
+                                                                <th scope="col">Delegation</th>
+                                                                <th scope="col">Category</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($val_order['ticket_detail_individu_order'] as $key => $val_order_ticket)
+                                                                @php
+                                                                    $delegation_from = '';
+
+                                                                    switch (strtolower($val_order_ticket->delegation_type)) {
+                                                                        case 'country':
+                                                                            $delegation_from = $val_order_ticket->country_delegation_name;
+                                                                            break;
+                                                                        case 'province':
+                                                                            $delegation_from = $val_order_ticket->province_delegation_name;
+                                                                            break;
+                                                                        case 'state':
+                                                                            $delegation_from = $val_order_ticket->province_delegation_name;
+                                                                            break;
+                                                                        case 'city':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'district':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'city/district':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'school/universities':
+                                                                            $delegation_from = $val_order_ticket->school_name;
+                                                                            break;
+                                                                        case 'organization':
+                                                                            $delegation_from = $val_order_ticket->organization_name;
+                                                                            break;
+                                                                        default:
+                                                                            $delegation_from = $val_order_ticket->club_name;
+                                                                            break;
+                                                                    }
+                                                                @endphp
+                                                                <tr>
+                                                                    <td scope="row">
+                                                                        {{ $key + 1 }}
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ ucfirst($val_order_ticket->user_full_name) }}
+                                                                    </td>
+                                                                    <td>
+                                                                        @if (strtolower($val_order_ticket->user_gender) == 'm')
+                                                                            {{ __('Male') }}
+                                                                        @elseif (strtolower($val_order_ticket->user_gender) == 'f')
+                                                                            {{ __('Female') }}
+                                                                        @else
+                                                                            N/A
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ !empty($delegation_from) ? $delegation_from : '-' }}
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ $val_order_ticket->sub_category_ticket }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    @endif
+
+                                    {{-- for official --}}
+                                    @if (count($val_order['ticket_detail_official_order']) > 0)
+                                        <section id="official_section">
+                                            <div class="col-12 mt-3">
+                                                <h4 style="font-weight: bold">
+                                                    {{ __('Category Order Official') }}
+                                                </h4>
+                                                <small>
+                                                    {{ __('Description Category Order Official') }}
+                                                </small>
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead class="table-secondary">
+                                                            <tr>
+                                                                <th scope="col">No</th>
+                                                                <th scope="col">Full Name</th>
+                                                                <th scope="col">Gender</th>
+                                                                <th scope="col">Delegation</th>
+                                                                <th scope="col">Category</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($val_order['ticket_detail_official_order'] as $key => $val_order_ticket)
+                                                                @php
+                                                                    $delegation_from = '';
+
+                                                                    switch (strtolower($val_order_ticket->delegation_type)) {
+                                                                        case 'country':
+                                                                            $delegation_from = $val_order_ticket->country_delegation_name;
+                                                                            break;
+                                                                        case 'province':
+                                                                            $delegation_from = $val_order_ticket->province_delegation_name;
+                                                                            break;
+                                                                        case 'state':
+                                                                            $delegation_from = $val_order_ticket->province_delegation_name;
+                                                                            break;
+                                                                        case 'city':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'district':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'city/district':
+                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            break;
+                                                                        case 'school/universities':
+                                                                            $delegation_from = $val_order_ticket->school_name;
+                                                                            break;
+                                                                        case 'organization':
+                                                                            $delegation_from = $val_order_ticket->organization_name;
+                                                                            break;
+                                                                        default:
+                                                                            $delegation_from = $val_order_ticket->club_name;
+                                                                            break;
+                                                                    }
+                                                                @endphp
+                                                                <tr>
+                                                                    <th scope="row">{{ $key + 1 }}</th>
+                                                                    <td>
+                                                                        {{ ucfirst($val_order_ticket->user_full_name) }}
+                                                                    </td>
+                                                                    <td>
+                                                                        @if (strtolower($val_order_ticket->user_gender) == 'm')
+                                                                            {{ __('Male') }}
+                                                                        @elseif (strtolower($val_order_ticket->user_gender) == 'f')
+                                                                            {{ __('Female') }}
+                                                                        @else
+                                                                            N/A
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ !empty($delegation_from) ? $delegation_from : '-' }}
+                                                                    </td>
+                                                                    <td>
+                                                                        Official
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
                     </div>
