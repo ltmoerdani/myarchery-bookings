@@ -284,6 +284,159 @@
                                 @endforeach
                             </div>
                         </div>
+
+                        <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
+                            <input type="hidden" name="event" value="{{ $event }}">
+                            {{-- <input type="hidden" name="request_ticket_infos" value="{{ $request_ticket_infos }}"> --}}
+                            <input type="hidden" name="request_orders" value="{{ $request_orders }}">
+                            <input type="hidden" name="language_id" value="{{ $language_id }}">
+                            <div class="row">
+                                <div class="col-12 d-flex flex-row flex-wrap gap-10px">
+                                    <img class="lazy img-fluid img-thumbnail" style="border-radius:1rem;"
+                                        data-src="{{ asset('assets/admin/img/event/thumbnail/' . $event['thumbnail']) }}"
+                                        alt="Event" width="100" height="71.88">
+                                    <div class="d-flex flex-column">
+                                        <h5 class="font-weight-normal mb-0 text-primary-1">
+                                            {{ $event->title }}
+                                        </h5>
+                                        <div class="d-flex justify-content-between flex-row flex-wrap gap-10px">
+                                            <small class="font-weight-normal text-primary-1">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <span class="mr-1">
+                                                    {{ \Carbon\Carbon::parse($date)->timezone($websiteInfo->timezone)->translatedFormat('D, dS M Y') }}
+                                                </span>
+                                            </small>
+                                            <small class="font-weight-normal text-primary-1">
+                                                <i class="far fa-clock"></i>
+                                                <span class="mr-1">
+                                                    {{ $event->date_type == 'multiple' ? @$event_date->duration : $event->duration }}
+                                                </span>
+                                            </small>
+                                        </div>
+                                        <small class="font-weight-normal text-primary-1">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>
+                                                @if ($event->city != null)
+                                                    {{ $event->city }}
+                                                @endif
+                                                @if ($event->country)
+                                                    , {{ $event->country }}
+                                                @endif
+                                            </span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3 mb-2">
+                                    <h4 class="font-weight-bold">{{ __('Order Summary') }}</h4>
+                                </div>
+                                <div class="col-12">
+                                    <p class="font-weight-bold">Tickets Info</p>
+                                </div>
+                                @php
+                                    $fee_sub_total = 0;
+                                    $total_tickets_quantity = 0;
+                                @endphp
+                                @foreach ($ticket_infos as $val_ticket_infos)
+                                    @if ($val_ticket_infos['quantity'] > 0)
+                                        @php
+                                            $fee_sub_total = $fee_sub_total + $val_ticket_infos['price'];
+                                            $total_tickets_quantity = $total_tickets_quantity + $val_ticket_infos['quantity'];
+                                        @endphp
+                                        <div class="col-12 d-flex justify-content-between flex-wrap">
+                                            <p class="font-weight-medium mb-0 mx-1">
+                                                {{ ucfirst($val_ticket_infos['title']) }}
+                                            </p>
+                                            <p class="font-weight-medium mb-0 mx-1">
+                                                {{ $val_ticket_infos['quantity'] }}x
+                                            </p>
+                                            <p class="font-weight-medium mb-0 mx-1">
+                                                Rp. {{ $val_ticket_infos['price'] }}
+                                            </p>
+                                        </div>
+                                        <div class="col-12 mt-0">
+                                            <hr style="width:100%;text-align:left;margin-left:0">
+                                        </div>
+                                    @endif
+                                @endforeach
+                                <div class="col-12 d-flex justify-content-between mt-2">
+                                    <p class="font-weight-medium mb-0">
+                                        {{ __('Total Tickets') }}
+                                    </p>
+                                    <p class="font-weight-medium mb-0">
+                                        {{ $total_tickets_quantity }}
+                                    </p>
+                                </div>
+                                <div class="col-12 d-flex justify-content-between mt-2">
+                                    <p class="font-weight-medium mb-0">
+                                        {{ __('Sub Total') }}
+                                    </p>
+                                    <p class="font-weight-medium mb-0">
+                                        Rp. {{ $fee_sub_total }}
+                                    </p>
+                                </div>
+                                <div class="col-12 d-flex justify-content-between mt-2">
+                                    <p class="font-weight-medium mb-0">
+                                        {{ __('Handling Fee') }} ({{ $ppn_value }}%)
+                                    </p>
+                                    <p class="font-weight-medium mb-0">
+                                        Rp. {{ $ppn_total = ($fee_sub_total * $ppn_value) / 100 }}
+                                    </p>
+                                </div>
+                                <div class="col-12 mt-0 mb-0">
+                                    <hr style="width:100%;text-align:left;margin-left:0">
+                                </div>
+                                <div class="col-12 d-flex justify-content-between mt-1">
+                                    <p class="font-weight-medium mb-0">
+                                        {{ __('Total') }}
+                                    </p>
+                                    <p class="font-weight-medium mb-0">
+                                        Rp. {{ $fee_sub_total + $ppn_total }}
+                                    </p>
+                                </div>
+                                @php
+                                    $total = $fee_sub_total + $ppn_total;
+                                @endphp
+                                <input type="hidden" name="total" value="{{ $fee_sub_total }}">
+                                <input type="hidden" name="quantity" value="{{ $total_tickets_quantity }}">
+
+                                @if ($total > 0)
+                                    <div class="col-12 mt-3 mb-2">
+                                        <h4 class="font-weight-bold">{{ __('Payment Methods') }}</h4>
+                                    </div>
+                                    <div class="col-12 mt-1">
+                                        <select class="form-select" name="gateway" id="payment">
+                                            <option value="" disabled>{{ __('Select a payment method') }}</option>
+                                            @foreach ($online_gateways as $online_gateway)
+                                                <option value="{{ $online_gateway->keyword }}"
+                                                    {{ $online_gateway->keyword == old('gateway') ? 'selected' : '' }}>
+                                                    {{ __("$online_gateway->name") }}</option>
+                                            @endforeach
+                                            @foreach ($offline_gateways as $offline_gateway)
+                                                <option value="{{ $offline_gateway->id }}"
+                                                    {{ $offline_gateway->id == old('gateway') ? 'selected' : '' }}>
+                                                    {{ __("$offline_gateway->name") }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <button class="theme-btn w-100" type="submit">
+                                            {{ __('Proceed To Pay') }}
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="col-12 mt-3">
+                                        <button type="submit" class="theme-btn w-100">{{ __('Submit') }}</button>
+                                    </div>
+                                @endif
+                                <div class="col-12 mt-3">
+                                    <a href="{{ route('processing_to_form_order_tournament') }}?checkoutID={{ $checkoutID }}"
+                                        class="theme-btn-outline-primary-1 w-100" type="button">
+                                        {{ __('Back') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

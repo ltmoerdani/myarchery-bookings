@@ -2300,7 +2300,6 @@ class CheckOutController extends Controller
     $information['offline_gateways'] = Session::get('offline_gateways');
 
     $orders[] = [
-      // "title" => $v,
       "title" => 'order_ticket' . time(),
       "category" => 'individu',
       "ticket_detail_individu_order" => $ticket_detail_individu_order,
@@ -2313,20 +2312,147 @@ class CheckOutController extends Controller
       ->where('events.id', $from_info_event['event_id'])
       ->where('event_contents.language_id', $language_id)
       ->first();
+
+    $category_ticket = array();
+    $categorytickets = array('ticket_id' => null, 'title' => null, 'quantity' => null, 'price_first' => null, 'price_early' => null, 'price' => null);
+
+    foreach ($ticket_detail_individu_order as $key => $ticket) {
+      // ============================ early_bird_discount ====================================
+      if ($ticket->early_bird_discount == 'enable') {
+
+        $early_bird_start = Carbon::parse($ticket->early_bird_discount_date . $ticket->early_bird_discount_time);
+        $early_bird_end = Carbon::parse($ticket->early_bird_discount_end_date . $ticket->early_bird_discount_end_time);
+        $today = Carbon::now();
+        if (($today >= $early_bird_start) && ($today <= $early_bird_end)) {
+          if ($ticket->early_bird_discount_type == 'fixed') {
+            $early_bird_dicount = $ticket->early_bird_discount_amount;
+          } else {
+            $early_bird_dicount = ($ticket->early_bird_discount_amount * $ticket->price) / 100;
+          }
+        } else {
+          $early_bird_dicount = 0;
+        }
+
+        if (!empty($ticket->early_bird_discount_international_date) && !empty($ticket->early_bird_discount_international_time)) {
+          $early_bird_int_start = Carbon::parse($ticket->early_bird_discount_international_date . $ticket->early_bird_discount_international_time);
+        }
+
+        if (!empty($ticket->early_bird_discount_international_end_date) && !empty($ticket->early_bird_discount_international_end_time)) {
+          $early_bird_int_end = Carbon::parse($ticket->early_bird_discount_international_end_date . $ticket->early_bird_discount_international_end_time);
+        }
+
+        if (($today >= $early_bird_int_start) && ($today <= $early_bird_int_end)) {
+          if ($ticket->early_bird_discount_international_type == 'fixed') {
+            $early_bird_dicount_international = $ticket->early_bird_discount_amount_international;
+          } else {
+            $early_bird_dicount_international = ($ticket->early_bird_discount_amount_international * $ticket->international_price) / 100;
+          }
+        } else {
+          $early_bird_dicount_international = 0;
+        }
+      } else {
+        $early_bird_dicount = 0;
+        $early_bird_dicount_international = 0;
+      }
+
+      if ($ticket->late_price_discount == 'enable') {
+        $late_start = Carbon::parse($ticket->late_price_discount_date . $ticket->late_price_discount_time);
+        $late_end = Carbon::parse($ticket->late_price_discount_end_date . $ticket->late_price_discount_end_time);
+        $today = Carbon::now();
+        if (($today >= $late_start) && ($today <= $late_end)) {
+          if ($ticket->late_price_discount_type == 'fixed') {
+            $late_price_dicount = $ticket->late_price_discount_amount;
+          } else {
+            $late_price_dicount = ($ticket->late_price_discount_amount * $ticket->price) / 100;
+          }
+        } else {
+          $late_price_dicount = 0;
+        }
+
+        $late_int_start = Carbon::parse($ticket->late_price_discount_international_date . $ticket->late_price_discount_international_time);
+        $late_int_end = Carbon::parse($ticket->late_price_discount_international_end_date . $ticket->late_price_discount_international_end_time);
+        if (($today >= $late_int_start) && ($today <= $late_int_end)) {
+          if ($ticket->late_price_discount_international_type == 'fixed') {
+            $late_price_dicount_international = $ticket->late_price_discount_amount_international;
+          } else {
+            $late_price_dicount_international = ($ticket->late_price_discount_international * $ticket->international_price) / 100;
+          }
+        } else {
+          $late_price_dicount_international = 0;
+        }
+      } else {
+        $late_price_dicount = 0;
+        $late_price_dicount_international = 0;
+      }
+
+      // Inisialisasi harga awal tiket dan judul tiket berdasarkan county_id (Indonesia atau Internasional)
+      if ($ticket->county_id == "102" || $ticket->county_id == 102) { // Indonesia
+        $ticketprice = $ticket->price;
+        $tickettitle = $ticket->sub_category_ticket;
+        $ticketprice_first = $ticketprice;
+
+        if ($early_bird_dicount > 0) {
+          $ticketprice = $ticketprice - $early_bird_dicount;
+        }
+
+        if ($late_price_dicount > 0) {
+          $ticketprice = $ticketprice + $late_price_dicount;
+        }
+      } else { // Internasional
+        $ticketprice = empty($ticket->international_price) ? $ticket->price : $ticket->international_price;
+        $tickettitle = $ticket->sub_category_ticket . ' (Internasional)';
+        $ticketprice_first = $ticketprice;
+
+        if ($early_bird_dicount_international > 0) {
+          $ticketprice = $ticketprice - $early_bird_dicount_international;
+        }
+
+        if ($late_price_dicount_international > 0) {
+          $ticketprice = $ticketprice + $late_price_dicount_international;
+        }
+      }
+
+      // Cari jika kategori tiket sudah ada di dalam cluster
+      $ticketFound = false;
+      foreach ($category_ticket as &$categorytickets) {
+        if ($categorytickets['title'] == $tickettitle) {
+          // Jika tiket dengan sub_category_ticket yang sama ditemukan, tambahkan harga dan kuantitas
+          $categorytickets['price_first'] += $ticketprice_first;
+          $categorytickets['price'] += $ticketprice;
+          $categorytickets['quantity']++;
+          $categorytickets['price_early'] += $early_bird_dicount; // Tambahkan diskon early bird
+          $ticketFound = true;
+          break;
+        }
+      }
+
+      // Jika tiket belum ada dalam cluster, buat entri baru
+      if (!$ticketFound) {
+        $categorytickets = [
+          'ticket_id' => $ticket->ticket_id,
+          'title' => $tickettitle,
+          'quantity' => 1,
+          'price_first' => $ticketprice_first,
+          'price_early' => $early_bird_dicount,
+          'price' => $ticketprice
+        ];
+        $category_ticket[] = $categorytickets;
+      }
+    }
+
     $information['customer'] = Auth::guard('customer')->user();
     $information['organizer'] = $organizer;
     $information['online_gateways'] = Session::get('online_gateways');
     $information['offline_gateways'] = Session::get('offline_gateways');
-    // $information['ticket_infos'] = $category_ticket;
+    $information['ticket_infos'] = $category_ticket;
     $information['orders'] = $orders;
     $information['ppn_value'] = $percent_handling_fee;
     $information['language_id'] = $language_id;
+    $information['checkoutID'] = $request->checkoutID;
 
-    // $information['request_ticket_infos'] = json_encode($category_ticket);
+    $information['request_ticket_infos'] = json_encode($category_ticket);
     $information['request_orders'] = json_encode($orders);
-    // dd($information);
     return view('frontend.event.event-tournament-checkout-detail', $information);
-    // dd($delegation_event, $from_info_event, $organizer, $category_tickets, $ticket_detail_individu_order, $ticket_detail_official_order, $ticket_detail_team_order, $ticket_detail_mix_team_order);
   }
   // end checkout tournament
 }
