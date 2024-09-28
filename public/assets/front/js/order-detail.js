@@ -6,42 +6,6 @@ const AllDataForm = {
   eventInfo: {},
 };
 
-const getInfoData = async () => {
-  fetch(`${base_url}/get-data-form-order-tournament?checkoutID=${checkoutID}`, {
-    method: "GET",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((response) => {
-      const { data } = response;
-      AllDataForm.individu = data.ticket_detail_individu_order;
-      AllDataForm.team = data.ticket_detail_team_order;
-      AllDataForm.mix_team = data.ticket_detail_mix_team_order;
-      AllDataForm.official = data.ticket_detail_official_order;
-      AllDataForm.eventInfo = data.event;
-
-      generateViewIndividu();
-      // generateViewTeam();
-      // generateViewMixTeam();
-      generateViewOfficial();
-      setTimeout(() => {
-        generateSummaryTickets();
-        $("#eventErrors ul").empty();
-        $("#eventErrors").hide();
-      }, 300);
-    })
-    .catch((error) => {
-      console.log("err:", error);
-      console.log("error:", error.message);
-    });
-};
-getInfoData();
-
-// global function
 // automatic create list ticket with select2 search
 const createS2TicketsDelegation = (
   contentIdx,
@@ -374,7 +338,7 @@ const createS2CityDelegation = (
         ].city_delegation = e.params.data.id;
         AllDataForm[e.target.dataset.contentfor][
           e.target.dataset.idx
-        ].city_delegation_name = e.params.data.name;
+        ].city_delegation_name = delegationCityName;
       }
     },
     function (param) {
@@ -1121,6 +1085,34 @@ const handlerBack = (slug, event_id) => {
 // Individu Schema
 const handlerMapSelect2Individu = (data) => {
   for (let i = 0; i < data.length; i++) {
+    // hide all content delegation
+    $(`.content-delegation-country-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-province-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-city-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-school-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-club-individu-${i}`).addClass("d-none");
+    // empty all content delegation
+    $(`.content-delegation-country-individu-${i}`).empty();
+    $(`.content-delegation-province-individu-${i}`).empty();
+    $(`.content-delegation-city-individu-${i}`).empty();
+    $(`.content-delegation-school-individu-${i}`).empty();
+    $(`.content-delegation-organization-individu-${i}`).empty();
+    $(`.content-delegation-club-individu-${i}`).empty(); // hide all content delegation
+    $(`.content-delegation-country-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-province-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-city-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-school-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
+    $(`.content-delegation-club-individu-${i}`).addClass("d-none");
+    // empty all content delegation
+    $(`.content-delegation-country-individu-${i}`).empty();
+    $(`.content-delegation-province-individu-${i}`).empty();
+    $(`.content-delegation-city-individu-${i}`).empty();
+    $(`.content-delegation-school-individu-${i}`).empty();
+    $(`.content-delegation-organization-individu-${i}`).empty();
+    $(`.content-delegation-club-individu-${i}`).empty();
+
     if ($(`#name_individu${data[i]}`)) {
       initiateSelect2DynamicOptionCreation(
         `#name_individu${data[i]}`,
@@ -1129,8 +1121,32 @@ const handlerMapSelect2Individu = (data) => {
         fullNamePlaceholder,
         ["text"],
         function (e) {
-          let gender = "M";
-          if (e?.params?.data?.gender) {
+          let gender = "";
+          if (AllDataForm.individu[e.target.dataset.idx].user_gender) {
+            if (
+              ["m", "male", "pria"].includes(
+                AllDataForm.individu[
+                  e.target.dataset.idx
+                ].user_gender.toLowerCase()
+              )
+            ) {
+              gender = "M";
+            }
+
+            if (
+              ["f", "female", "wanita"].includes(
+                AllDataForm.individu[
+                  e.target.dataset.idx
+                ].user_gender.toLowerCase()
+              )
+            ) {
+              gender = "F";
+            }
+          } else {
+            gender = "M";
+          }
+
+          if (e.params.data.gender) {
             if (
               ["m", "male", "pria"].includes(e.params.data.gender.toLowerCase())
             ) {
@@ -1279,21 +1295,6 @@ const handlerMapSelect2Individu = (data) => {
       );
     }
 
-    // hide all content delegation
-    $(`.content-delegation-country-individu-${i}`).addClass("d-none");
-    $(`.content-delegation-province-individu-${i}`).addClass("d-none");
-    $(`.content-delegation-city-individu-${i}`).addClass("d-none");
-    $(`.content-delegation-school-individu-${i}`).addClass("d-none");
-    $(`.content-delegation-organization-individu-${i}`).addClass("d-none");
-    $(`.content-delegation-club-individu-${i}`).addClass("d-none");
-    // empty all content delegation
-    $(`.content-delegation-country-individu-${i}`).empty();
-    $(`.content-delegation-province-individu-${i}`).empty();
-    $(`.content-delegation-city-individu-${i}`).empty();
-    $(`.content-delegation-school-individu-${i}`).empty();
-    $(`.content-delegation-organization-individu-${i}`).empty();
-    $(`.content-delegation-club-individu-${i}`).empty();
-
     if (AllDataForm.individu[i].contingent_type.toLowerCase() !== "open") {
       switch (AllDataForm.individu[i].delegation_type.toLowerCase()) {
         case "country":
@@ -1312,7 +1313,12 @@ const handlerMapSelect2Individu = (data) => {
           createS2ProvinceDelegation(
             "individu",
             i,
-            "",
+            AllDataForm.individu[i].province_delegation
+              ? {
+                  id: AllDataForm.individu[i].province_delegation,
+                  text: AllDataForm.individu[i].province_delegation_name,
+                }
+              : "",
             AllDataForm.individu[i].country_delegation
           );
           break;
@@ -1320,7 +1326,12 @@ const handlerMapSelect2Individu = (data) => {
           createS2CityDelegation(
             "individu",
             i,
-            "",
+            AllDataForm.individu[i].city_delegation
+              ? {
+                  id: AllDataForm.individu[i].city_delegation,
+                  text: AllDataForm.individu[i].city_delegation_name,
+                }
+              : "",
             AllDataForm.individu[i].country_delegation,
             AllDataForm.individu[i].province_delegation
           );
@@ -1569,10 +1580,10 @@ const generateViewIndividu = () => {
                       <select class="form-select" id="gender_individu${index}" data-idx="${index}"
                       data-contentFor="individu" name="gender_individu[]" value="${gender}"
                       onchange="handlerChooseGender('individu',${index})">
-                          <option value="M">
+                          <option value="M" ${gender === "M" ? "selected" : ""}>
                             ${genderMaleLang}
                           </option>
-                          <option value="F">
+                          <option value="F" ${gender === "F" ? "selected" : ""}>
                             ${genderFemaleLang}
                           </option>
                       </select>
@@ -1666,9 +1677,33 @@ const handlerMapSelect2Official = (data) => {
         fullNamePlaceholder,
         ["text"],
         function (e) {
-          let gender = "M";
+          let gender = "";
 
-          if (e?.params?.data?.gender) {
+          if (AllDataForm.official[e.target.dataset.idx].user_gender) {
+            if (
+              ["m", "male", "pria"].includes(
+                AllDataForm.official[
+                  e.target.dataset.idx
+                ].user_gender.toLowerCase()
+              )
+            ) {
+              gender = "M";
+            }
+
+            if (
+              ["f", "female", "wanita"].includes(
+                AllDataForm.official[
+                  e.target.dataset.idx
+                ].user_gender.toLowerCase()
+              )
+            ) {
+              gender = "F";
+            }
+          } else {
+            gender = "M";
+          }
+
+          if (e.params.data.gender) {
             if (
               ["m", "male", "pria"].includes(e.params.data.gender.toLowerCase())
             ) {
@@ -2186,6 +2221,77 @@ const generateViewOfficial = () => {
   }, 200);
 };
 
+const getInfoData = async () => {
+  let myHeaders = new Headers();
+  myHeaders.append("pragma", "no-cache");
+  myHeaders.append("cache-control", "no-cache");
+
+  let responseStatus = {
+    success: false,
+    message: "",
+    data: null,
+  };
+
+  try {
+    const response = await fetch(
+      `${base_url}/get-data-form-order-tournament?checkoutID=${checkoutID}`,
+      {
+        method: "GET",
+        headers: myHeaders,
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      // Menangani error HTTP
+      responseStatus.message = `HTTP error! status: ${response.status}`;
+      throw new Error(responseStatus.message);
+    }
+
+    // Clone respons agar bisa digunakan di banyak tempat
+    const clonedResponse = response.clone();
+
+    const data = await clonedResponse.json(); // Parsing JSON dari respons
+
+    if (data.data) {
+      AllDataForm.individu = data.data.ticket_detail_individu_order ?? [];
+      AllDataForm.team = data.data.ticket_detail_team_order ?? [];
+      AllDataForm.mix_team = data.data.ticket_detail_mix_team_order ?? [];
+      AllDataForm.official = data.data.ticket_detail_official_order ?? [];
+      AllDataForm.eventInfo = data.data.event ?? [];
+
+      // Panggil fungsi render view
+      generateViewIndividu();
+      // generateViewTeam();
+      // generateViewMixTeam();
+      generateViewOfficial();
+      generateSummaryTickets();
+      $("#eventErrors ul").empty();
+      $("#eventErrors").hide();
+
+      responseStatus.success = true;
+      responseStatus.message = "Done loaded";
+      responseStatus.data = data.data; // Menyimpan data ke dalam variabel status
+    }
+  } catch (error) {
+    // Menangani error dari fetch atau JSON parsing
+    responseStatus.success = false;
+    responseStatus.message = `Error: ${error.message}`;
+  }
+
+  return responseStatus; // Mengembalikan status dan pesan dari proses fetch
+};
+
+// Memanggil fungsi dan menangani hasilnya
+(async () => {
+  const result = await getInfoData();
+  if (result.success) {
+    console.log("response:", result.message);
+  } else {
+    console.log("response:", result.message);
+  }
+})();
+
 $("#ToDetailCheckout").on("click", function (e) {
   $(e.target).attr("disabled", true);
   $(".request-loader").addClass("show");
@@ -2194,10 +2300,6 @@ $("#ToDetailCheckout").on("click", function (e) {
   $("#eventErrors").hide();
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
-
-  // console.log("AllDataForm.individu:", AllDataForm.individu);
-  // console.log("AllDataForm.official:", AllDataForm.official);
-  // return false;
 
   fd.append(
     "individu",

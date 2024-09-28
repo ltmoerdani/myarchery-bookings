@@ -58,12 +58,18 @@
         action="{{ route('ticket.booking.tournament', [$event['id'], 'type' => 'guest', 'form_type' => 'tournament']) }}">
         @csrf
         <input type="hidden" id="event_id" name="event_id" value="{{ $event['id'] }}">
-        <input type="hidden" id="base_url" value="{{ url('/') }}">
+        {{-- <input type="hidden" id="base_url" value="{{ url('/') }}"> --}}
 
         <section class="event-details-section pt-110 rpt-90 pb-90 rpb-70">
             <div class="container">
                 <div class="event-details-content">
                     <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-danger pb-1 dis-none" id="eventErrors">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <ul></ul>
+                            </div>
+                        </div>
                         <div class="col-12 col-lg-8 order-1 order-lg-0 my-1">
                             <div class="row">
                                 <div class="col-12 mb-3">
@@ -105,6 +111,16 @@
                                         </table>
                                     </div>
                                 </div>
+
+                                <input type="hidden" id="data_individu"
+                                    value="{{ json_encode($orders[0]['ticket_detail_individu_order']) }}">
+                                <input type="hidden" id="data_team"
+                                    value="{{ json_encode($orders[0]['ticket_detail_team_order']) }}">
+                                <input type="hidden" id="data_mix_team"
+                                    value="{{ json_encode($orders[0]['ticket_detail_mix_team_order']) }}">
+                                <input type="hidden" id="data_official"
+                                    value="{{ json_encode($orders[0]['ticket_detail_official_order']) }}">
+
                                 @foreach ($orders as $val_order)
                                     {{-- for individu --}}
                                     @if (count($val_order['ticket_detail_individu_order']) > 0)
@@ -145,13 +161,13 @@
                                                                             $delegation_from = $val_order_ticket->province_delegation_name;
                                                                             break;
                                                                         case 'city':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'district':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'city/district':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'school/universities':
                                                                             $delegation_from = $val_order_ticket->school_name;
@@ -234,13 +250,13 @@
                                                                             $delegation_from = $val_order_ticket->province_delegation_name;
                                                                             break;
                                                                         case 'city':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'district':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'city/district':
-                                                                            $delegation_from = $val_order_ticket->city_name;
+                                                                            $delegation_from = $val_order_ticket->city_delegation_name;
                                                                             break;
                                                                         case 'school/universities':
                                                                             $delegation_from = $val_order_ticket->school_name;
@@ -430,10 +446,14 @@
                                     </div>
                                 @endif
                                 <div class="col-12 mt-3">
-                                    <a href="{{ route('processing_to_form_order_tournament') }}?checkoutID={{ $checkoutID }}"
+                                    <button type="button" class="theme-btn-outline-primary-1 w-100" id="ToBack"
+                                        type="button">
+                                        {{ __('Back') }}
+                                    </button>
+                                    {{-- <a href="{{ route('processing_to_form_order_tournament') }}?checkoutID={{ $checkoutID }}"
                                         class="theme-btn-outline-primary-1 w-100" type="button">
                                         {{ __('Back') }}
-                                    </a>
+                                    </a> --}}
                                 </div>
                             </div>
                         </div>
@@ -444,5 +464,73 @@
     </form>
 @endsection
 @section('custom-script')
-    <script src="{{ asset('assets/front/js/order-detail.js') }}"></script>
+    <script>
+        const checkoutID = "{{ $checkoutID }}";
+        $("#eventErrors ul").empty();
+        $("#eventErrors").hide();
+
+        $("#ToBack").on("click", function(e) {
+            let eventForm = document.getElementById("eventForm");
+            let dataIndividu = $("#data_individu").val()
+            let dataTeam = $("#data_team").val()
+            let dataMixTeam = $("#data_mix_team").val()
+            let dataOfficial = $("#data_official").val()
+            // console.log("dataIndividu:", dataIndividu)
+            // console.log("dataTeam:", dataTeam)
+            // console.log("dataMixTeam:", dataMixTeam)
+            // console.log("dataOfficial:", dataOfficial)
+            // $(e.target).attr("disabled", true);
+            // $(".request-loader").addClass("show");
+
+            $("#eventErrors ul").empty();
+            $("#eventErrors").hide();
+            let fd = new FormData(eventForm);
+
+            fd.append("individu", dataIndividu);
+            fd.append("team", dataTeam);
+            fd.append("mix_team", dataMixTeam);
+            fd.append("official", dataOfficial);
+            fd.append("checkoutID", checkoutID);
+
+            $.ajax({
+                url: `{{ route('rollback_to_form_checkout') }}?checkoutID=${checkoutID}`,
+                method: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // console.log("response:", response)
+                    if (response.status == "success") {
+                        location.replace(
+                            "{{ route('processing_to_form_order_tournament') }}?checkoutID={{ $checkoutID }}"
+                        );
+                    }
+                },
+                statusCode: {
+                    419: function(response) {
+                        location.reload();
+                    },
+                },
+                error: function(error) {
+                    let errors = ``;
+                    for (let x in error.responseJSON?.errors?.message) {
+                        errors += `<li>
+            <p class="text-danger mb-0">${error.responseJSON.errors.message[x]}</p>
+          </li>`;
+                    }
+
+                    $("#eventErrors ul").html(errors);
+                    $("#eventErrors").show();
+
+                    $(".request-loader").removeClass("show");
+
+                    $("html, body").animate({
+                            scrollTop: $("#eventErrors").offset().top - 100,
+                        },
+                        1000
+                    );
+                },
+            });
+        });
+    </script>
 @endsection

@@ -104,7 +104,7 @@ function initiateSelect2DynamicOptionCreation(
     })
     .on("select2:select", function (e) {
       const selectedData = e.params.data;
-      console.log("selected:", selectedData);
+      // console.log("selected:", selectedData);
 
       // Menjalankan callback jika disediakan
       if (onSelect) onSelect(e);
