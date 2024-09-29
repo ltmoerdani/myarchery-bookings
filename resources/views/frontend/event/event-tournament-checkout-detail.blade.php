@@ -2,7 +2,7 @@
 @php
     $og_title = $event['title'];
     if ($event['date_type'] == 'multiple') {
-        $event_date = eventLatestDates($event['id']);
+        $event_date = eventLatestDates($event['event_id']);
         $date = strtotime(@$event_date['start_date']);
     } else {
         $date = strtotime($event['start_date']);
@@ -55,9 +55,9 @@
 
 @section('content')
     <form id="eventForm" method="POST"
-        action="{{ route('ticket.booking.tournament', [$event['id'], 'type' => 'guest', 'form_type' => 'tournament']) }}">
+        action="{{ route('ticket.booking.tournament', [$event['event_id'], 'type' => 'guest', 'form_type' => 'tournament']) }}">
         @csrf
-        <input type="hidden" id="event_id" name="event_id" value="{{ $event['id'] }}">
+        <input type="hidden" id="event_id" name="event_id" value="{{ $event['event_id'] }}">
         {{-- <input type="hidden" id="base_url" value="{{ url('/') }}"> --}}
 
         <section class="event-details-section pt-110 rpt-90 pb-90 rpb-70">
@@ -303,7 +303,7 @@
 
                         <div class="col-12 col-lg-4 order-0 order-lg-1 my-1">
                             <input type="hidden" name="event" value="{{ $event }}">
-                            {{-- <input type="hidden" name="request_ticket_infos" value="{{ $request_ticket_infos }}"> --}}
+                            <input type="hidden" name="request_ticket_infos" value="{{ $request_ticket_infos }}">
                             <input type="hidden" name="request_orders" value="{{ $request_orders }}">
                             <input type="hidden" name="language_id" value="{{ $language_id }}">
                             <div class="row">

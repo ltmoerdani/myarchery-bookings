@@ -44,6 +44,9 @@ use App\Models\IndonesianSubdistrict;
 use App\Models\IndonesianCities;
 use App\Models\InternationalCities;
 use App\Http\Helpers\HelperUser;
+use App\Models\Clubs;
+use App\Models\Organization;
+use App\Models\School;
 use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
@@ -211,6 +214,7 @@ class BookingController extends Controller
 
   public function booking_tournament(Request $request, $id)
   {
+    // dd($request->all());
     $basic = Basic::select('event_guest_checkout_status')->first();
     if ($basic->event_guest_checkout_status == 0 && $request->type != 'guest') {
       // check whether user is logged in or not
@@ -452,7 +456,8 @@ class BookingController extends Controller
   public function storeData($info)
   {
     try {
-      $event = Event::find($info['event_id']);
+      $event = Event::where('id', $info['event_id'])->first();
+
       if ($event) {
         if ($event->organizer_id) {
           $organizer_id = $event->organizer_id;
@@ -466,14 +471,17 @@ class BookingController extends Controller
       } else {
         $variations = Session::get('selTickets');
       }
+      // dd($info, $variations);
 
       if ($variations) {
+
         foreach ($variations as $variation) {
           if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
             $variation = (array) $variation;
           }
 
           $ticket = Ticket::where('id', $variation['ticket_id'])->first();
+
           if ($ticket->pricing_type == 'normal' && $ticket->ticket_available_type == 'limited') {
 
             if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
@@ -600,80 +608,28 @@ class BookingController extends Controller
 
       if ($info['form_type'] == "tournament" || $info['form_type'] == "turnamen") {
         $dataOrders = $info['dataOrders'];
-        // foreach ($dataOrders as $d) {
-        //   $ticket_id = $d->title;
-        //   $category = $d->category;
-        //   $ticket_detail_order = $d->ticket_detail_order;
-
-        //   foreach ($ticket_detail_order as $t) {
-        //     if ($t->country_id == "102") { //Indonesia
-        //       if ($t->city_id) {
-        //         $city_name = IndonesianCities::select('id', 'name')->where('id', $t->city_id)->first();
-        //       }
-        //     } else {
-        //       if ($t->city_id) {
-        //         $city_name = InternationalCities::select('id', 'name')->where('country_id', $t->country_id)->where('id', $t->city_id)->first();
-        //       }
-        //     }
-
-        //     $data_participant['fname'] = $t->user_full_name;
-        //     $data_participant['lname'] = null;
-        //     $data_participant['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
-        //     $data_participant['birthdate'] = $t->birthdate;
-        //     $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
-        //     $checkParticipant = Participant::where('fname', $data_participant['fname'])->where('lname', $data_participant['lname'])
-        //       ->where('gender', $data_participant['gender'])->where('birthdate', $data_participant['birthdate'])->first();
-        //     if (!$checkParticipant) {
-        //       // Save to table participant
-        //       $input['fname'] = $t->user_full_name;
-        //       $input['lname'] = null;
-        //       $input['gender'] = ($t->user_gender == 'male') ? 'M' : 'F';
-        //       $input['birthdate'] = $t->birthdate;
-        //       $input['county_id'] = $t->country_id;
-        //       $input['country'] = $t->country_name;
-        //       $input['city_id'] = $t->city_id;
-        //       $input['city'] = empty($city_name->name) ? null : $city_name->name;
-        //       $input['username'] = $username;
-        //       $peserta = Participant::create($input);
-        //       $participant_id = $peserta->id;
-        //     } else {
-        //       $participant_id = $checkParticipant->id;
-        //     }
-
-        //     $p['competition_name'] = $t->sub_category_ticket;
-        //     $p['event_id'] = $info['event_id'];
-        //     $p['participant_id'] = $participant_id;
-        //     $p['ticket_id'] = $t->id;
-        //     $p['booking_id'] = $booking->id;
-        //     $p['category'] = $t->delegation_type;
-        //     $p['delegation_id'] = empty($t->club_id) ? null : $t->club_id;
-        //     $p['customer_id'] = Auth::guard('customer')->user()->id;
-        //     $p['description'] = null;
-        //     ParticipantCompetitions::create($p);
-        //   }
-        // }
-
         foreach ($dataOrders as $d) {
-          // $ticket_id = $d->title;
-          // $category = $d->category;
           $ticket_detail_individu_order = $d->ticket_detail_individu_order;
           $ticket_detail_official_order = $d->ticket_detail_official_order;
 
+          // return ['ticket_detail_individu_order' => $ticket_detail_individu_order, 'ticket_detail_official_order' => $ticket_detail_official_order];
+
           if ($ticket_detail_individu_order) {
             foreach ($ticket_detail_individu_order as $valueDataOrderIndividu) {
-              if ($valueDataOrderIndividu->country_id == "102") { //Indonesia
+              if ($valueDataOrderIndividu->county_id == "102") { //Indonesia
                 if ($valueDataOrderIndividu->city_id) {
                   $city_name = IndonesianCities::select('id', 'name')->where('id', $valueDataOrderIndividu->city_id)->first();
                 }
               } else {
                 if ($valueDataOrderIndividu->city_id) {
-                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderIndividu->country_id)->where('id', $valueDataOrderIndividu->city_id)->first();
+                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderIndividu->county_id)->where('id', $valueDataOrderIndividu->city_id)->first();
                 }
               }
 
               $data_participant['fname'] = $valueDataOrderIndividu->user_full_name;
               $data_participant['lname'] = null;
-              $data_participant['gender'] = ($valueDataOrderIndividu->user_gender == 'male') ? 'M' : 'F';
+              // $data_participant['gender'] = ($valueDataOrderIndividu->user_gender == 'male') ? 'M' : 'F';
+              $data_participant['gender'] = $valueDataOrderIndividu->user_gender;
               $data_participant['birthdate'] = $valueDataOrderIndividu->birthdate;
               $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
 
@@ -687,9 +643,9 @@ class BookingController extends Controller
                 // Save to table participant
                 $input['fname'] = $valueDataOrderIndividu->user_full_name;
                 $input['lname'] = null;
-                $input['gender'] = ($valueDataOrderIndividu->user_gender == 'male') ? 'M' : 'F';
+                $input['gender'] = $valueDataOrderIndividu->user_gender;
                 $input['birthdate'] = $valueDataOrderIndividu->birthdate;
-                $input['county_id'] = $valueDataOrderIndividu->country_id;
+                $input['county_id'] = $valueDataOrderIndividu->county_id;
                 $input['country'] = $valueDataOrderIndividu->country_name;
                 $input['city_id'] = $valueDataOrderIndividu->city_id;
                 $input['city'] = empty($city_name->name) ? null : $city_name->name;
@@ -701,55 +657,95 @@ class BookingController extends Controller
               }
 
               $delegation_id = null;
+              $country_id = null;
+              $province_id = null;
+
               switch (strtolower($valueDataOrderIndividu->delegation_type)) {
                 case 'country':
-                  $delegation_id = empty($valueDataOrderIndividu->country_delegation_individu) ? null : $valueDataOrderIndividu->country_delegation_individu;
+                  $delegation_id = empty($valueDataOrderIndividu->country_delegation) ? null : $valueDataOrderIndividu->country_delegation;
                   break;
                 case 'province':
-                  $delegation_id = empty($valueDataOrderIndividu->province_delegation_individu) ? null : $valueDataOrderIndividu->province_delegation_individu;
+                  $delegation_id = empty($valueDataOrderIndividu->province_delegation) ? null : $valueDataOrderIndividu->province_delegation;
+                  $country_id = empty($valueDataOrderIndividu->country_delegation) ? null : $valueDataOrderIndividu->country_delegation;
                   break;
                 case 'city/district':
-                  $delegation_id = empty($valueDataOrderIndividu->city_delegation_individu) ? null : $valueDataOrderIndividu->city_delegation_individu;
+                  $country_id = empty($valueDataOrderIndividu->country_delegation) ? null : $valueDataOrderIndividu->country_delegation;
+                  $province_id = empty($valueDataOrderIndividu->province_delegation) ? null : $valueDataOrderIndividu->province_delegation;
+                  $delegation_id = empty($valueDataOrderIndividu->city_delegation) ? null : $valueDataOrderIndividu->city_delegation;
                   break;
                 case 'school/universities':
-                  $delegation_id = empty($valueDataOrderIndividu->school_id) ? null : $valueDataOrderIndividu->school_id;
+                  $schooldId = null;
+                  $checkSchool = School::where('id', $valueDataOrderIndividu->school_id)->first();
+
+                  if ($checkSchool) {
+                    $schooldId = $valueDataOrderIndividu->school_id;
+                  } else {
+                    $newSchool = School::create(['name' => $valueDataOrderIndividu->school_name]);
+                    $schooldId = $newSchool['id'];
+                  }
+
+                  $delegation_id = $schooldId;
                   break;
                 case 'organization':
-                  $delegation_id = empty($valueDataOrderIndividu->organization_id) ? null : $valueDataOrderIndividu->organization_id;
+                  $organization_id = null;
+                  $checkOrganization = Organization::where('id', $valueDataOrderIndividu->organization_id)->first();
+
+                  if ($checkOrganization) {
+                    $organization_id = $valueDataOrderIndividu->organization_id;
+                  } else {
+                    $newOrganization = Organization::create(['name' => $valueDataOrderIndividu->organization_name]);
+                    $organization_id = $newOrganization['id'];
+                  }
+                  $delegation_id = $organization_id;
                   break;
                 default:
-                  $delegation_id = empty($valueDataOrderIndividu->club_id) ? null : $valueDataOrderIndividu->club_id;
+                  $clubId = null;
+                  $checkClub = Clubs::where('id', $valueDataOrderIndividu->club_id)->first();
+
+                  if ($checkClub) {
+                    $clubId = $valueDataOrderIndividu->club_id;
+                  } else {
+                    $newClub = Clubs::create(['name' => $valueDataOrderIndividu->club_name]);
+                    $clubId = $newClub['id'];
+                  }
+                  $delegation_id = $clubId;
+                  // $delegation_id = empty($valueDataOrderIndividu->club_id) ? null : $valueDataOrderIndividu->club_id;
                   break;
               }
 
               $p['competition_name'] = $valueDataOrderIndividu->sub_category_ticket;
               $p['event_id'] = $info['event_id'];
               $p['participant_id'] = $participant_id;
-              $p['ticket_id'] = $valueDataOrderIndividu->id;
+              $p['ticket_id'] = $valueDataOrderIndividu->ticket_id;
               $p['booking_id'] = $booking->id;
               $p['category'] = $valueDataOrderIndividu->delegation_type;
               $p['delegation_id'] = $delegation_id;
               $p['customer_id'] = Auth::guard('customer')->user()->id;
               $p['description'] = null;
+              $p['country_id'] = $country_id;
+              $p['province_id'] = $province_id;
+
               ParticipantCompetitions::create($p);
             }
           }
 
           if ($ticket_detail_official_order) {
             foreach ($ticket_detail_official_order as $valueDataOrderOfficial) {
-              if ($valueDataOrderOfficial->country_id == "102") { //Indonesia
+              if ($valueDataOrderOfficial->county_id == "102") { //Indonesia
                 if ($valueDataOrderOfficial->city_id) {
                   $city_name = IndonesianCities::select('id', 'name')->where('id', $valueDataOrderOfficial->city_id)->first();
                 }
               } else {
+
                 if ($valueDataOrderOfficial->city_id) {
-                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderOfficial->country_id)->where('id', $valueDataOrderOfficial->city_id)->first();
+                  $city_name = InternationalCities::select('id', 'name')->where('country_id', $valueDataOrderOfficial->county_id)->where('id', $valueDataOrderOfficial->city_id)->first();
                 }
               }
 
               $data_participant['fname'] = $valueDataOrderOfficial->user_full_name;
               $data_participant['lname'] = null;
-              $data_participant['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+              // $data_participant['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+              $data_participant['gender'] = $valueDataOrderOfficial->user_gender;
               $data_participant['birthdate'] = $valueDataOrderOfficial->birthdate;
               $username = HelperUser::AutoGenerateUsernameParticipant($data_participant);
 
@@ -763,9 +759,10 @@ class BookingController extends Controller
                 // Save to table participant
                 $input['fname'] = $valueDataOrderOfficial->user_full_name;
                 $input['lname'] = null;
-                $input['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+                // $input['gender'] = ($valueDataOrderOfficial->user_gender == 'male') ? 'M' : 'F';
+                $input['gender'] = $valueDataOrderOfficial->user_gender;
                 $input['birthdate'] = $valueDataOrderOfficial->birthdate;
-                $input['county_id'] = $valueDataOrderOfficial->country_id;
+                $input['county_id'] = $valueDataOrderOfficial->county_id;
                 $input['country'] = $valueDataOrderOfficial->country_name;
                 $input['city_id'] = $valueDataOrderOfficial->city_id;
                 $input['city'] = empty($city_name->name) ? null : $city_name->name;
@@ -777,41 +774,78 @@ class BookingController extends Controller
               }
 
               $delegation_id = null;
+              $country_id = null;
+              $province_id = null;
+
               switch (strtolower($valueDataOrderOfficial->delegation_type)) {
                 case 'country':
-                  $delegation_id = empty($valueDataOrderOfficial->country_delegation_official) ? null : $valueDataOrderOfficial->country_delegation_official;
+                  $delegation_id = empty($valueDataOrderOfficial->country_delegation) ? null : $valueDataOrderOfficial->country_delegation;
                   break;
                 case 'province':
-                  $delegation_id = empty($valueDataOrderOfficial->province_delegation_official) ? null : $valueDataOrderOfficial->province_delegation_official;
+                  $delegation_id = empty($valueDataOrderOfficial->province_delegation) ? null : $valueDataOrderOfficial->province_delegation;
+                  $country_id = empty($valueDataOrderOfficial->country_delegation) ? null : $valueDataOrderOfficial->country_delegation;
                   break;
                 case 'city/district':
-                  $delegation_id = empty($valueDataOrderOfficial->city_delegation_official) ? null : $valueDataOrderOfficial->city_delegation_official;
+                  $country_id = empty($valueDataOrderOfficial->country_delegation) ? null : $valueDataOrderOfficial->country_delegation;
+                  $province_id = empty($valueDataOrderOfficial->province_delegation) ? null : $valueDataOrderOfficial->province_delegation;
+                  $delegation_id = empty($valueDataOrderOfficial->city_delegation) ? null : $valueDataOrderOfficial->city_delegation;
                   break;
                 case 'school/universities':
-                  $delegation_id = empty($valueDataOrderOfficial->school_id) ? null : $valueDataOrderOfficial->school_id;
+                  $schooldId = null;
+                  $checkSchool = School::where('id', $valueDataOrderOfficial->school_id)->first();
+
+                  if ($checkSchool) {
+                    $schooldId = $valueDataOrderOfficial->school_id;
+                  } else {
+                    $newSchool = School::create(['name' => $valueDataOrderOfficial->school_name]);
+                    $schooldId = $newSchool['id'];
+                  }
+
+                  $delegation_id = $schooldId;
                   break;
                 case 'organization':
-                  $delegation_id = empty($valueDataOrderOfficial->organization_id) ? null : $valueDataOrderOfficial->organization_id;
+                  $organization_id = null;
+                  $checkOrganization = Organization::where('id', $valueDataOrderOfficial->organization_id)->first();
+
+                  if ($checkOrganization) {
+                    $organization_id = $valueDataOrderOfficial->organization_id;
+                  } else {
+                    $newOrganization = Organization::create(['name' => $valueDataOrderOfficial->organization_name]);
+                    $organization_id = $newOrganization['id'];
+                  }
+                  $delegation_id = $organization_id;
                   break;
                 default:
-                  $delegation_id = empty($valueDataOrderOfficial->club_id) ? null : $valueDataOrderOfficial->club_id;
+                  $clubId = null;
+                  $checkClub = Clubs::where('id', $valueDataOrderOfficial->club_id)->first();
+
+                  if ($checkClub) {
+                    $clubId = $valueDataOrderOfficial->club_id;
+                  } else {
+                    $newClub = Clubs::create(['name' => $valueDataOrderOfficial->club_name]);
+                    $clubId = $newClub['id'];
+                  }
+                  $delegation_id = $clubId;
                   break;
               }
 
-              $p['competition_name'] = $valueDataOrderOfficial->sub_category_ticket;
+              $p['competition_name'] = 'Official';
               $p['event_id'] = $info['event_id'];
               $p['participant_id'] = $participant_id;
-              $p['ticket_id'] = $valueDataOrderOfficial->id;
+              $p['ticket_id'] = $valueDataOrderOfficial->ticket_id;
               $p['booking_id'] = $booking->id;
               $p['category'] = $valueDataOrderOfficial->delegation_type;
               $p['delegation_id'] = $delegation_id;
               $p['customer_id'] = Auth::guard('customer')->user()->id;
               $p['description'] = null;
+              $p['country_id'] = $country_id;
+              $p['province_id'] = $province_id;
               ParticipantCompetitions::create($p);
             }
           }
         }
       }
+
       return $booking;
     } catch (\Exception $th) {
       Log::build([

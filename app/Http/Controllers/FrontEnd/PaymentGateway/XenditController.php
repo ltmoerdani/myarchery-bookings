@@ -88,13 +88,14 @@ class XenditController extends Controller
           'dataOrders' => json_decode($request->request_orders),
           'form_type' => 'tournament',
         );
-
+        // dd($arrData);
 
         //============== create booking and invoice =============================
         $booking = new BookingController();
         // store the course enrolment information in database
         $bookingInfo = $booking->storeData($arrData);
-
+        // dd($bookingInfo);
+        // return false;
         // generate an invoice in pdf format
         $invoice = $booking->generateInvoice($bookingInfo, $event_id);
         //unlink qr code
@@ -612,7 +613,7 @@ class XenditController extends Controller
   {
     $data = $request->all();
     $req_header = $request->header();
-    
+
     $callback_token = 'aVFVqPOwHwkQ4S4X8HLzsLaW5W2feaFW3t02cHJLgskwgf1i';
     if ($req_header['x-callback-token'][0] !== $callback_token) {
       echo 'Invalid Callback Token.';
@@ -642,11 +643,11 @@ class XenditController extends Controller
     $disb->status = empty($data['status']) ? null : $data['status'];
     $disb->save();
 
-    if($data['status'] == 'COMPLETED'){
+    if ($data['status'] == 'COMPLETED') {
       $payment_status = 1;
-    }elseif($data['status'] == 'FAILED'){
+    } elseif ($data['status'] == 'FAILED') {
       $payment_status = 2;
-    }else{
+    } else {
       $payment_status = 0;
     }
 
