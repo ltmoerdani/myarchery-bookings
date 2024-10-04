@@ -84,11 +84,10 @@ class XenditController extends Controller
           'gatewayType' => 'online',
           'paymentStatus' => 'pending',
           'paymentStatusBooking' => 'pending',
-          'ticketInfos' => json_decode($request->request_ticket_infos),
           'dataOrders' => json_decode($request->request_orders),
+          'ticketInfos' => json_decode($request->request_ticket_infos),
           'form_type' => 'tournament',
         );
-        // dd($arrData);
 
         //============== create booking and invoice =============================
         $booking = new BookingController();

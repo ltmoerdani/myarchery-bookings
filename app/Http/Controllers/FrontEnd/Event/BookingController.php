@@ -724,7 +724,6 @@ class BookingController extends Controller
               $p['description'] = null;
               $p['country_id'] = $country_id;
               $p['province_id'] = $province_id;
-
               ParticipantCompetitions::create($p);
             }
           }

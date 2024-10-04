@@ -2298,6 +2298,11 @@ $("#ToDetailCheckout").on("click", function (e) {
 
   $("#eventErrors ul").empty();
   $("#eventErrors").hide();
+
+  // console.log("AllDataForm.individu:", AllDataForm.individu);
+  // console.log("AllDataForm.official:", AllDataForm.official);
+  // return false;
+
   let bookingForm = document.getElementById("bookingForm");
   let fd = new FormData(bookingForm);
 
