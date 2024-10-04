@@ -71,6 +71,7 @@ class XenditController extends Controller
           'currencyTextPosition' => $currencyInfo->base_currency_text_position,
           'currencySymbol' => $currencyInfo->base_currency_symbol,
           'currencySymbolPosition' => $currencyInfo->base_currency_symbol_position,
+          'customer_id' => $cust->id,
           'fname' => $cust->fname,
           'lname' => empty($cust->lname) ? $cust->fname : $cust->lname,
           'email' => $cust->email,

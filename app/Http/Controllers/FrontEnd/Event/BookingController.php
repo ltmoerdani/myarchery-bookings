@@ -46,6 +46,7 @@ use App\Models\InternationalCities;
 use App\Http\Helpers\HelperUser;
 use App\Models\Clubs;
 use App\Models\Organization;
+use App\Models\ParticipantByCustomer;
 use App\Models\School;
 use Illuminate\Support\Facades\Log;
 
@@ -656,6 +657,8 @@ class BookingController extends Controller
                 $participant_id = $checkParticipant->id;
               }
 
+              ParticipantByCustomer::create(['participant_id' => $participant_id, 'customer_id' => $info['customer_id']]);
+
               $delegation_id = null;
               $country_id = null;
               $province_id = null;
@@ -771,6 +774,8 @@ class BookingController extends Controller
               } else {
                 $participant_id = $checkParticipant->id;
               }
+
+              ParticipantByCustomer::create(['participant_id' => $participant_id, 'customer_id' => $info['customer_id']]);
 
               $delegation_id = null;
               $country_id = null;
