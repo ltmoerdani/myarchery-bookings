@@ -2363,6 +2363,8 @@ $("#ToDetailCheckout").on("click", function (e) {
         },
         1000
       );
+
+      $(e.target).attr("disabled", false);
     },
   });
 });
